@@ -22,7 +22,7 @@
     <string name="service_more">More</string>
     <string name="cashbox_eyebrow">Savings</string>
     <string name="cashbox_title">CashBox</string>
-    <string name="cashbox_subtitle">Earn up to 20%</string>
+    <string name="cashbox_subtitle" formatted="false">Earn up to 20%</string>
     <string name="cashbox_action">₦1 to Start</string>
     <string name="fixed_savings_eyebrow">Savings plan</string>
     <string name="fixed_savings_title">Fixed Savings</string>
