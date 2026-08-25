@@ -7,7 +7,7 @@ android {
     compileSdk = 36
     buildToolsVersion = "36.0.0"
 
-    defaultConfig {
+    defaultConfig {s
         applicationId = "damjay.palmpay.clone"
         minSdk = 26
         targetSdk = 35
@@ -16,7 +16,28 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+// Pin every build to one keystore so the APK signature never changes between
+  // builds. Credentials live in gradle.properties (not hard-coded here).
+  signingConfigs {
+    create("stable") {
+      val storeFilePath = (project.findProperty("PALMPAY_CLONE_STORE_FILE") as? String)
+        ?: "keystore/damjay_debug.keystore"
+      storeFile = rootProject.file(storeFilePath)
+      storePassword = project.findProperty("PALMPAY_CLONE_STORE_PASSWORD") as? String
+      keyAlias = project.findProperty("PALMPAY_CLONE_KEY_ALIAS") as? String
+      keyPassword = project.findProperty("PALMPAY_CLONE_KEY_PASSWORD") as? String
+    }
+  }
 
+  buildTypes {
+    getByName("debug") {
+      signingConfig = signingConfigs.getByName("stable")
+    }
+    // To also sign release builds with the same stable key, uncomment:
+    // getByName("release") {
+    //   signingConfig = signingConfigs.getByName("stable")
+    // }
+  }
     buildFeatures {
         viewBinding = true
     }
