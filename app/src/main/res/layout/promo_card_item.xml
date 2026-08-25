@@ -68,7 +68,7 @@
                 android:textSize="10sp"
                 app:backgroundTint="@color/surface_white"
                 app:cornerRadius="14dp"
-                app:elevation="0dp"
+                android:elevation="0dp"
                 app:strokeWidth="0dp" />
         </LinearLayout>
 

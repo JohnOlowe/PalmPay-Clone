@@ -245,7 +245,7 @@
                             android:textStyle="bold"
                             app:backgroundTint="@color/brand_purple"
                             app:cornerRadius="21dp"
-                            app:elevation="0dp"
+                            android:elevation="0dp"
                             app:iconGravity="textStart"
                             app:strokeWidth="0dp" />
                     </LinearLayout>
