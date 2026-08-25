@@ -526,7 +526,7 @@
                             android:layout_width="10dp"
                             android:layout_height="6dp"
                             android:layout_marginStart="4dp"
-                            android:background="@drawable/bg_dot_ina       android:background="@drawable/bg_dot_inactive" />
+                            android:background="@drawable/bg_dot_inactive" />
                         <View
                             android:layout_width="10dp"
                             android:layout_height="6dp"
@@ -563,4 +563,3 @@
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-straintlayout.widget.ConstraintLayout>
