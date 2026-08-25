@@ -1,6 +1,7 @@
 package damjay.palmpay.clone;
 
 import android.graphics.Color;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
 
@@ -40,8 +41,10 @@ public final class MainActivity extends AppCompatActivity {
 
         WindowInsetsControllerCompat insetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
-        insetsController.setAppearanceLightStatusBars(true);
-        insetsController.setAppearanceLightNavigationBars(true);
+        boolean darkMode = (getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
+        insetsController.setAppearanceLightStatusBars(!darkMode);
+        insetsController.setAppearanceLightNavigationBars(!darkMode);
     }
 
     private void applySystemBarInsets(@NonNull View root) {

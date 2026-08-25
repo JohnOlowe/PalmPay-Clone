@@ -2,7 +2,6 @@ package damjay.palmpay.clone.data;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
@@ -59,18 +58,22 @@ public class HomeCatalogTest {
         List<PromotionCard> promotions = HomeCatalog.promotions();
 
         assertEquals(2, promotions.size());
-        assertEquals(R.string.cashbox_title, promotions.get(0).getTitleRes());
-        assertEquals(R.string.fixed_savings_title, promotions.get(1).getTitleRes());
-        assertNotNull(promotions.get(0));
-        assertNotNull(promotions.get(1));
+        assertEquals(R.string.team_save_eyebrow, promotions.get(0).getHeadingRes());
+        assertEquals(R.string.cashbox_eyebrow, promotions.get(1).getHeadingRes());
+        assertEquals(R.string.team_save_amount, promotions.get(0).getAmountRes());
+        assertEquals(R.string.cashbox_amount, promotions.get(1).getAmountRes());
+        assertEquals(0, promotions.get(0).getIllustrationRes());
+        assertNotEquals(0, promotions.get(1).getIllustrationRes());
         assertNotEquals(
-                promotions.get(0).getBackgroundColorRes(),
-                promotions.get(1).getBackgroundColorRes());
+                promotions.get(0).getHeadingRes(),
+                promotions.get(1).getHeadingRes());
         for (PromotionCard promotion : promotions) {
-            assertTrue(promotion.getEyebrowRes() > 0);
+            assertTrue(promotion.getHeadingRes() > 0);
             assertTrue(promotion.getSubtitleRes() > 0);
+            assertTrue(promotion.getAmountRes() > 0);
+            assertTrue(promotion.getAmountCaptionRes() > 0);
             assertTrue(promotion.getActionRes() > 0);
-            assertTrue(promotion.getIllustrationRes() > 0);
+            assertTrue(promotion.getBackgroundColorRes() > 0);
         }
     }
 }

@@ -17,7 +17,7 @@ import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.badge.BadgeDrawable;
 
 import java.util.List;
 
@@ -33,14 +33,14 @@ import damjay.palmpay.clone.model.ServiceAction;
 
 /**
  * Coordinates the home screen without putting catalogue or interaction logic in
- * the activity.  The XML files define the visual contract while this class
- * turns the reusable models into views and wires up their behaviour.
+ * the activity. The XML files define the visual contract while this class turns
+ * the reusable models into views and wires up their behaviour.
  */
 public final class HomeScreenController {
     private final Context context;
     private final ActivityMainBinding binding;
     private final LayoutInflater inflater;
-    private boolean balanceVisible;
+    private boolean balanceVisible = true;
 
     public HomeScreenController(Context context, ActivityMainBinding binding) {
         this.context = context;
@@ -54,27 +54,32 @@ public final class HomeScreenController {
         renderPromotions(HomeCatalog.promotions());
         bindBalanceCard();
         bindHeader();
+        bindClaimCard();
         bindNavigation();
     }
 
     private void renderQuickActions(List<QuickAction> actions) {
         binding.quickActionsContainer.removeAllViews();
 
-        for (QuickAction action : actions) {
+        for (int index = 0; index < actions.size(); index++) {
+            QuickAction action = actions.get(index);
             QuickActionItemBinding item = QuickActionItemBinding.inflate(
                     inflater, binding.quickActionsContainer, false);
             item.actionTitle.setText(action.getTitleRes());
             item.actionIcon.setImageResource(action.getIconRes());
             tint(item.actionIcon, action.getIconColorRes());
+            item.actionBadge.setVisibility(index == 0 ? View.VISIBLE : View.GONE);
             setRoundedBackground(
-                    item.actionIconContainer,
+                    item.getRoot(),
                     color(action.getBackgroundColorRes()),
-                    dp(13));
+                    dp(14));
             item.getRoot().setContentDescription(context.getString(action.getTitleRes()));
             item.getRoot().setOnClickListener(view -> showSelection(action.getTitleRes()));
 
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                    0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+                    0, dp(76), 1f);
+            layoutParams.setMarginStart(index == 0 ? 0 : dp(3));
+            layoutParams.setMarginEnd(index == actions.size() - 1 ? 0 : dp(3));
             binding.quickActionsContainer.addView(item.getRoot(), layoutParams);
         }
     }
@@ -87,11 +92,6 @@ public final class HomeScreenController {
                     inflater, binding.servicesGrid, false);
             item.serviceTitle.setText(service.getTitleRes());
             item.serviceIcon.setImageResource(service.getIconRes());
-            tint(item.serviceIcon, service.getIconColorRes());
-            setRoundedBackground(
-                    item.serviceIconContainer,
-                    color(service.getBackgroundColorRes()),
-                    dp(21));
             item.getRoot().setContentDescription(context.getString(service.getTitleRes()));
             item.getRoot().setOnClickListener(view -> showSelection(service.getTitleRes()));
 
@@ -99,7 +99,7 @@ public final class HomeScreenController {
                     GridLayout.spec(GridLayout.UNDEFINED),
                     GridLayout.spec(GridLayout.UNDEFINED, 1f));
             layoutParams.width = 0;
-            layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            layoutParams.height = dp(59);
             layoutParams.setGravity(Gravity.FILL_HORIZONTAL);
             binding.servicesGrid.addView(item.getRoot(), layoutParams);
         }
@@ -112,22 +112,29 @@ public final class HomeScreenController {
             PromotionCard promotion = promotions.get(index);
             PromoCardItemBinding item = PromoCardItemBinding.inflate(
                     inflater, binding.promotionsContainer, false);
-            item.promoEyebrow.setText(promotion.getEyebrowRes());
-            item.promoTitle.setText(promotion.getTitleRes());
-            item.promoSubtitle.setText(promotion.getSubtitleRes());
+            item.promoEyebrow.setText(promotion.getHeadingRes());
+            item.promoTitle.setText(promotion.getSubtitleRes());
+            item.promoSubtitle.setText(promotion.getAmountRes());
+            item.promoAmountCaption.setText(promotion.getAmountCaptionRes());
             item.promoAction.setText(promotion.getActionRes());
-            item.promoIllustration.setImageResource(promotion.getIllustrationRes());
-            item.promoIllustration.setContentDescription(context.getString(promotion.getTitleRes()));
             item.getRoot().setCardBackgroundColor(color(promotion.getBackgroundColorRes()));
-            item.getRoot().setContentDescription(context.getString(promotion.getTitleRes()));
-            item.getRoot().setOnClickListener(view -> showSelection(promotion.getTitleRes()));
-            item.promoAction.setOnClickListener(view -> showSelection(promotion.getTitleRes()));
+            item.getRoot().setContentDescription(context.getString(promotion.getHeadingRes()));
+            item.getRoot().setOnClickListener(view -> showSelection(promotion.getHeadingRes()));
+            item.promoAction.setOnClickListener(view -> showSelection(promotion.getHeadingRes()));
+
+            if (promotion.getIllustrationRes() == 0) {
+                item.promoIllustration.setVisibility(View.GONE);
+            } else {
+                item.promoIllustration.setVisibility(View.VISIBLE);
+                item.promoIllustration.setImageResource(promotion.getIllustrationRes());
+                item.promoIllustration.setContentDescription(
+                        context.getString(promotion.getHeadingRes()));
+            }
 
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                    0, dp(126), 1f);
+                    0, dp(148), 1f);
             if (index > 0) {
                 layoutParams.setMarginStart(dp(6));
-                layoutParams.setMarginEnd(0);
             }
             binding.promotionsContainer.addView(item.getRoot(), layoutParams);
         }
@@ -140,8 +147,8 @@ public final class HomeScreenController {
                     ? R.string.visible_balance
                     : R.string.hidden_balance);
             binding.balanceVisibilityButton.setImageResource(balanceVisible
-                    ? R.drawable.ic_eye_off
-                    : R.drawable.ic_eye_visible);
+                    ? R.drawable.ic_eye_visible
+                    : R.drawable.ic_eye_off);
             binding.balanceVisibilityButton.setContentDescription(context.getString(
                     balanceVisible
                             ? R.string.balance_visible_description
@@ -157,7 +164,21 @@ public final class HomeScreenController {
         binding.notificationsButton.setOnClickListener(view -> showMessage("No new notifications"));
     }
 
+    private void bindClaimCard() {
+        binding.claimAction.setOnClickListener(view -> showMessage("Claim selected"));
+    }
+
     private void bindNavigation() {
+        BadgeDrawable wealthBadge = binding.bottomNavigation.getOrCreateBadge(R.id.nav_wealth);
+        wealthBadge.setVisible(true);
+        wealthBadge.setText(context.getString(R.string.nav_new_badge));
+        wealthBadge.setBackgroundColor(color(R.color.badge_orange));
+        wealthBadge.setBadgeTextColor(color(R.color.badge_text_orange));
+
+        BadgeDrawable loanBadge = binding.bottomNavigation.getOrCreateBadge(R.id.nav_loan);
+        loanBadge.setVisible(true);
+        loanBadge.setBackgroundColor(color(R.color.badge_red));
+
         binding.bottomNavigation.setSelectedItemId(R.id.nav_home);
         binding.bottomNavigation.setOnItemSelectedListener(item -> {
             if (item.getItemId() != R.id.nav_home) {

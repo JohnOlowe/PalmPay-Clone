@@ -4,14 +4,16 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
-/** Content and styling for one of the two savings promotions. */
+/** Content and styling for one savings promotion tile. */
 public final class PromotionCard {
     @StringRes
-    private final int eyebrowRes;
-    @StringRes
-    private final int titleRes;
+    private final int headingRes;
     @StringRes
     private final int subtitleRes;
+    @StringRes
+    private final int amountRes;
+    @StringRes
+    private final int amountCaptionRes;
     @StringRes
     private final int actionRes;
     @DrawableRes
@@ -20,33 +22,40 @@ public final class PromotionCard {
     private final int backgroundColorRes;
 
     public PromotionCard(
-            @StringRes int eyebrowRes,
-            @StringRes int titleRes,
+            @StringRes int headingRes,
             @StringRes int subtitleRes,
+            @StringRes int amountRes,
+            @StringRes int amountCaptionRes,
             @StringRes int actionRes,
             @DrawableRes int illustrationRes,
             @ColorRes int backgroundColorRes) {
-        this.eyebrowRes = eyebrowRes;
-        this.titleRes = titleRes;
+        this.headingRes = headingRes;
         this.subtitleRes = subtitleRes;
+        this.amountRes = amountRes;
+        this.amountCaptionRes = amountCaptionRes;
         this.actionRes = actionRes;
         this.illustrationRes = illustrationRes;
         this.backgroundColorRes = backgroundColorRes;
     }
 
     @StringRes
-    public int getEyebrowRes() {
-        return eyebrowRes;
-    }
-
-    @StringRes
-    public int getTitleRes() {
-        return titleRes;
+    public int getHeadingRes() {
+        return headingRes;
     }
 
     @StringRes
     public int getSubtitleRes() {
         return subtitleRes;
+    }
+
+    @StringRes
+    public int getAmountRes() {
+        return amountRes;
+    }
+
+    @StringRes
+    public int getAmountCaptionRes() {
+        return amountCaptionRes;
     }
 
     @StringRes

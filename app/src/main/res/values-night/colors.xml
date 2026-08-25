@@ -1,10 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="screen_background">#FAF9FD</color>
-    <color name="surface_white">#FFFFFF</color>
-    <color name="surface_lilac">#F1EEFF</color>
-    <color name="ink">#19171D</color>
-    <color name="ink_secondary">#6D6877</color>
-    <color name="ink_muted">#9A96A4</color>
-    <color name="divider">#E6E3EB</color>
+    <color name="screen_background">#121212</color>
+    <color name="surface_white">#1E1E1E</color>
+    <color name="balance_surface">#865CFE</color>
+    <color name="notification_surface">#1E1E1E</color>
+    <color name="quick_card_surface">#1E1E1E</color>
+    <color name="service_card_surface">#1E1E1E</color>
+    <color name="promo_surface">#121212</color>
+    <color name="brand_purple">#865CFE</color>
+    <color name="brand_purple_dark">#6A35FF</color>
+    <color name="brand_purple_soft">#322457</color>
+    <color name="balance_action_background">#1E1E1E</color>
+    <color name="balance_action_text">#FFFFFF</color>
+    <color name="ink">#F5F3FA</color>
+    <color name="ink_secondary">#A8A5B0</color>
+    <color name="ink_muted">#77747E</color>
+    <color name="divider">#37353B</color>
+    <color name="icon_purple">#7B3CFF</color>
+    <color name="nav_unselected">#EEEAF5</color>
+    <color name="earnings_positive">#1EBC92</color>
+    <color name="cashbox_green">#176A4D</color>
+    <color name="fixed_savings_blue">#3C39A7</color>
 </resources>

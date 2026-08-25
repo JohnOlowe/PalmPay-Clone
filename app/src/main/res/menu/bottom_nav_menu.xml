@@ -5,13 +5,17 @@
         android:icon="@drawable/ic_home"
         android:title="@string/nav_home" />
     <item
-        android:id="@+id/nav_rewards"
-        android:icon="@drawable/ic_rewards"
-        android:title="@string/nav_rewards" />
+        android:id="@+id/nav_loan"
+        android:icon="@drawable/ic_loan_nav"
+        android:title="@string/nav_loan" />
     <item
-        android:id="@+id/nav_finance"
-        android:icon="@drawable/ic_finance"
-        android:title="@string/nav_finance" />
+        android:id="@+id/nav_wealth"
+        android:icon="@drawable/ic_wealth"
+        android:title="@string/nav_wealth" />
+    <item
+        android:id="@+id/nav_reward"
+        android:icon="@drawable/ic_reward"
+        android:title="@string/nav_reward" />
     <item
         android:id="@+id/nav_me"
         android:icon="@drawable/ic_person"

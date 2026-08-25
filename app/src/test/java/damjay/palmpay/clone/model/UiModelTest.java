@@ -14,30 +14,32 @@ public class UiModelTest {
         QuickAction action = new QuickAction(
                 R.string.quick_action_cards,
                 R.drawable.ic_card,
-                R.color.pastel_orange,
-                R.color.icon_orange);
+                R.color.quick_card_surface,
+                R.color.icon_purple);
 
         assertEquals(R.string.quick_action_cards, action.getTitleRes());
         assertEquals(R.drawable.ic_card, action.getIconRes());
-        assertEquals(R.color.pastel_orange, action.getBackgroundColorRes());
-        assertEquals(R.color.icon_orange, action.getIconColorRes());
+        assertEquals(R.color.quick_card_surface, action.getBackgroundColorRes());
+        assertEquals(R.color.icon_purple, action.getIconColorRes());
     }
 
     @Test
     public void promotionCardExposesEveryConstructorValue() {
         PromotionCard promotion = new PromotionCard(
                 R.string.cashbox_eyebrow,
-                R.string.cashbox_title,
                 R.string.cashbox_subtitle,
+                R.string.cashbox_amount,
+                R.string.cashbox_amount_caption,
                 R.string.cashbox_action,
-                R.drawable.ic_cashbox,
-                R.color.cashbox_green);
+                R.drawable.gift_reference,
+                R.color.promo_surface);
 
-        assertEquals(R.string.cashbox_eyebrow, promotion.getEyebrowRes());
-        assertEquals(R.string.cashbox_title, promotion.getTitleRes());
+        assertEquals(R.string.cashbox_eyebrow, promotion.getHeadingRes());
         assertEquals(R.string.cashbox_subtitle, promotion.getSubtitleRes());
+        assertEquals(R.string.cashbox_amount, promotion.getAmountRes());
+        assertEquals(R.string.cashbox_amount_caption, promotion.getAmountCaptionRes());
         assertEquals(R.string.cashbox_action, promotion.getActionRes());
-        assertEquals(R.drawable.ic_cashbox, promotion.getIllustrationRes());
-        assertEquals(R.color.cashbox_green, promotion.getBackgroundColorRes());
+        assertEquals(R.drawable.gift_reference, promotion.getIllustrationRes());
+        assertEquals(R.color.promo_surface, promotion.getBackgroundColorRes());
     }
 }
