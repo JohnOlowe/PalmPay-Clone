@@ -1,2 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <color name="screen_background">#FAF9FD</color>
+    <color name="surface_white">#FFFFFF</color>
+    <color name="surface_lilac">#F1EEFF</color>
+    <color name="surface_lilac_strong">#E8E0FF</color>
+    <color name="brand_purple">#6500F5</color>
+    <color name="brand_purple_dark">#4D00C8</color>
+    <color name="brand_purple_soft">#EEE8FF</color>
+    <color name="ink">#19171D</color>
+    <color name="ink_secondary">#6D6877</color>
+    <color name="ink_muted">#9A96A4</color>
+    <color name="divider">#E6E3EB</color>
+    <color name="icon_purple">#6734DF</color>
+    <color name="icon_blue">#3974DB</color>
+    <color name="icon_green">#2B9C6A</color>
+    <color name="icon_orange">#EA7B42</color>
+    <color name="icon_red">#E85C68</color>
+    <color name="icon_yellow">#D79A28</color>
+    <color name="icon_teal">#209D9A</color>
+    <color name="icon_slate">#6372B5</color>
+    <color name="pastel_lilac">#EEE8FF</color>
+    <color name="pastel_blue">#E8F1FF</color>
+    <color name="pastel_green">#E2F6EE</color>
+    <color name="pastel_orange">#FFF0E7</color>
+    <color name="pastel_red">#FFECEF</color>
+    <color name="pastel_yellow">#FFF7DD</color>
+    <color name="pastel_teal">#E2F7F5</color>
+    <color name="pastel_slate">#EAEFFF</color>
+    <color name="cashbox_green">#176A4D</color>
+    <color name="fixed_savings_blue">#3C39A7</color>
+    <color name="badge_red">#F04459</color>
+    <color name="nav_unselected">#A19DAA</color>
+</resources>

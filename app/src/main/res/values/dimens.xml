@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="screen_horizontal_padding">16dp</dimen>
+    <dimen name="header_height">52dp</dimen>
+    <dimen name="section_gap">16dp</dimen>
+    <dimen name="card_radius">18dp</dimen>
+    <dimen name="small_card_radius">14dp</dimen>
+    <dimen name="quick_icon_size">42dp</dimen>
+    <dimen name="service_icon_size">42dp</dimen>
+    <dimen name="bottom_navigation_height">70dp</dimen>
+</resources>

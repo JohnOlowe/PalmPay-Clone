@@ -1,4 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">App</string>
+    <string name="app_name">PalmPay</string>
+    <string name="greeting">Hi, JOHN</string>
+    <string name="available_balance">Available Balance</string>
+    <string name="hidden_balance">****</string>
+    <string name="visible_balance">₦12,436.70</string>
+    <string name="transaction_history">Transaction History</string>
+    <string name="add_money">Add Money</string>
+    <string name="yesterday_earnings">Yesterday&apos;s Earnings: +₦2.37</string>
+    <string name="quick_action_to_bank">To Bank</string>
+    <string name="quick_action_palmpay">PalmPay</string>
+    <string name="quick_action_savings">Savings</string>
+    <string name="quick_action_cards">Cards</string>
+    <string name="service_airtime">Airtime</string>
+    <string name="service_data">Data</string>
+    <string name="service_betting">Betting</string>
+    <string name="service_electricity">Electricity</string>
+    <string name="service_cable_tv">Cable TV</string>
+    <string name="service_education">Education</string>
+    <string name="service_loans">Loans</string>
+    <string name="service_more">More</string>
+    <string name="cashbox_eyebrow">Savings</string>
+    <string name="cashbox_title">CashBox</string>
+    <string name="cashbox_subtitle">Earn up to 20%</string>
+    <string name="cashbox_action">₦1 to Start</string>
+    <string name="fixed_savings_eyebrow">Savings plan</string>
+    <string name="fixed_savings_title">Fixed Savings</string>
+    <string name="fixed_savings_subtitle">Grow your money</string>
+    <string name="fixed_savings_action">Save now</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_rewards">Rewards</string>
+    <string name="nav_finance">Finance</string>
+    <string name="nav_me">Me</string>
+    <string name="balance_hidden_description">Balance is hidden. Tap to show.</string>
+    <string name="balance_visible_description">Balance is visible. Tap to hide.</string>
 </resources>

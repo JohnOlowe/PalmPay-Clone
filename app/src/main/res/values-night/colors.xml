@@ -1,2 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <color name="screen_background">#FAF9FD</color>
+    <color name="surface_white">#FFFFFF</color>
+    <color name="surface_lilac">#F1EEFF</color>
+    <color name="ink">#19171D</color>
+    <color name="ink_secondary">#6D6877</color>
+    <color name="ink_muted">#9A96A4</color>
+    <color name="divider">#E6E3EB</color>
+</resources>
