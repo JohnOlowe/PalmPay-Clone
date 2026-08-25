@@ -56,4 +56,24 @@
     <string name="support_content_description">Customer support</string>
     <string name="notifications_content_description">Notifications</string>
     <string name="free_transfer_badge">0 Fee</string>
+    <string name="transfer_to_bank">Transfer to Bank</string>
+    <string name="add_extra_transfer_protection">Add Extra Transfer Protection</string>
+    <string name="recipient_account">Recipient Account</string>
+    <string name="account_number_hint">Enter 10 digits Account Number</string>
+    <string name="bank">Bank</string>
+    <string name="select_bank">Select bank</string>
+    <string name="choose_bank">Choose bank</string>
+    <string name="next">Next</string>
+    <string name="schedule_transfer">Schedule\nTransfer</string>
+    <string name="success_rate">Success\nRate</string>
+    <string name="transfer_settings">Transfer\nSettings</string>
+    <string name="withdraw_cash">Withdraw\nCash</string>
+    <string name="recent">Recent</string>
+    <string name="favorites">Favorites</string>
+    <string name="palmpay_contacts">PalmPay Contacts</string>
+    <string name="search_contacts">Search contacts</string>
+    <string name="view_all">View All</string>
+    <string name="transfer_support">Transfer support</string>
+    <string name="transfer_history">Transfer history</string>
+    <string name="claim_selected">Claim selected</string>
 </resources>

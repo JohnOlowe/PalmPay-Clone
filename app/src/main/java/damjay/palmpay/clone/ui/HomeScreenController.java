@@ -30,6 +30,7 @@ import damjay.palmpay.clone.databinding.ServiceActionItemBinding;
 import damjay.palmpay.clone.model.PromotionCard;
 import damjay.palmpay.clone.model.QuickAction;
 import damjay.palmpay.clone.model.ServiceAction;
+import damjay.palmpay.clone.transfer.ui.TransferActivity;
 
 /**
  * Coordinates the home screen without putting catalogue or interaction logic in
@@ -74,7 +75,13 @@ public final class HomeScreenController {
                     color(action.getBackgroundColorRes()),
                     dp(14));
             item.getRoot().setContentDescription(context.getString(action.getTitleRes()));
-            item.getRoot().setOnClickListener(view -> showSelection(action.getTitleRes()));
+            item.getRoot().setOnClickListener(view -> {
+                if (action.getTitleRes() == R.string.quick_action_to_bank) {
+                    TransferActivity.start(context);
+                } else {
+                    showSelection(action.getTitleRes());
+                }
+            });
 
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                     0, dp(72), 1f);

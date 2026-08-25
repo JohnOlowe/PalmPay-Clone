@@ -39,4 +39,17 @@
     <color name="badge_text_orange">#8A4C00</color>
     <color name="nav_unselected">#9998A1</color>
     <color name="earnings_positive">#22A784</color>
+    <color name="transfer_background">#F6F5FA</color>
+    <color name="transfer_toolbar_surface">#FFFFFF</color>
+    <color name="transfer_surface">#FFFFFF</color>
+    <color name="transfer_field_surface">#F6F5FA</color>
+    <color name="transfer_hint">#B7B6BD</color>
+    <color name="transfer_green">#25B99F</color>
+    <color name="transfer_next_disabled">#DACFF7</color>
+    <color name="transfer_next_text_disabled">#FFFFFF</color>
+    <color name="transfer_next_text_enabled">#FFFFFF</color>
+    <color name="recipient_circle">#BAB3DD</color>
+    <color name="shortcut_icon">#22213D</color>
+    <color name="tab_inactive">#696872</color>
+    <color name="transfer_divider">#EEEEF1</color>
 </resources>
