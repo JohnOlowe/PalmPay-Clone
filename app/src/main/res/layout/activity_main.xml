@@ -22,26 +22,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingStart="16dp"
-            android:paddingTop="12dp"
-            android:paddingEnd="16dp"
-            android:paddingBottom="18dp">
+            android:paddingStart="@dimen/screen_horizontal_padding"
+            android:paddingTop="14dp"
+            android:paddingEnd="@dimen/screen_horizontal_padding"
+            android:paddingBottom="24dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/top_bar"
                 android:layout_width="match_parent"
-                android:layout_height="42dp"
-                android:layout_marginBottom="0dp">
+                android:layout_height="@dimen/header_height"
+                android:layout_marginBottom="16dp">
 
                 <FrameLayout
                     android:id="@+id/profile_button"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
                     android:background="@drawable/bg_avatar"
                     android:clickable="true"
-                    android:clipToOutline="true"
-                    android:contentDescription="@string/profile_content_description"
+                    android:contentDescription="Profile"
                     android:focusable="true"
+                    android:padding="1dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -50,16 +50,15 @@
                         android:id="@+id/profile_image"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:contentDescription="@string/profile_content_description"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/avatar_reference" />
+                        android:contentDescription="Profile photo"
+                        android:src="@drawable/ic_profile_placeholder" />
                 </FrameLayout>
 
                 <TextView
                     android:id="@+id/greeting_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="12dp"
                     android:fontFamily="sans"
                     android:includeFontPadding="false"
                     android:text="@string/greeting"
@@ -82,13 +81,14 @@
 
                     <FrameLayout
                         android:id="@+id/support_button"
-                        android:layout_width="36dp"
-                        android:layout_height="42dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/bg_header_icon"
                         android:clickable="true"
-                        android:contentDescription="@string/support_content_description"
+                        android:contentDescription="Customer support"
                         android:focusable="true"
                         android:foreground="?attr/selectableItemBackgroundBorderless"
-                        android:padding="4dp">
+                        android:padding="9dp">
 
                         <ImageView
                             android:layout_width="match_parent"
@@ -100,14 +100,15 @@
 
                     <FrameLayout
                         android:id="@+id/notifications_button"
-                        android:layout_width="42dp"
-                        android:layout_height="42dp"
-                        android:layout_marginStart="7dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/bg_header_icon"
                         android:clickable="true"
-                        android:contentDescription="@string/notifications_content_description"
+                        android:contentDescription="Notifications"
                         android:focusable="true"
                         android:foreground="?attr/selectableItemBackgroundBorderless"
-                        android:padding="4dp">
+                        android:padding="9dp">
 
                         <ImageView
                             android:layout_width="match_parent"
@@ -116,20 +117,11 @@
                             android:src="@drawable/ic_notifications"
                             android:tint="@color/ink" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="20dp"
+                        <View
+                            android:layout_width="7dp"
+                            android:layout_height="7dp"
                             android:layout_gravity="top|end"
-                            android:background="@drawable/bg_notification_count"
-                            android:gravity="center"
-                            android:includeFontPadding="false"
-                            android:minWidth="25dp"
-                            android:paddingStart="4dp"
-                            android:paddingEnd="4dp"
-                            android:text="99+"
-                            android:textColor="@android:color/white"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
+                            android:background="@drawable/bg_notification_badge" />
                     </FrameLayout>
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -138,31 +130,26 @@
                 android:id="@+id/balance_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                app:cardBackgroundColor="@color/surface_white"
-                app:cardCornerRadius="18dp"
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="@color/surface_lilac"
+                app:cardCornerRadius="@dimen/card_radius"
                 app:cardElevation="0dp"
                 app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
                     <RelativeLayout
-                        android:id="@+id/balance_panel"
                         android:layout_width="match_parent"
-                        android:layout_height="70dp"
-                        android:background="@drawable/bg_balance_panel"
-                        android:paddingStart="16dp"
-                        android:paddingTop="7dp"
-                        android:paddingEnd="16dp"
-                        android:paddingBottom="6dp">
+                        android:layout_height="22dp">
 
                         <LinearLayout
                             android:id="@+id/balance_label_group"
                             android:layout_width="wrap_content"
-                            android:layout_height="26dp"
+                            android:layout_height="match_parent"
                             android:gravity="center_vertical"
                             android:orientation="horizontal">
 
@@ -171,7 +158,7 @@
                                 android:layout_height="18dp"
                                 android:contentDescription=""
                                 android:src="@drawable/ic_shield_check"
-                                android:tint="@color/icon_green" />
+                                android:tint="@color/ink_secondary" />
 
                             <TextView
                                 android:id="@+id/available_balance_label"
@@ -180,136 +167,117 @@
                                 android:layout_marginStart="7dp"
                                 android:includeFontPadding="false"
                                 android:text="@string/available_balance"
-                                android:textColor="@color/ink"
-                                android:textSize="14sp" />
+                                android:textColor="@color/ink_secondary"
+                                android:textSize="13sp" />
 
                             <ImageButton
                                 android:id="@+id/balance_visibility_button"
-                                android:layout_width="25dp"
-                                android:layout_height="25dp"
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
                                 android:layout_marginStart="3dp"
                                 android:background="@android:color/transparent"
-                                android:contentDescription="@string/balance_visible_description"
-                                android:padding="4dp"
+                                android:contentDescription="@string/balance_hidden_description"
+                                android:padding="6dp"
                                 android:src="@drawable/ic_eye_visible"
-                                android:tint="@color/ink" />
+                                android:tint="@color/ink_secondary" />
                         </LinearLayout>
 
                         <LinearLayout
                             android:id="@+id/history_button"
                             android:layout_width="wrap_content"
-                            android:layout_height="26dp"
+                            android:layout_height="match_parent"
                             android:layout_alignParentEnd="true"
                             android:clickable="true"
                             android:focusable="true"
                             android:foreground="?attr/selectableItemBackgroundBorderless"
                             android:gravity="center_vertical"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal"
+                            android:paddingStart="4dp"
+                            android:paddingEnd="0dp">
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:includeFontPadding="false"
                                 android:text="@string/transaction_history"
-                                android:textColor="@color/ink"
-                                android:textSize="14sp" />
+                                android:textColor="@color/ink_secondary"
+                                android:textSize="12sp" />
 
                             <ImageView
-                                android:layout_width="16dp"
-                                android:layout_height="16dp"
-                                android:layout_marginStart="1dp"
+                                android:layout_width="14dp"
+                                android:layout_height="14dp"
+                                android:layout_marginStart="2dp"
                                 android:contentDescription=""
                                 android:src="@drawable/ic_chevron_right"
-                                android:tint="@color/ink" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="34dp"
-                            android:layout_alignParentBottom="true"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/balance_amount"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:includeFontPadding="false"
-                                android:text="@string/visible_balance"
-                                android:textColor="@color/ink"
-                                android:textSize="22sp"
-                                android:textStyle="bold" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/add_money_button"
-                                android:layout_width="64dp"
-                                android:layout_height="28dp"
-                                android:elevation="0dp"
-                                android:insetTop="0dp"
-                                android:insetBottom="0dp"
-                                android:minWidth="0dp"
-                                android:minHeight="0dp"
-                                android:paddingStart="4dp"
-                                android:paddingEnd="4dp"
-                                android:text="@string/add_money"
-                                android:textAllCaps="false"
-                                android:textColor="@color/balance_action_text"
-                                android:textSize="12sp"
-                                android:textStyle="bold"
-                                app:backgroundTint="@color/balance_action_background"
-                                app:cornerRadius="14dp"
-                                app:strokeWidth="0dp" />
+                                android:tint="@color/ink_secondary" />
                         </LinearLayout>
                     </RelativeLayout>
 
                     <LinearLayout
-                        android:id="@+id/earnings_row"
                         android:layout_width="match_parent"
-                        android:layout_height="38dp"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="7dp"
                         android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:paddingStart="14dp"
-                        android:paddingEnd="14dp">
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/balance_amount"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:includeFontPadding="false"
+                            android:text="@string/hidden_balance"
+                            android:textColor="@color/ink"
+                            android:textSize="29sp"
+                            android:textStyle="bold" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/add_money_button"
+                            android:layout_width="112dp"
+                            android:layout_height="42dp"
+                            android:insetTop="0dp"
+                            android:insetBottom="0dp"
+                            android:minHeight="0dp"
+                            android:text="@string/add_money"
+                            android:textAllCaps="false"
+                            android:textColor="@color/surface_white"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            app:backgroundTint="@color/brand_purple"
+                            app:cornerRadius="21dp"
+                            android:elevation="0dp"
+                            app:iconGravity="textStart"
+                            app:strokeWidth="0dp" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="3dp"
+                        android:background="@color/divider" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="28dp"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
                         <ImageView
-                            android:layout_width="23dp"
-                            android:layout_height="23dp"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
                             android:contentDescription=""
                             android:src="@drawable/ic_coins"
-                            android:tint="@color/brand_purple" />
+                            android:tint="@color/icon_yellow" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="7dp"
                             android:includeFontPadding="false"
-                            android:text="@string/earnings_prefix"
+                            android:text="@string/yesterday_earnings"
                             android:textColor="@color/ink_secondary"
-                            android:textSize="13sp" />
-
-                        <TextView
-                            android:id="@+id/earnings_amount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:includeFontPadding="false"
-                            android:text="@string/earnings_amount"
-                            android:textColor="@color/earnings_positive"
-                            android:textSize="13sp" />
-
-                        <Space
-                            android:layout_width="0dp"
-                            android:layout_height="1dp"
-                            android:layout_weight="1" />
-
-                        <ImageView
-                            android:layout_width="23dp"
-                            android:layout_height="23dp"
-                            android:background="@drawable/bg_earnings_arrow"
-                            android:contentDescription=""
-                            android:padding="5dp"
-                            android:src="@drawable/ic_chevron_right"
-                            android:tint="@color/brand_purple" />
+                            android:textSize="12sp" />
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -318,219 +286,19 @@
                 android:id="@+id/quick_actions_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="10dp"
                 android:baselineAligned="false"
                 android:orientation="horizontal" />
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/notification_card"
-                android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:layout_marginBottom="0dp"
-                app:cardBackgroundColor="@color/notification_surface"
-                app:cardCornerRadius="18dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="0dp">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="12dp">
-
-                    <TextView
-                        android:id="@+id/notification_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginTop="8dp"
-                        android:includeFontPadding="false"
-                        android:maxLines="1"
-                        android:text="@string/notification_title"
-                        android:textColor="@color/ink"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/notification_time"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_marginTop="9dp"
-                        android:includeFontPadding="false"
-                        android:text="@string/notification_time"
-                        android:textColor="@color/ink_secondary"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:id="@+id/notification_detail"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentBottom="true"
-                        android:layout_marginBottom="8dp"
-                        android:ellipsize="end"
-                        android:includeFontPadding="false"
-                        android:maxLines="1"
-                        android:text="@string/notification_detail"
-                        android:textColor="@color/ink_secondary"
-                        android:textSize="12sp" />
-                </RelativeLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/services_card"
+            <GridLayout
+                android:id="@+id/services_grid"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="1dp"
-                android:layout_marginBottom="0dp"
-                app:cardBackgroundColor="@color/service_card_surface"
-                app:cardCornerRadius="18dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="0dp">
-
-                <GridLayout
-                    android:id="@+id/services_grid"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:columnCount="4"
-                    android:paddingStart="7dp"
-                    android:paddingTop="6dp"
-                    android:paddingEnd="7dp"
-                    android:paddingBottom="3dp"
-                    android:rowCount="2"
-                    android:useDefaultMargins="false" />
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/claim_card"
-                android:layout_width="match_parent"
-                android:layout_height="98dp"
-                android:layout_marginBottom="8dp"
-                app:cardBackgroundColor="@color/notification_surface"
-                app:cardCornerRadius="18dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="0dp">
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:id="@+id/claim_illustration"
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="10dp"
-                        android:contentDescription="@string/claim_title"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/claim_reference" />
-
-                    <LinearLayout
-                        android:id="@+id/claim_copy"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="68dp"
-                        android:orientation="vertical">
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/claim_title"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:ellipsize="end"
-                                android:includeFontPadding="false"
-                                android:maxWidth="145dp"
-                                android:maxLines="1"
-                                android:text="@string/claim_title"
-                                android:textColor="@color/ink"
-                                android:textSize="14sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/claim_status"
-                                android:layout_width="wrap_content"
-                                android:layout_height="22dp"
-                                android:layout_marginStart="7dp"
-                                android:background="@drawable/bg_claim_status"
-                                android:gravity="center"
-                                android:includeFontPadding="false"
-                                android:paddingStart="7dp"
-                                android:paddingEnd="7dp"
-                                android:text="@string/claim_status"
-                                android:textColor="#31B3BE"
-                                android:textSize="10sp" />
-                        </LinearLayout>
-
-                        <TextView
-                            android:id="@+id/claim_subtitle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:includeFontPadding="false"
-                            android:text="@string/claim_subtitle"
-                            android:textColor="@color/ink_secondary"
-                            android:textSize="12sp" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/claim_action"
-                        android:layout_width="57dp"
-                        android:layout_height="34dp"
-                        android:layout_gravity="center_vertical|end"
-                        android:layout_marginEnd="16dp"
-                        android:background="@drawable/bg_claim_button"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackgroundBorderless"
-                        android:gravity="center"
-                        android:text="@string/claim_action"
-                        android:textColor="@color/brand_purple"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
-
-                    <LinearLayout
-                        android:id="@+id/claim_dots"
-                        android:layout_width="wrap_content"
-                        android:layout_height="6dp"
-                        android:layout_gravity="bottom|center_horizontal"
-                        android:layout_marginBottom="8dp"
-                        android:orientation="horizontal">
-
-                        <View
-                            android:layout_width="10dp"
-                            android:layout_height="6dp"
-                            android:background="@drawable/bg_dot_active" />
-                        <View
-                            android:layout_width="10dp"
-                            android:layout_height="6dp"
-                            android:layout_marginStart="4dp"
-                            android:background="@drawable/bg_dot_inactive" />
-                        <View
-                            android:layout_width="10dp"
-                            android:layout_height="6dp"
-                            android:layout_marginStart="4dp"
-                            android:background="@drawable/bg_dot_inactive" />
-                        <View
-                            android:layout_width="10dp"
-                            android:layout_height="6dp"
-                            android:layout_marginStart="4dp"
-                            android:background="@drawable/bg_dot_inactive" />
-                        <View
-                            android:layout_width="10dp"
-                            android:layout_height="6dp"
-                            android:layout_marginStart="4dp"
-                            android:background="@drawable/bg_dot_inactive" />
-                    </LinearLayout>
-                </FrameLayout>
-            </com.google.android.material.card.MaterialCardView>
+                android:layout_marginBottom="16dp"
+                android:columnCount="4"
+                android:orientation="horizontal"
+                android:rowCount="2"
+                android:useDefaultMargins="false" />
 
             <LinearLayout
                 android:id="@+id/promotions_container"
@@ -550,9 +318,9 @@
         app:itemHorizontalTranslationEnabled="false"
         app:itemIconTint="@color/bottom_nav_color_selector"
         app:itemTextColor="@color/bottom_nav_color_selector"
-        app:itemRippleColor="@color/brand_purple_soft"
         app:labelVisibilityMode="labeled"
         app:menu="@menu/bottom_nav_menu"
+        app:itemRippleColor="@color/brand_purple_soft"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
