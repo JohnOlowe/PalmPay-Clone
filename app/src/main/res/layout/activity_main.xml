@@ -2,276 +2,565 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8F9FA">
+    android:background="@color/screen_background">
 
-    <!-- Scrollable Main Content -->
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/home_scroll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:fillViewport="false"
+        android:overScrollMode="never"
+        android:scrollbars="none"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation">
+        app:layout_constraintBottom_toTopOf="@id/bottom_navigation">
 
         <LinearLayout
+            android:id="@+id/home_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingTop="7dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="18dp">
 
-            <!-- Top Header Area -->
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/top_bar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp">
+                android:layout_height="49dp"
+                android:layout_marginBottom="0dp">
 
-                <ImageView
-                    android:id="@+id/profile_image"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:background="@drawable/circle_background"
-                    android:src="@drawable/ic_profile_placeholder"
+                <FrameLayout
+                    android:id="@+id/profile_button"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/bg_avatar"
+                    android:clickable="true"
+                    android:clipToOutline="true"
+                    android:contentDescription="@string/profile_content_description"
+                    android:focusable="true"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/profile_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:contentDescription="@string/profile_content_description"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/avatar_reference" />
+                </FrameLayout>
 
                 <TextView
                     android:id="@+id/greeting_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:text="Hi, JOHN"
+                    android:layout_marginStart="10dp"
+                    android:fontFamily="sans"
+                    android:includeFontPadding="false"
+                    android:text="@string/greeting"
+                    android:textColor="@color/ink"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="#000000"
-                    app:layout_constraintStart_toEndOf="@id/profile_image"
-                    app:layout_constraintTop_toTopOf="@id/profile_image"
-                    app:layout_constraintBottom_toBottomOf="@id/profile_image" />
+                    app:layout_constraintBottom_toBottomOf="@id/profile_button"
+                    app:layout_constraintStart_toEndOf="@id/profile_button"
+                    app:layout_constraintTop_toTopOf="@id/profile_button" />
 
-                <ImageView
-                    android:id="@+id/icon_support"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginEnd="16dp"
-                    android:src="@drawable/ic_headset"
-                    app:layout_constraintEnd_toStartOf="@id/icon_notifications"
-                    app:layout_constraintTop_toTopOf="@id/profile_image"
-                    app:layout_constraintBottom_toBottomOf="@id/profile_image" />
-
-                <!-- Notification Bell with Badge (Simplified) -->
-                <ImageView
-                    android:id="@+id/icon_notifications"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_bell"
+                <LinearLayout
+                    android:id="@+id/header_actions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/profile_image"
-                    app:layout_constraintBottom_toBottomOf="@id/profile_image" />
+                    app:layout_constraintTop_toTopOf="parent">
 
+                    <FrameLayout
+                        android:id="@+id/support_button"
+                        android:layout_width="36dp"
+                        android:layout_height="42dp"
+                        android:clickable="true"
+                        android:contentDescription="@string/support_content_description"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackgroundBorderless"
+                        android:padding="4dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:contentDescription=""
+                            android:src="@drawable/ic_headset"
+                            android:tint="@color/ink" />
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:id="@+id/notifications_button"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:layout_marginStart="7dp"
+                        android:clickable="true"
+                        android:contentDescription="@string/notifications_content_description"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackgroundBorderless"
+                        android:padding="4dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:contentDescription=""
+                            android:src="@drawable/ic_notifications"
+                            android:tint="@color/ink" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="20dp"
+                            android:layout_gravity="top|end"
+                            android:background="@drawable/bg_notification_count"
+                            android:gravity="center"
+                            android:includeFontPadding="false"
+                            android:minWidth="25dp"
+                            android:paddingStart="4dp"
+                            android:paddingEnd="4dp"
+                            android:text="99+"
+                            android:textColor="@android:color/white"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+                    </FrameLayout>
+                </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- Balance Card -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/balance_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="16dp"
+                android:layout_marginBottom="8dp"
+                app:cardBackgroundColor="@color/surface_white"
+                app:cardCornerRadius="18dp"
                 app:cardElevation="0dp"
-                app:cardBackgroundColor="#F3F0FF">
+                app:strokeWidth="0dp">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="16dp">
+                    android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/tv_available_balance"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Available Balance"
-                        android:textColor="#555555"
-                        android:drawablePadding="8dp"
-                        app:drawableStartCompat="@drawable/ic_shield_check"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:layout_marginStart="8dp"
-                        android:src="@drawable/ic_eye_visible"
-                        app:layout_constraintStart_toEndOf="@id/tv_available_balance"
-                        app:layout_constraintTop_toTopOf="@id/tv_available_balance"
-                        app:layout_constraintBottom_toBottomOf="@id/tv_available_balance" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Transaction History &gt;"
-                        android:textSize="12sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@id/tv_available_balance"
-                        app:layout_constraintBottom_toBottomOf="@id/tv_available_balance" />
-
-                    <TextView
-                        android:id="@+id/tv_balance_amount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:text="****"
-                        android:textSize="24sp"
-                        android:textStyle="bold"
-                        android:textColor="#000000"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/tv_available_balance" />
-
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Add Money"
-                        android:backgroundTint="#6200EA"
-                        android:textColor="#FFFFFF"
-                        app:cornerRadius="20dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@id/tv_balance_amount"
-                        app:layout_constraintBottom_toBottomOf="@id/tv_balance_amount" />
-
-                    <View
-                        android:id="@+id/divider"
+                    <RelativeLayout
+                        android:id="@+id/balance_panel"
                         android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="16dp"
-                        android:background="#E0E0E0"
-                        app:layout_constraintTop_toBottomOf="@id/tv_balance_amount" />
+                        android:layout_height="72dp"
+                        android:background="@drawable/bg_balance_panel"
+                        android:paddingStart="16dp"
+                        android:paddingTop="7dp"
+                        android:paddingEnd="16dp"
+                        android:paddingBottom="6dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:text="Yesterday's Earnings: +₦2.37"
-                        android:textColor="#555555"
-                        android:drawablePadding="8dp"
-                        app:drawableStartCompat="@drawable/ic_coins"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/divider" />
+                        <LinearLayout
+                            android:id="@+id/balance_label_group"
+                            android:layout_width="wrap_content"
+                            android:layout_height="26dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                            <ImageView
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:contentDescription=""
+                                android:src="@drawable/ic_shield_check"
+                                android:tint="@color/icon_green" />
 
+                            <TextView
+                                android:id="@+id/available_balance_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="4dp"
+                                android:includeFontPadding="false"
+                                android:text="@string/available_balance"
+                                android:textColor="@color/ink"
+                                android:textSize="13sp" />
+
+                            <ImageButton
+                                android:id="@+id/balance_visibility_button"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_marginStart="2dp"
+                                android:background="@android:color/transparent"
+                                android:contentDescription="@string/balance_visible_description"
+                                android:padding="2dp"
+                                android:src="@drawable/ic_eye_visible"
+                                android:tint="@color/ink" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/history_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="26dp"
+                            android:layout_alignParentEnd="true"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?attr/selectableItemBackgroundBorderless"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:includeFontPadding="false"
+                                android:text="@string/transaction_history"
+                                android:textColor="@color/ink"
+                                android:textSize="12sp" />
+
+                            <ImageView
+                                android:layout_width="14dp"
+                                android:layout_height="14dp"
+                                android:layout_marginStart="1dp"
+                                android:contentDescription=""
+                                android:src="@drawable/ic_chevron_right"
+                                android:tint="@color/ink" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="34dp"
+                            android:layout_alignParentBottom="true"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/balance_amount"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:includeFontPadding="false"
+                                android:text="@string/visible_balance"
+                                android:textColor="@color/ink"
+                                android:textSize="22sp"
+                                android:textStyle="bold" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/add_money_button"
+                                android:layout_width="64dp"
+                                android:layout_height="28dp"
+                                android:elevation="0dp"
+                                android:insetTop="0dp"
+                                android:insetBottom="0dp"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:ellipsize="none"
+                                android:maxLines="1"
+                                android:paddingStart="0dp"
+                                android:paddingEnd="0dp"
+                                android:text="@string/add_money"
+                                android:textAllCaps="false"
+                                android:textColor="@color/balance_action_text"
+                                android:textSize="11sp"
+                                android:textStyle="bold"
+                                app:backgroundTint="@color/balance_action_background"
+                                app:cornerRadius="14dp"
+                                app:strokeWidth="0dp" />
+                        </LinearLayout>
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:id="@+id/earnings_row"
+                        android:layout_width="match_parent"
+                        android:layout_height="34dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp">
+
+                        <ImageView
+                            android:layout_width="23dp"
+                            android:layout_height="23dp"
+                            android:contentDescription=""
+                            android:src="@drawable/ic_coins"
+                            android:tint="@color/brand_purple" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="7dp"
+                            android:includeFontPadding="false"
+                            android:text="@string/earnings_prefix"
+                            android:textColor="@color/ink_secondary"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/earnings_amount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="2dp"
+                            android:includeFontPadding="false"
+                            android:text="@string/earnings_amount"
+                            android:textColor="@color/earnings_positive"
+                            android:textSize="13sp" />
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="1dp"
+                            android:layout_weight="1" />
+
+                        <ImageView
+                            android:layout_width="23dp"
+                            android:layout_height="23dp"
+                            android:background="@drawable/bg_earnings_arrow"
+                            android:contentDescription=""
+                            android:padding="5dp"
+                            android:src="@drawable/ic_chevron_right"
+                            android:tint="@color/brand_purple" />
+                    </LinearLayout>
+                </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Quick Action Buttons (To Bank, PalmPay, Savings, Cards) -->
             <LinearLayout
+                android:id="@+id/quick_actions_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:orientation="horizontal"
-                android:baselineAligned="false">
+                android:layout_marginBottom="8dp"
+                android:baselineAligned="false"
+                android:orientation="horizontal" />
 
-                <!-- Repeat this block 4 times with different icons/text -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <ImageView
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:src="@drawable/ic_to_bank" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="To Bank"
-                        android:textSize="12sp" />
-
-                </LinearLayout>
-
-                <!-- Add 3 more LinearLayouts here for PalmPay, Savings, Cards -->
-            </LinearLayout>
-
-            <!-- Main Services Grid (Airtime, Data, Betting, etc.) -->
-            <GridLayout
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/notification_card"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:columnCount="4"
-                android:rowCount="2">
+                android:layout_height="52dp"
+                android:layout_marginBottom="0dp"
+                app:cardBackgroundColor="@color/notification_surface"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
 
-                <!-- Repeat this block 8 times for each grid item -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:padding="8dp"
-                    android:layout_columnWeight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:src="@drawable/ic_airtime" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="12dp">
 
                     <TextView
+                        android:id="@+id/notification_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentTop="true"
                         android:layout_marginTop="8dp"
-                        android:text="Airtime"
+                        android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:text="@string/notification_title"
+                        android:textColor="@color/ink"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/notification_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginTop="9dp"
+                        android:includeFontPadding="false"
+                        android:text="@string/notification_time"
+                        android:textColor="@color/ink_secondary"
                         android:textSize="12sp" />
 
-                </LinearLayout>
+                    <TextView
+                        android:id="@+id/notification_detail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginBottom="8dp"
+                        android:ellipsize="end"
+                        android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:text="@string/notification_detail"
+                        android:textColor="@color/ink_secondary"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-                <!-- Add remaining 7 items here -->
-            </GridLayout>
-
-            <!-- Bottom Promotion Cards (CashBox & Fixed Savings) -->
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/services_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:baselineAligned="false">
+                android:layout_marginTop="9dp"
+                android:layout_marginBottom="0dp"
+                app:cardBackgroundColor="@color/service_card_surface"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
 
-                <!-- CashBox Card -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="0dp"
+                <GridLayout
+                    android:id="@+id/services_grid"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="0dp">
+                    android:columnCount="4"
+                    android:paddingStart="7dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="7dp"
+                    android:paddingBottom="3dp"
+                    android:rowCount="2"
+                    android:useDefaultMargins="false" />
+            </com.google.android.material.card.MaterialCardView>
 
-                    <!-- Add inner ConstraintLayout with CashBox text and '₦1 to Start' button -->
-                </com.google.android.material.card.MaterialCardView>
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/claim_card"
+                android:layout_width="match_parent"
+                android:layout_height="98dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                app:cardBackgroundColor="@color/notification_surface"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
 
-                <!-- Fixed Savings Card -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="0dp">
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-                    <!-- Add inner ConstraintLayout with Fixed Savings text and 'Save' button -->
-                </com.google.android.material.card.MaterialCardView>
+                    <ImageView
+                        android:id="@+id/claim_illustration"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="10dp"
+                        android:contentDescription="@string/claim_title"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/claim_reference" />
 
-            </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/claim_copy"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="68dp"
+                        android:orientation="vertical">
 
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/claim_title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:ellipsize="end"
+                                android:includeFontPadding="false"
+                                android:maxWidth="145dp"
+                                android:maxLines="1"
+                                android:text="@string/claim_title"
+                                android:textColor="@color/ink"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/claim_status"
+                                android:layout_width="wrap_content"
+                                android:layout_height="22dp"
+                                android:layout_marginStart="7dp"
+                                android:background="@drawable/bg_claim_status"
+                                android:gravity="center"
+                                android:includeFontPadding="false"
+                                android:paddingStart="7dp"
+                                android:paddingEnd="7dp"
+                                android:text="@string/claim_status"
+                                android:textColor="#31B3BE"
+                                android:textSize="10sp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/claim_subtitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:includeFontPadding="false"
+                            android:text="@string/claim_subtitle"
+                            android:textColor="@color/ink_secondary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/claim_action"
+                        android:layout_width="57dp"
+                        android:layout_height="34dp"
+                        android:layout_gravity="center_vertical|end"
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/bg_claim_button"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackgroundBorderless"
+                        android:gravity="center"
+                        android:text="@string/claim_action"
+                        android:textColor="@color/brand_purple"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:id="@+id/claim_dots"
+                        android:layout_width="wrap_content"
+                        android:layout_height="6dp"
+                        android:layout_gravity="bottom|center_horizontal"
+                        android:layout_marginBottom="8dp"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:layout_width="10dp"
+                            android:layout_height="6dp"
+                            android:background="@drawable/bg_dot_active" />
+                        <View
+                            android:layout_width="10dp"
+                            android:layout_height="6dp"
+                            android:layout_marginStart="4dp"
+                            android:background="@drawable/bg_dot_inactive" />
+                        <View
+                            android:layout_width="10dp"
+                            android:layout_height="6dp"
+                            android:layout_marginStart="4dp"
+                            android:background="@drawable/bg_dot_inactive" />
+                        <View
+                            android:layout_width="10dp"
+                            android:layout_height="6dp"
+                            android:layout_marginStart="4dp"
+                            android:background="@drawable/bg_dot_ina       android:background="@drawable/bg_dot_inactive" />
+                        <View
+                            android:layout_width="10dp"
+                            android:layout_height="6dp"
+                            android:layout_marginStart="4dp"
+                            android:background="@drawable/bg_dot_inactive" />
+                    </LinearLayout>
+                </FrameLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <LinearLayout
+                android:id="@+id/promotions_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:baselineAligned="false"
+                android:orientation="horizontal" />
         </LinearLayout>
-
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Bottom Navigation Bar -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#FFFFFF"
-        app:menu="@menu/bottom_nav_menu"
+        android:layout_height="56dp"
+        android:background="@color/surface_white"
+        android:elevation="5dp"
+        app:itemHorizontalTranslationEnabled="false"
         app:itemIconTint="@color/bottom_nav_color_selector"
         app:itemTextColor="@color/bottom_nav_color_selector"
+        app:itemActiveIndicatorStyle="@android:color/transparent"
+        app:itemRippleColor="@color/brand_purple_soft"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/bottom_nav_menu"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+straintlayout.widget.ConstraintLayout>
