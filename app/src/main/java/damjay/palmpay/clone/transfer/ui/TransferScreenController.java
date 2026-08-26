@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.List;
 
 import damjay.palmpay.clone.R;
