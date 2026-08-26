@@ -9,6 +9,7 @@ rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use(
 val paystackApiKey: String =
     localProps.getProperty("PAYSTACK_API_KEY")
         ?: System.getenv("PAYSTACK_API_KEY")
+        ?: (project.findProperty("PAYSTACK_API_KEY") as? String)
         ?: ""
 
 android {
