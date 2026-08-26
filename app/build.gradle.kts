@@ -1,8 +1,8 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
 }
-
-import java.util.Properties
 
 val localProps = Properties()
 rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use(localProps::load)
