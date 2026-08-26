@@ -8,6 +8,7 @@ import java.net.URL;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -20,6 +21,9 @@ public class PaystackLiveProbeTest {
     private static final String KEY =
             "sk_test_59907d1708ffa4117e75f560fe2990ecd3c138f3";
 
+    // Ignored after the first live run (33015542579, red): test mode returned
+    // no holder name. Re-enable to probe again once a live key is available.
+    @Ignore("diagnostic already captured; see CI run 33015542579")
     @Test
     public void probeAccountResolution() throws Exception {
         JSONObject banks = get("/bank?country=nigeria&perPage=500&page=1");
