@@ -11,7 +11,7 @@ public final class BankInstitution {
         this.name = name;
         this.slug = slug;
         this.code = code;
-        this.logoUrl = logo;
+        this.logoUrl = logoUrl;
     }
 
     public String getName() {

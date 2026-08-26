@@ -173,8 +173,9 @@ public final class TransferScreenController {
 
     private void bindStickyTabs() {
         binding.transferTabsSticky.getRoot().setVisibility(View.GONE);
-        binding.transferScroll.setOnScrollChangeListener((view, scrollX, scrollY, oldScrollX, oldScrollY) ->
-                updateStickyTabs());
+        binding.transferScroll.setOnScrollChangeListener(
+                (androidx.core.widget.NestedScrollView.OnScrollChangeListener)
+                        (view, scrollX, scrollY, oldScrollX, oldScrollY) -> updateStickyTabs());
         binding.transferScroll.post(this::updateStickyTabs);
     }
 
