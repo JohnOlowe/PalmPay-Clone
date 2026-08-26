@@ -8,8 +8,6 @@ import android.widget.TextView;
 
 import androidx.test.core.app.ActivityScenario;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -31,7 +29,7 @@ public class BottomNavigationLabelTest {
         try (ActivityScenario<MainActivity> scenario =
                      ActivityScenario.launch(MainActivity.class)) {
             scenario.onActivity(activity -> {
-                BottomNavigationView nav = activity.findViewById(R.id.bottom_navigation);
+                View nav = activity.findViewById(R.id.bottom_bar);
                 StringBuilder dump = new StringBuilder("NAV DUMP height=")
                         .append(nav.getHeight());
                 dumpViews(nav, dump, 0);
@@ -46,7 +44,7 @@ public class BottomNavigationLabelTest {
         }
     }
 
-    private static String[] findLabelTexts(BottomNavigationView nav) {
+    private static String[] findLabelTexts(View nav) {
         java.util.List<String> texts = new java.util.ArrayList<>();
         collectLabels(nav, texts);
         return texts.toArray(new String[0]);

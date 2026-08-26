@@ -26,8 +26,10 @@ import damjay.palmpay.clone.databinding.ActivityTransferBinding;
 import damjay.palmpay.clone.databinding.RecipientItemBinding;
 import damjay.palmpay.clone.databinding.TransferShortcutItemBinding;
 import damjay.palmpay.clone.databinding.TransferTabsBinding;
+import damjay.palmpay.clone.transfer.data.BankDirectoryRepository;
 import damjay.palmpay.clone.transfer.data.BankLogoLoader;
 import damjay.palmpay.clone.transfer.data.BankLogoResolver;
+import damjay.palmpay.clone.transfer.data.NubanBankResolver;
 import damjay.palmpay.clone.transfer.data.TransferRepository;
 import damjay.palmpay.clone.transfer.model.BankInstitution;
 import damjay.palmpay.clone.transfer.model.TransferRecipient;
@@ -40,7 +42,11 @@ public final class TransferScreenController {
     private final LayoutInflater inflater;
     private final TransferRepository repository;
     private final BankLogoLoader logoLoader = new BankLogoLoader();
+    private final BankDirectoryRepository directoryRepository =
+            new BankDirectoryRepository();
     private final List<TransferRecipient> transferHistory = new ArrayList<>();
+    private List<BankInstitution> directoryBanks;
+    private boolean directoryLoading;
     private boolean bankSelected;
     private boolean formattingAccount;
     private TransferRecipient trustedRecipient;
@@ -58,6 +64,13 @@ public final class TransferScreenController {
     public void bind() {
         transferHistory.clear();
         transferHistory.addAll(repository.getRecentRecipients());
+        directoryRepository.load((banks, fromNetwork) -> {
+            directoryBanks = banks;
+            String current = digitsOnly(binding.accountNumberInput.getText());
+            if (current.length() == DIGITS_REQUIRED && trustedRecipient == null) {
+                autoResolveBank(current);
+            }
+        });
         renderShortcuts(repository.getShortcuts());
         renderRecipients(transferHistory);
         bindForm();
@@ -154,12 +167,13 @@ public final class TransferScreenController {
     }
 
     private void updateAccountMatch(String digits) {
-        if (digits.length() == 10) {
+        if (digits.length() == DIGITS_REQUIRED) {
             TransferRecipient match = trustedRecipientFor(digits);
             if (match != null) {
                 selectTrustedRecipient(match, true);
                 return;
             }
+            autoResolveBank(digits);
         }
 
         trustedRecipient = null;
@@ -262,8 +276,7 @@ public final class TransferScreenController {
         trustedRecipient = recipient;
         bankSelected = true;
         hideAccountSuggestions();
-        binding.selectedBankText.setText(recipient.getProvider());
-        binding.selectedBankText.setTextColor(color(R.color.ink));
+        showResolvedBank(recipient.getProvider(), null);
         if (showConfirmation) {
             binding.recipientConfirmationItem.confirmationName.setText(recipient.getName());
             binding.recipientConfirmationItem.getRoot().setVisibility(View.VISIBLE);
@@ -286,9 +299,71 @@ public final class TransferScreenController {
         bankSelected = true;
         hideAccountSuggestions();
         hideConfirmation();
-        binding.selectedBankText.setText(bank.getName());
-        binding.selectedBankText.setTextColor(color(R.color.ink));
+        showResolvedBank(bank.getName(), bank.getLogoUrl());
         refreshNextState();
+    }
+
+    /**
+     * Automatically retrieves the bank attached to a complete account number.
+     * A matching transfer history wins; otherwise the NUBAN check-digit
+     * algorithm is replayed against the loaded bank directory.
+     */
+    private void autoResolveBank(String digits) {
+        if (directoryBanks == null) {
+            if (!directoryLoading) {
+                directoryLoading = true;
+                directoryRepository.load((banks, fromNetwork) -> {
+                    directoryLoading = false;
+                    directoryBanks = banks;
+                    String current = digitsOnly(binding.accountNumberInput.getText());
+                    if (current.equals(digits) && trustedRecipient == null) {
+                        autoResolveBank(digits);
+                    }
+                });
+            }
+            return;
+        }
+        List<BankInstitution> candidates =
+                NubanBankResolver.candidateBanks(digits, directoryBanks);
+        if (candidates.isEmpty()) {
+            return;
+        }
+        BankInstitution chosen = candidates.get(0);
+        outer:
+        for (TransferRecipient recipient : transferHistory) {
+            if (!recipient.getAccountNumber().equals(digits)) {
+                continue;
+            }
+            String provider = recipient.getProvider().toLowerCase(Locale.US);
+            for (BankInstitution bank : candidates) {
+                String name = bank.getName().toLowerCase(Locale.US);
+                if (name.contains(provider) || provider.contains(name)) {
+                    chosen = bank;
+                    break outer;
+                }
+            }
+        }
+        bankSelected = true;
+        showResolvedBank(chosen.getName(), chosen.getLogoUrl());
+        refreshNextState();
+    }
+
+    private void showResolvedBank(String name, String logoUrl) {
+        binding.selectedBankText.setText(name);
+        binding.selectedBankText.setTextColor(color(R.color.ink));
+        binding.selectedBankLogo.setVisibility(View.VISIBLE);
+        ImageViewCompat.setImageTintList(binding.selectedBankLogo, null);
+        if (logoUrl != null && !logoUrl.isEmpty()) {
+            binding.selectedBankLogo.setImageResource(R.drawable.ic_bank_building);
+            logoLoader.load(logoUrl, binding.selectedBankLogo);
+        } else {
+            int fallback = BankLogoResolver.fallbackForProvider(name);
+            binding.selectedBankLogo.setImageResource(fallback);
+            if (fallback == R.drawable.ic_bank_building) {
+                ImageViewCompat.setImageTintList(binding.selectedBankLogo,
+                        ColorStateList.valueOf(color(android.R.color.white)));
+            }
+        }
     }
 
     private void refreshNextState() {
@@ -323,6 +398,7 @@ public final class TransferScreenController {
     private void resetBankField() {
         binding.selectedBankText.setText(R.string.select_bank);
         binding.selectedBankText.setTextColor(color(R.color.transfer_hint));
+        binding.selectedBankLogo.setVisibility(View.GONE);
     }
 
     private void applyProviderLogo(android.widget.ImageView image, String provider) {

@@ -15,7 +15,7 @@
         android:overScrollMode="never"
         android:scrollbars="none"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottom_navigation">
+        app:layout_constraintBottom_toTopOf="@id/bottom_bar">
 
         <LinearLayout
             android:id="@+id/home_content"
@@ -547,22 +547,15 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
+    <LinearLayout
+        android:id="@+id/bottom_bar"
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:background="@color/surface_white"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         android:elevation="5dp"
-        app:itemHorizontalTranslationEnabled="false"
-        app:itemIconSize="26dp"
-        app:itemIconTint="@color/bottom_nav_color_selector"
-        app:itemTextColor="@color/bottom_nav_color_selector"
-        app:itemActiveIndicatorStyle="@style/NoActiveIndicator"
-        app:itemTextAppearanceActive="@style/NavLabel"
-        app:itemTextAppearanceInactive="@style/NavLabel"
-        app:itemRippleColor="@color/brand_purple_soft"
-        app:labelVisibilityMode="labeled"
-        app:menu="@menu/bottom_nav_menu"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

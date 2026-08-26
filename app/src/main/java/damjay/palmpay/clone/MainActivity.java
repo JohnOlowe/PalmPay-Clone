@@ -66,11 +66,11 @@ public final class MainActivity extends AppCompatActivity {
                     systemBars.top,
                     binding.homeScroll.getPaddingRight(),
                     binding.homeScroll.getPaddingBottom());
-            // The navigation view has an explicit 56dp height matching the
+            // The bottom bar has an explicit 64dp height matching the
             // reference. Its background is allowed to extend behind the
             // transparent system navigation area instead of increasing its
             // measured height.
-            binding.bottomNavigation.setPadding(0, 0, 0, 0);
+            binding.bottomBar.setPadding(0, 0, 0, 0);
             return windowInsets;
         });
         ViewCompat.requestApplyInsets(root);

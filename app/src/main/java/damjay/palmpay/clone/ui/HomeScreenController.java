@@ -15,8 +15,6 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 
-import com.google.android.material.badge.BadgeDrawable;
-
 import java.util.List;
 
 import damjay.palmpay.clone.R;
@@ -24,6 +22,7 @@ import damjay.palmpay.clone.data.HomeCatalog;
 import damjay.palmpay.clone.data.WalletStore;
 import damjay.palmpay.clone.profile.ProfileActivity;
 import damjay.palmpay.clone.databinding.ActivityMainBinding;
+import damjay.palmpay.clone.databinding.BottomNavItemBinding;
 import damjay.palmpay.clone.databinding.PromoCardItemBinding;
 import damjay.palmpay.clone.databinding.QuickActionItemBinding;
 import damjay.palmpay.clone.databinding.ServiceActionItemBinding;
@@ -38,6 +37,9 @@ import damjay.palmpay.clone.transfer.ui.TransferActivity;
  * the reusable models into views and wires up their behaviour.
  */
 public final class HomeScreenController {
+    private static final int BADGE_NONE = 0;
+    private static final int BADGE_DOT = 1;
+    private static final int BADGE_NEW = 2;
     private final Context context;
     private final ActivityMainBinding binding;
     private final LayoutInflater inflater;
@@ -190,23 +192,33 @@ public final class HomeScreenController {
     }
 
     private void bindNavigation() {
-        BadgeDrawable wealthBadge = binding.bottomNavigation.getOrCreateBadge(R.id.nav_wealth);
-        wealthBadge.setVisible(true);
-        wealthBadge.setText(context.getString(R.string.nav_new_badge));
-        wealthBadge.setBackgroundColor(color(R.color.badge_orange));
-        wealthBadge.setBadgeTextColor(color(R.color.badge_text_orange));
+        binding.bottomBar.removeAllViews();
+        addNavItem(R.drawable.exact_nav_home, R.string.nav_home, BADGE_NONE, true);
+        addNavItem(R.drawable.exact_nav_loan, R.string.nav_loan, BADGE_DOT, false);
+        addNavItem(R.drawable.exact_nav_wealth, R.string.nav_wealth, BADGE_NEW, false);
+        addNavItem(R.drawable.exact_nav_reward, R.string.nav_reward, BADGE_NONE, false);
+        addNavItem(R.drawable.exact_nav_me, R.string.nav_me, BADGE_NONE, false);
+    }
 
-        BadgeDrawable loanBadge = binding.bottomNavigation.getOrCreateBadge(R.id.nav_loan);
-        loanBadge.setVisible(true);
-        loanBadge.setBackgroundColor(color(R.color.badge_red));
-
-        binding.bottomNavigation.setSelectedItemId(R.id.nav_home);
-        binding.bottomNavigation.setOnItemSelectedListener(item -> {
-            if (item.getItemId() != R.id.nav_home) {
-                showMessage(item.getTitle() + " selected");
+    private void addNavItem(
+            int iconRes, int labelRes, int badgeKind, boolean selected) {
+        BottomNavItemBinding item = BottomNavItemBinding.inflate(
+                inflater, binding.bottomBar, false);
+        int tint = color(selected ? R.color.brand_purple : R.color.nav_unselected);
+        item.navIcon.setImageResource(iconRes);
+        item.navIcon.setColorFilter(tint);
+        item.navLabel.setText(labelRes);
+        item.navLabel.setTextColor(tint);
+        item.navDotBadge.setVisibility(badgeKind == BADGE_DOT ? View.VISIBLE : View.GONE);
+        item.navNewBadge.setVisibility(badgeKind == BADGE_NEW ? View.VISIBLE : View.GONE);
+        item.getRoot().setContentDescription(context.getString(labelRes));
+        item.getRoot().setOnClickListener(view -> {
+            if (!selected) {
+                showSelection(labelRes);
             }
-            return true;
         });
+        binding.bottomBar.addView(item.getRoot(), new LinearLayout.LayoutParams(
+                0, LinearLayout.LayoutParams.MATCH_PARENT, 1f));
     }
 
     private void showSelection(@StringRes int titleRes) {
