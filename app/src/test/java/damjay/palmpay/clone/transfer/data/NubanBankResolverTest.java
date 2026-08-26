@@ -22,7 +22,9 @@ public class NubanBankResolverTest {
 
     @Test
     public void rejectsWrongBankOrTypo() {
-        assertFalse(NubanBankResolver.isValidNuban("044", "0000014579"));
+        // 058's weighted code differs from 011's by 49, so it cannot validate
+        // the same serial (044 would collide: its difference is 30 = 0 mod 10).
+        assertFalse(NubanBankResolver.isValidNuban("058", "0000014579"));
         assertFalse(NubanBankResolver.isValidNuban("011", "0000014578"));
         assertFalse(NubanBankResolver.isValidNuban("011", "000001457"));
         assertFalse(NubanBankResolver.isValidNuban("0110", "0000014579"));
@@ -32,8 +34,8 @@ public class NubanBankResolverTest {
     public void discoversBankFromAccountNumber() {
         List<BankInstitution> banks = Arrays.asList(
                 new BankInstitution("First Bank Of Nigeria", "first-bank", "011", ""),
-                new BankInstitution("Access Bank", "access", "044", ""),
-                new BankInstitution("Guaranty Trust Bank", "gtb", "058", ""));
+                new BankInstitution("Guaranty Trust Bank", "gtb", "058", ""),
+                new BankInstitution("Stanbic IBTC Bank", "stanbic", "221", ""));
         List<BankInstitution> matches =
                 NubanBankResolver.candidateBanks("0000014579", banks);
         assertEquals(1, matches.size());
