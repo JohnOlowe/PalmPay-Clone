@@ -5,22 +5,20 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
-import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
-import android.view.WindowManager;
 
 import damjay.palmpay.clone.R;
 import damjay.palmpay.clone.databinding.ActivityAmountBinding;
 import damjay.palmpay.clone.transfer.model.TransferRecipient;
 
-/** Amount entry page opened from a trusted transfer-history recipient. */
+/** Amount entry page opened from a trusted recipient. */
 public final class AmountActivity extends AppCompatActivity {
     private static final String EXTRA_RECIPIENT_NAME = "extra_recipient_name";
     private static final String EXTRA_RECIPIENT_ACCOUNT = "extra_recipient_account";
@@ -44,8 +42,8 @@ public final class AmountActivity extends AppCompatActivity {
         configureWindow();
         binding = ActivityAmountBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
-                | WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING
+                | WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         TransferRecipient recipient = new TransferRecipient(
                 getIntent().getStringExtra(EXTRA_RECIPIENT_NAME),
@@ -86,33 +84,9 @@ public final class AmountActivity extends AppCompatActivity {
                 .start();
     }
 
-    public void showAmountKeyboard() {
-        if (binding == null) {
-            return;
-        }
-        binding.amountInput.setShowSoftInputOnFocus(true);
-        binding.amountInput.requestFocus();
-        WindowInsetsControllerCompat insetsController =
-                WindowCompat.getInsetsController(getWindow(), binding.getRoot());
-        insetsController.show(WindowInsetsCompat.Type.ime());
-        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(
-                INPUT_METHOD_SERVICE);
-        if (inputMethodManager != null) {
-            inputMethodManager.showSoftInput(binding.amountInput, InputMethodManager.SHOW_IMPLICIT);
-        }
-    }
-
     public void finishFromAmount() {
         finish();
         overridePendingTransition(0, 0);
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        if (hasFocus && binding != null) {
-            binding.amountInput.postDelayed(this::showAmountKeyboard, 250L);
-        }
     }
 
     @Override

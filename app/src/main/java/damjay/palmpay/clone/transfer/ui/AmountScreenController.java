@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,7 +17,7 @@ import damjay.palmpay.clone.databinding.ActivityAmountBinding;
 import damjay.palmpay.clone.transfer.data.BankLogoResolver;
 import damjay.palmpay.clone.transfer.model.TransferRecipient;
 
-/** Binds the trusted recipient and amount controls to the amount page. */
+/** Binds the trusted recipient, amount controls, and in-app numeric keypad. */
 public final class AmountScreenController {
     private final Context context;
     private final ActivityAmountBinding binding;
@@ -39,7 +38,9 @@ public final class AmountScreenController {
         binding.amountRecipientProvider.setText(recipient.getProvider());
         WalletStore walletStore = new WalletStore(context);
         binding.amountBalanceText.setText(context.getString(
-                R.string.balance_cashbox, walletStore.getBalanceDisplay()));
+                R.string.balance_cashbox,
+                walletStore.getBalanceDisplay()));
+
         int logo = BankLogoResolver.fallbackForProvider(recipient.getProvider());
         binding.amountRecipientLogo.setImageResource(logo);
         if (logo == R.drawable.ic_bank_building) {
@@ -55,6 +56,22 @@ public final class AmountScreenController {
         bindQuickAmount(binding.chip5000, R.string.amount_5000);
         bindQuickAmount(binding.chip9999, R.string.amount_9999);
         bindQuickAmount(binding.chip10000, R.string.amount_10000);
+        bindKey(binding.key1, "1");
+        bindKey(binding.key2, "2");
+        bindKey(binding.key3, "3");
+        bindKey(binding.key4, "4");
+        bindKey(binding.key5, "5");
+        bindKey(binding.key6, "6");
+        bindKey(binding.key7, "7");
+        bindKey(binding.key8, "8");
+        bindKey(binding.key9, "9");
+        bindKey(binding.key00, "00");
+        bindKey(binding.key0, "0");
+        bindKey(binding.keyDot, ".");
+        binding.keyBackspace.setOnClickListener(view -> deleteLastAmountCharacter());
+        binding.amountKeypadNext.setOnClickListener(view -> showMessage(
+                "Transfer amount entered"));
+
         binding.amountProtectionButton.setOnClickListener(view -> showMessage(
                 "Transfer protection selected"));
         binding.amountBackButton.setOnClickListener(view -> closeScreen());
@@ -62,6 +79,7 @@ public final class AmountScreenController {
                 "Transfer support selected"));
         binding.amountHistoryButton.setOnClickListener(view -> showMessage(
                 "Transfer history selected"));
+        binding.amountInput.setShowSoftInputOnFocus(false);
         binding.amountInput.setOnEditorActionListener((view, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 showMessage("Transfer amount entered");
@@ -70,18 +88,29 @@ public final class AmountScreenController {
             return false;
         });
         binding.amountInput.requestFocus();
-        binding.amountInput.postDelayed(() -> {
-            InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(
-                    Context.INPUT_METHOD_SERVICE);
-            if (inputMethodManager != null) {
-                inputMethodManager.showSoftInput(binding.amountInput, InputMethodManager.SHOW_IMPLICIT);
-            }
-        }, 150L);
     }
 
     private void bindQuickAmount(TextView chip, int amountRes) {
         chip.setOnClickListener(view -> binding.amountInput.setText(
                 context.getString(amountRes).replace(",", "")));
+    }
+
+    private void bindKey(TextView key, String value) {
+        key.setOnClickListener(view -> {
+            String current = binding.amountInput.getText().toString();
+            if (".".equals(value) && current.contains(".")) {
+                return;
+            }
+            binding.amountInput.append(value);
+        });
+    }
+
+    private void deleteLastAmountCharacter() {
+        TextView input = binding.amountInput;
+        int length = input.length();
+        if (length > 0) {
+            input.getText().delete(length - 1, length);
+        }
     }
 
     private void closeScreen() {

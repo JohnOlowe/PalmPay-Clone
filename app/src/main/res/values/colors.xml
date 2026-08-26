@@ -37,7 +37,7 @@
     <color name="badge_red">#F04459</color>
     <color name="badge_orange">#FFB020</color>
     <color name="badge_text_orange">#8A4C00</color>
-    <color name="nav_unselected">#9998A1</color>
+    <color name="nav_unselected">#22213D</color>
     <color name="earnings_positive">#22A784</color>
     <color name="transfer_background">#F6F5FA</color>
     <color name="transfer_toolbar_surface">#FFFFFF</color>
