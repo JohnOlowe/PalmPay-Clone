@@ -70,7 +70,9 @@ public final class HomeScreenController {
                     inflater, binding.quickActionsContainer, false);
             item.actionTitle.setText(action.getTitleRes());
             item.actionIcon.setImageResource(action.getIconRes());
-            item.actionBadge.setVisibility(View.GONE);
+            item.actionBadge.setVisibility(
+                    action.getTitleRes() == R.string.quick_action_to_bank
+                            ? View.VISIBLE : View.GONE);
             setRoundedBackground(
                     item.getRoot(),
                     color(action.getBackgroundColorRes()),
