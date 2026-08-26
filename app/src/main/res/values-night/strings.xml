@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_title">Flexi Cash Repayment Reminder</string>
+    <string name="notification_time"></string>
+    <string name="notification_detail">Your Flexi Cash of ₦3076.67 is due today (25</string>
+</resources>

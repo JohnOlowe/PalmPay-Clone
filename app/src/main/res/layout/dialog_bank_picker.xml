@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_transfer_surface"
+    android:orientation="vertical"
+    android:paddingTop="10dp">
+
+    <View
+        android:layout_width="36dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/bg_transfer_tab_indicator" />
+
+    <TextView
+        android:id="@+id/bank_picker_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="20dp"
+        android:text="@string/choose_bank"
+        android:textColor="@color/ink"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/bank_search_input"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="18dp"
+        android:background="@drawable/bg_transfer_field"
+        android:hint="@string/search_banks"
+        android:inputType="text"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:singleLine="true"
+        android:textColor="@color/ink"
+        android:textColorHint="@color/transfer_hint"
+        android:textSize="14sp" />
+
+    <ProgressBar
+        android:id="@+id/bank_loading"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:indeterminateTint="@color/brand_purple" />
+
+    <ListView
+        android:id="@+id/bank_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="6dp"
+        android:layout_weight="1"
+        android:cacheColorHint="@android:color/transparent"
+        android:divider="@color/transfer_divider"
+        android:dividerHeight="1dp"
+        android:overScrollMode="never"
+        android:scrollbars="none" />
+</LinearLayout>
