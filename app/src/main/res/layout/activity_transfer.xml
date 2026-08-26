@@ -152,7 +152,7 @@
                             android:layout_width="18dp"
                             android:layout_height="18dp"
                             android:contentDescription=""
-                            android:src="@drawable/ic_shield_check"
+                            android:src="@drawable/exact_shield_check"
                             android:tint="@color/transfer_green" />
 
                         <TextView
@@ -226,7 +226,7 @@
                                 android:background="@android:color/transparent"
                                 android:contentDescription="Clear account number"
                                 android:padding="0dp"
-                                android:src="@drawable/ic_clear_circle"
+                                android:src="@drawable/exact_clear_circle"
                                 android:visibility="gone" />
                         </FrameLayout>
 

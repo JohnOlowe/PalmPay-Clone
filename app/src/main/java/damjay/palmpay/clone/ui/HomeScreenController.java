@@ -166,7 +166,7 @@ public final class HomeScreenController {
             balanceVisible = !balanceVisible;
             refreshBalance();
             binding.balanceVisibilityButton.setImageResource(balanceVisible
-                    ? R.drawable.ic_eye_visible
+                    ? R.drawable.exact_eye_visible
                     : R.drawable.ic_eye_off);
             binding.balanceVisibilityButton.setContentDescription(context.getString(
                     balanceVisible
