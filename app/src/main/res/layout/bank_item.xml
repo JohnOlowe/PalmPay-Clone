@@ -16,6 +16,7 @@
         android:layout_width="38dp"
         android:layout_height="38dp"
         android:background="@drawable/bg_recipient_circle"
+        android:clipToOutline="true"
         android:contentDescription=""
         android:padding="8dp"
         android:scaleType="centerInside"

@@ -22,6 +22,8 @@
             android:id="@+id/recipient_icon"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@drawable/bg_recipient_circle"
+            android:clipToOutline="true"
             android:contentDescription=""
             android:src="@drawable/ic_bank_building"
             android:tint="@android:color/white" />

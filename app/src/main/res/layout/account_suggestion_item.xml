@@ -16,6 +16,8 @@
         android:id="@+id/suggestion_logo"
         android:layout_width="32dp"
         android:layout_height="32dp"
+        android:background="@drawable/bg_recipient_circle"
+        android:clipToOutline="true"
         android:contentDescription=""
         android:scaleType="centerInside"
         android:src="@drawable/recipient_opay" />
