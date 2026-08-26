@@ -23,3 +23,7 @@ A Java and XML recreation of the PalmPay-style wallet home screen. It is an offl
 The debug APK is written to `app/build/outputs/apk/debug/`. The project uses Java 17, Android XML layouts, AndroidX, ConstraintLayout, and Material Components.
 
 See [ASSETS.md](ASSETS.md) for the visual asset sources and licensing notes.
+
+## Paystack automatic bank retrieval
+
+The Transfer to Bank screen resolves a completed 10-digit account number to its bank using, in order: the local transfer history, the CBN NUBAN check-digit algorithm, and (when configured) Paystack account resolution for wallet providers such as OPay and PalmPay. To enable the Paystack step, put your secret key in `local.properties` as `PAYSTACK_API_KEY=sk_...` (or export `PAYSTACK_API_KEY`); without a key the app gracefully skips that step.

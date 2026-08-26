@@ -30,6 +30,7 @@ import damjay.palmpay.clone.transfer.data.BankDirectoryRepository;
 import damjay.palmpay.clone.transfer.data.BankLogoLoader;
 import damjay.palmpay.clone.transfer.data.BankLogoResolver;
 import damjay.palmpay.clone.transfer.data.NubanBankResolver;
+import damjay.palmpay.clone.transfer.data.PaystackClient;
 import damjay.palmpay.clone.transfer.data.TransferRepository;
 import damjay.palmpay.clone.transfer.model.BankInstitution;
 import damjay.palmpay.clone.transfer.model.TransferRecipient;
@@ -47,6 +48,9 @@ public final class TransferScreenController {
     private final List<TransferRecipient> transferHistory = new ArrayList<>();
     private List<BankInstitution> directoryBanks;
     private boolean directoryLoading;
+    private final PaystackClient paystackClient = new PaystackClient();
+    private boolean paystackProbing;
+    private TransferRecipient resolvedRecipient;
     private boolean bankSelected;
     private boolean formattingAccount;
     private TransferRecipient trustedRecipient;
@@ -130,7 +134,7 @@ public final class TransferScreenController {
                 showMessage("Choose a matching transfer history suggestion first");
                 return;
             }
-            openAmountScreen(trustedRecipient);
+            openAmountScreen(effectiveRecipient());
         });
         binding.accountNumberInput.addTextChangedListener(new TextWatcher() {
             @Override
@@ -296,6 +300,7 @@ public final class TransferScreenController {
 
     public void selectBank(BankInstitution bank) {
         trustedRecipient = null;
+        resolvedRecipient = null;
         bankSelected = true;
         hideAccountSuggestions();
         hideConfirmation();
@@ -326,6 +331,7 @@ public final class TransferScreenController {
         List<BankInstitution> candidates =
                 NubanBankResolver.candidateBanks(digits, directoryBanks);
         if (candidates.isEmpty()) {
+            paystackResolve(digits);
             return;
         }
         BankInstitution chosen = candidates.get(0);
@@ -346,6 +352,90 @@ public final class TransferScreenController {
         bankSelected = true;
         showResolvedBank(chosen.getName(), chosen.getLogoUrl());
         refreshNextState();
+    }
+
+    /**
+     * Paystack-backed retrieval for institutions the NUBAN algorithm cannot
+     * identify (OPay, PalmPay, Moniepoint and other wallet providers): the
+     * account number is probed against the Paystack institution list, the
+     * first bank that validates it wins, and the returned holder name is
+     * shown as the verified recipient.
+     */
+    private void paystackResolve(final String digits) {
+        if (!paystackClient.isConfigured() || paystackProbing) {
+            return;
+        }
+        paystackProbing = true;
+        paystackClient.listBanks(banks -> {
+            if (banks.isEmpty()) {
+                paystackProbing = false;
+                return;
+            }
+            probeWithPaystack(digits, priorityOrdered(banks), 0);
+        });
+    }
+
+    private List<BankInstitution> priorityOrdered(List<BankInstitution> banks) {
+        String[] priorities = {"opay", "palmpay", "moniepoint", "kuda",
+                "smartcash", "momo", "access", "gtb", "zenith", "uba", "first"};
+        List<BankInstitution> ordered = new ArrayList<>();
+        for (String priority : priorities) {
+            for (BankInstitution bank : banks) {
+                if (bank.getName().toLowerCase(Locale.US).contains(priority)
+                        && !ordered.contains(bank)) {
+                    ordered.add(bank);
+                }
+            }
+        }
+        for (BankInstitution bank : banks) {
+            if (!ordered.contains(bank)) {
+                ordered.add(bank);
+            }
+        }
+        return ordered;
+    }
+
+    private void probeWithPaystack(
+            final String digits, final List<BankInstitution> banks, final int index) {
+        String current = digitsOnly(binding.accountNumberInput.getText());
+        if (index >= banks.size() || !current.equals(digits)) {
+            paystackProbing = false;
+            return;
+        }
+        paystackClient.resolveAccount(digits, banks.get(index),
+                new PaystackClient.ResolveCallback() {
+                    @Override
+                    public void onResolved(String accountName, BankInstitution bank) {
+                        paystackProbing = false;
+                        bankSelected = true;
+                        resolvedRecipient = new TransferRecipient(
+                                accountName, digits, bank.getName(), "");
+                        showResolvedBank(bank.getName(), logoUrlForBank(bank));
+                        binding.recipientConfirmationItem.confirmationName
+                                .setText(accountName);
+                        binding.recipientConfirmationItem.getRoot()
+                                .setVisibility(View.VISIBLE);
+                        refreshNextState();
+                    }
+
+                    @Override
+                    public void onFailed() {
+                        probeWithPaystack(digits, banks, index + 1);
+                    }
+                });
+    }
+
+    private String logoUrlForBank(BankInstitution bank) {
+        if (directoryBanks != null) {
+            String name = bank.getName().toLowerCase(Locale.US);
+            for (BankInstitution known : directoryBanks) {
+                String knownName = known.getName().toLowerCase(Locale.US);
+                if (knownName.contains(name) || name.contains(knownName)) {
+                    return known.getLogoUrl();
+                }
+            }
+        }
+        return null;
     }
 
     private void showResolvedBank(String name, String logoUrl) {
@@ -377,7 +467,11 @@ public final class TransferScreenController {
     private boolean isFormReady() {
         return digitsOnly(binding.accountNumberInput.getText()).length() == 10
                 && bankSelected
-                && trustedRecipient != null;
+                && (trustedRecipient != null || resolvedRecipient != null);
+    }
+
+    private TransferRecipient effectiveRecipient() {
+        return trustedRecipient != null ? trustedRecipient : resolvedRecipient;
     }
 
     private void openAmountScreen(TransferRecipient recipient) {
@@ -399,6 +493,7 @@ public final class TransferScreenController {
         binding.selectedBankText.setText(R.string.select_bank);
         binding.selectedBankText.setTextColor(color(R.color.transfer_hint));
         binding.selectedBankLogo.setVisibility(View.GONE);
+        resolvedRecipient = null;
     }
 
     private void applyProviderLogo(android.widget.ImageView image, String provider) {

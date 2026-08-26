@@ -37,6 +37,7 @@ import damjay.palmpay.clone.transfer.ui.TransferActivity;
  * the reusable models into views and wires up their behaviour.
  */
 public final class HomeScreenController {
+    private boolean carouselAlive;
     private static final int BADGE_NONE = 0;
     private static final int BADGE_DOT = 1;
     private static final int BADGE_NEW = 2;
@@ -60,6 +61,7 @@ public final class HomeScreenController {
         bindBalanceCard();
         bindHeader();
         bindClaimCard();
+        bindPromoCarousel();
         bindNavigation();
     }
 
@@ -189,6 +191,47 @@ public final class HomeScreenController {
 
     private void bindClaimCard() {
         binding.claimAction.setOnClickListener(view -> showMessage("Claim selected"));
+    }
+
+    private void bindPromoCarousel() {
+        final android.widget.ViewFlipper flipper = binding.promoFlipper;
+        flipper.setFlipInterval(4000);
+        flipper.setInAnimation(context, android.R.anim.fade_in);
+        flipper.setOutAnimation(context, android.R.anim.fade_out);
+        flipper.startFlipping();
+        carouselAlive = true;
+        final android.os.Handler handler = new android.os.Handler(
+                android.os.Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (!carouselAlive) {
+                    return;
+                }
+                updatePromoDots(flipper.getDisplayedChild());
+                handler.postDelayed(this, 4000);
+            }
+        });
+        binding.cashbackPage.cashbackAction.setOnClickListener(
+                view -> showMessage("Cashback selected"));
+        binding.moreWealthRow.setOnClickListener(
+                view -> showMessage("More wealth products selected"));
+        binding.borrowBanner.setOnClickListener(
+                view -> showMessage("Borrow selected"));
+    }
+
+    private void updatePromoDots(int page) {
+        android.widget.LinearLayout dots = binding.claimDots;
+        for (int i = 0; i < dots.getChildCount(); i++) {
+            dots.getChildAt(i).setBackgroundResource(
+                    i == page ? R.drawable.bg_dot_active : R.drawable.bg_dot_inactive);
+        }
+    }
+
+    /** Stops the carousel ticker when the activity goes away. */
+    public void release() {
+        carouselAlive = false;
+        binding.promoFlipper.stopFlipping();
     }
 
     private void bindNavigation() {

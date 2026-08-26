@@ -78,6 +78,9 @@ public final class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        if (homeScreenController != null) {
+            homeScreenController.release();
+        }
         homeScreenController = null;
         binding = null;
         super.onDestroy();

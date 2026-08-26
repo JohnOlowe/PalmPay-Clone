@@ -87,6 +87,11 @@
     <string name="free_transfer_message">All Transfers are Free on PalmPay</string>
     <string name="amount">Amount</string>
     <string name="amount_hint">₦ 10.00-200,000.00</string>
+    <string name="cashback_title">Up To ₦30 Cashback</string>
+    <string name="cashback_subtitle">Earn Cashback Now!</string>
+    <string name="cashback_action">GO</string>
+    <string name="more_wealth_product">More Wealth Product</string>
+    <string name="borrow_again">Borrow again</string>
     <string name="balance_cashbox">Balance: %1$s CashBox: %1$s</string>
     <string name="note">Note</string>
     <string name="note_hint">What’s this for? (optional)</string>

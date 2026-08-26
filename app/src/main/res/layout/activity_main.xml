@@ -421,6 +421,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
+                    <ViewFlipper
+                        android:id="@+id/promo_flipper"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
                     <ImageView
                         android:id="@+id/claim_illustration"
                         android:layout_width="60dp"
@@ -500,6 +510,13 @@
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
+                        </LinearLayout>
+
+                        <include
+                            android:id="@+id/cashback_page"
+                            layout="@layout/page_cashback" />
+                    </ViewFlipper>
+
                     <LinearLayout
                         android:id="@+id/claim_dots"
                         android:layout_width="wrap_content"
@@ -536,14 +553,78 @@
                 </FrameLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <LinearLayout
-                android:id="@+id/promotions_container"
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:baselineAligned="false"
-                android:orientation="horizontal" />
+                android:layout_marginBottom="8dp"
+                app:cardBackgroundColor="@color/surface_white"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <LinearLayout
+                        android:id="@+id/promotions_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:baselineAligned="false"
+                        android:orientation="horizontal" />
+
+                    <LinearLayout
+                        android:id="@+id/more_wealth_row"
+                        android:layout_width="wrap_content"
+                        android:layout_height="34dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="6dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:includeFontPadding="false"
+                            android:text="@string/more_wealth_product"
+                            android:textColor="@color/ink_secondary"
+                            android:textSize="13sp" />
+
+                        <ImageView
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:layout_marginStart="2dp"
+                            android:contentDescription=""
+                            android:src="@drawable/ic_chevron_right"
+                            android:tint="@color/ink_secondary" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/borrow_banner"
+                android:layout_width="match_parent"
+                android:layout_height="73dp"
+                android:layout_marginBottom="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="@string/borrow_again"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/borrow_reference" />
+            </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

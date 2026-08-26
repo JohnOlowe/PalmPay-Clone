@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:layout_width="52dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="14dp"
+        android:contentDescription="@string/cashback_title"
+        android:scaleType="centerInside"
+        android:src="@drawable/cashback_reference" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:text="@string/cashback_title"
+            android:textColor="@color/ink"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:includeFontPadding="false"
+            android:text="@string/cashback_subtitle"
+            android:textColor="@color/ink_secondary"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/cashback_action"
+        android:layout_width="57dp"
+        android:layout_height="34dp"
+        android:layout_gravity="center_vertical|end"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/bg_claim_button"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:gravity="center"
+        android:text="@string/cashback_action"
+        android:textColor="@color/brand_purple"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+</LinearLayout>

@@ -2,6 +2,15 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
+import java.util.Properties
+
+val localProps = Properties()
+rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use(localProps::load)
+val paystackApiKey: String =
+    localProps.getProperty("PAYSTACK_API_KEY")
+        ?: System.getenv("PAYSTACK_API_KEY")
+        ?: ""
+
 android {
     namespace = "damjay.palmpay.clone"
     compileSdk = 36
@@ -15,6 +24,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "PAYSTACK_API_KEY", "\"" + paystackApiKey + "\"")
     }
 
     // Pin every build to one keystore so the APK signature never changes between
@@ -42,6 +53,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 
     testOptions {
