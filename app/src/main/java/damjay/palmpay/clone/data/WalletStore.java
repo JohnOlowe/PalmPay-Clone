@@ -17,6 +17,9 @@ public final class WalletStore {
     private static final String PREFERENCES_NAME = "palmpay_clone_wallet";
     private static final String BALANCE_KEY = "available_balance";
     private static final String DEFAULT_BALANCE = "0.62";
+    private static final String NAME_KEY = "display_name";
+    private static final String DEFAULT_NAME = "JOHN";
+    private static final String PAYSTACK_KEY = "paystack_api_key";
 
     private final SharedPreferences preferences;
 
@@ -27,6 +30,25 @@ public final class WalletStore {
 
     public String getBalanceDisplay() {
         return formatBalance(readBalance());
+    }
+
+    public String getDisplayName() {
+        String name = preferences.getString(NAME_KEY, DEFAULT_NAME);
+        return name == null || name.trim().isEmpty() ? DEFAULT_NAME : name.trim();
+    }
+
+    public void saveDisplayName(String name) {
+        preferences.edit().putString(NAME_KEY,
+                name == null ? "" : name.trim()).commit();
+    }
+
+    public String getPaystackApiKey() {
+        return preferences.getString(PAYSTACK_KEY, "");
+    }
+
+    public void savePaystackApiKey(String key) {
+        preferences.edit().putString(PAYSTACK_KEY,
+                key == null ? "" : key.trim()).commit();
     }
 
     public boolean saveBalance(String userInput) {

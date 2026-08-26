@@ -184,6 +184,8 @@ public final class HomeScreenController {
     }
 
     private void bindHeader() {
+        binding.greetingText.setText(context.getString(
+                R.string.greeting_format, walletStore.getDisplayName()));
         binding.profileButton.setOnClickListener(view -> ProfileActivity.start(context));
         binding.supportButton.setOnClickListener(view -> showMessage("Customer support selected"));
         binding.notificationsButton.setOnClickListener(view -> showMessage("No new notifications"));

@@ -116,6 +116,54 @@
                         android:textColorHint="@color/transfer_hint"
                         android:textSize="17sp" />
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:includeFontPadding="false"
+                        android:text="@string/name_field_label"
+                        android:textColor="@color/ink"
+                        android:textSize="14sp" />
+
+                    <EditText
+                        android:id="@+id/profile_name_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="54dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bg_transfer_field"
+                        android:hint="@string/name_input_hint"
+                        android:inputType="textCapCharacters"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:singleLine="true"
+                        android:textColor="@color/ink"
+                        android:textColorHint="@color/transfer_hint"
+                        android:textSize="17sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:includeFontPadding="false"
+                        android:text="@string/paystack_field_label"
+                        android:textColor="@color/ink"
+                        android:textSize="14sp" />
+
+                    <EditText
+                        android:id="@+id/profile_paystack_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="54dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bg_transfer_field"
+                        android:hint="@string/paystack_input_hint"
+                        android:inputType="textVisiblePassword"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:singleLine="true"
+                        android:textColor="@color/ink"
+                        android:textColorHint="@color/transfer_hint"
+                        android:textSize="14sp" />
+
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/save_balance_button"
                         android:layout_width="match_parent"
@@ -124,7 +172,7 @@
                         android:elevation="0dp"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
-                        android:text="@string/save_balance"
+                        android:text="@string/save_changes"
                         android:textAllCaps="false"
                         android:textColor="@android:color/white"
                         android:textSize="14sp"

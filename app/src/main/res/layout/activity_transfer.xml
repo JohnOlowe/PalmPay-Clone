@@ -241,7 +241,7 @@
                     <FrameLayout
                         android:id="@+id/bank_field"
                         android:layout_width="match_parent"
-                        android:layout_height="82dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         android:background="@drawable/bg_transfer_field"
                         android:clickable="true"
@@ -300,6 +300,46 @@
                                     android:src="@drawable/ic_chevron_right"
                                     android:tint="@color/transfer_hint" />
                             </LinearLayout>
+
+                            <View
+                                android:id="@+id/bank_extra_divider"
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginTop="10dp"
+                                android:background="@color/transfer_divider"
+                                android:visibility="gone" />
+
+                            <LinearLayout
+                                android:id="@+id/bank_status_row"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:layout_marginBottom="4dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:visibility="gone">
+
+                                <ProgressBar
+                                    android:layout_width="18dp"
+                                    android:layout_height="18dp"
+                                    android:indeterminate="true" />
+
+                                <TextView
+                                    android:id="@+id/bank_status_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="10dp"
+                                    android:includeFontPadding="false"
+                                    android:textColor="@color/ink_secondary"
+                                    android:textSize="13sp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/matching_banks_container"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:visibility="gone" />
                         </LinearLayout>
                     </FrameLayout>
 
