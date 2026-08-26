@@ -24,7 +24,7 @@ public final class HomeCatalog {
         return Collections.unmodifiableList(Arrays.asList(
                 new QuickAction(
                         R.string.quick_action_to_bank,
-                        R.drawable.home_action_bank,
+                        R.drawable.exact_action_bank,
                         R.color.quick_card_surface,
                         R.color.icon_purple),
                 new QuickAction(

@@ -118,7 +118,7 @@
                             android:layout_width="12dp"
                             android:layout_height="12dp"
                             android:contentDescription=""
-                            android:src="@drawable/ic_shield_check"
+                            android:src="@drawable/exact_shield_check"
                             android:tint="@color/transfer_green" />
 
                         <TextView

@@ -94,7 +94,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:contentDescription=""
-                            android:src="@drawable/ic_headset"
+                            android:src="@drawable/exact_headset"
                             android:tint="@color/ink" />
                     </FrameLayout>
 
@@ -113,7 +113,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:contentDescription=""
-                            android:src="@drawable/ic_notifications"
+                            android:src="@drawable/exact_bell"
                             android:tint="@color/ink" />
 
                         <TextView
@@ -170,7 +170,7 @@
                                 android:layout_width="10dp"
                                 android:layout_height="10dp"
                                 android:contentDescription=""
-                                android:src="@drawable/ic_shield_check"
+                                android:src="@drawable/exact_shield_check"
                                 android:tint="@color/icon_green" />
 
                             <TextView
@@ -191,7 +191,7 @@
                                 android:background="@android:color/transparent"
                                 android:contentDescription="@string/balance_visible_description"
                                 android:padding="2dp"
-                                android:src="@drawable/ic_eye_visible"
+                                android:src="@drawable/exact_eye_visible"
                                 android:tint="@color/ink" />
                         </LinearLayout>
 
@@ -278,7 +278,7 @@
                             android:layout_width="23dp"
                             android:layout_height="23dp"
                             android:contentDescription=""
-                            android:src="@drawable/ic_coins"
+                            android:src="@drawable/exact_coins"
                             android:tint="@color/brand_purple" />
 
                         <TextView
