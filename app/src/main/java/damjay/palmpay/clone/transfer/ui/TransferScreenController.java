@@ -39,6 +39,8 @@ import damjay.palmpay.clone.transfer.model.TransferShortcut;
 
 /** Binds transfer data to XML and owns the small amount of form state. */
 public final class TransferScreenController {
+    private static final int DIGITS_REQUIRED = 10;
+
     private final Context context;
     private final ActivityTransferBinding binding;
     private final LayoutInflater inflater;
