@@ -25,8 +25,15 @@ public final class BankPickerActivity extends AppCompatActivity {
     private ActivityBankPickerBinding binding;
     private BankPickerScreenController controller;
 
+    public static final String EXTRA_ACCOUNT = "picker_account";
+
     public static Intent createIntent(Context context) {
         return new Intent(context, BankPickerActivity.class);
+    }
+
+    public static Intent createIntent(Context context, String accountDigits) {
+        return new Intent(context, BankPickerActivity.class)
+                .putExtra(EXTRA_ACCOUNT, accountDigits);
     }
 
     @Override
@@ -40,6 +47,7 @@ public final class BankPickerActivity extends AppCompatActivity {
                 this,
                 binding,
                 new BankDirectoryRepository(),
+                getIntent().getStringExtra(EXTRA_ACCOUNT),
                 this::returnSelectedBank);
         controller.bind();
     }

@@ -39,7 +39,12 @@ public final class TransferActivity extends AppCompatActivity {
     }
 
     public void openBankPicker() {
-        startActivityForResult(BankPickerActivity.createIntent(this), REQUEST_BANK);
+        openBankPicker("");
+    }
+
+    public void openBankPicker(String accountDigits) {
+        startActivityForResult(
+                BankPickerActivity.createIntent(this, accountDigits), REQUEST_BANK);
         overridePendingTransition(0, 0);
     }
 

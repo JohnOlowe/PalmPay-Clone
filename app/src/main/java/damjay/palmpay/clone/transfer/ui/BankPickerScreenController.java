@@ -28,6 +28,7 @@ import damjay.palmpay.clone.databinding.FrequentBankItemBinding;
 import damjay.palmpay.clone.databinding.PickerBankItemBinding;
 import damjay.palmpay.clone.databinding.ActivityBankPickerBinding;
 import damjay.palmpay.clone.transfer.data.BankDirectoryRepository;
+import damjay.palmpay.clone.transfer.data.NubanBankResolver;
 import damjay.palmpay.clone.transfer.data.BankLogoLoader;
 import damjay.palmpay.clone.transfer.model.BankInstitution;
 
@@ -39,6 +40,7 @@ public final class BankPickerScreenController {
     private final BankDirectoryRepository repository;
     private final BankLogoLoader logoLoader = new BankLogoLoader();
     private final OnBankPickedListener listener;
+    private final String accountDigits;
     private final List<BankInstitution> allBanks = new ArrayList<>();
     private String query = "";
     private boolean destroyed;
@@ -51,11 +53,13 @@ public final class BankPickerScreenController {
             Context context,
             ActivityBankPickerBinding binding,
             BankDirectoryRepository repository,
+            String accountDigits,
             OnBankPickedListener listener) {
         this.context = context;
         this.binding = binding;
         this.repository = repository;
         this.listener = listener;
+        this.accountDigits = accountDigits == null ? "" : accountDigits;
         this.inflater = LayoutInflater.from(context);
     }
 
@@ -172,6 +176,13 @@ public final class BankPickerScreenController {
     }
 
     private List<BankInstitution> frequentBanks() {
+        if (accountDigits.length() == 10) {
+            List<BankInstitution> verified =
+                    NubanBankResolver.candidateBanks(accountDigits, allBanks);
+            if (!verified.isEmpty()) {
+                return verified;
+            }
+        }
         String[] wanted = {
                 "palmpay", "access bank", "first bank", "moniepoint", "opay", "united bank for africa"
         };

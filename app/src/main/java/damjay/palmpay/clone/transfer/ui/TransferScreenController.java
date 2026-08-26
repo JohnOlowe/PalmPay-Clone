@@ -182,7 +182,7 @@ public final class TransferScreenController {
             bankSelected = false;
             hideConfirmation();
             resetBankField();
-            hideAccountSuggestions();
+            renderAccountSuggestions(digits);
             showMatchingBanks(digits);
             refreshNextState();
             return;
@@ -300,7 +300,8 @@ public final class TransferScreenController {
 
     private void showBankPicker() {
         if (context instanceof TransferActivity) {
-            ((TransferActivity) context).openBankPicker();
+            ((TransferActivity) context).openBankPicker(
+                    digitsOnly(binding.accountNumberInput.getText()));
         } else {
             BankPickerDialog.show(context, bank -> selectBank(bank));
         }

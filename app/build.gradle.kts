@@ -78,5 +78,6 @@ dependencies {
 
     testImplementation(libs.junit4)
     testImplementation(libs.robolectric)
+    testImplementation(libs.json)
     testImplementation(libs.androidx.test.core)
 }
