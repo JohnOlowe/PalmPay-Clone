@@ -82,7 +82,8 @@ public final class TransferScreenController {
             item.recipientName.setText(recipient.getName());
             item.recipientAccount.setText(recipient.getAccountNumber());
             item.recipientProvider.setText(recipient.getProvider());
-            item.recipientDate.setText(recipient.getLastTransferDate());
+            item.recipientDate.setText(context.getString(
+                    R.string.last_transfer_on, recipient.getLastTransferDate()));
             item.recipientIcon.setTag(null);
             int fallbackLogo = BankLogoResolver.fallbackForProvider(recipient.getProvider());
             item.recipientIcon.setImageResource(fallbackLogo);

@@ -72,6 +72,7 @@
     <string name="favorites">Favorites</string>
     <string name="palmpay_contacts">PalmPay Contacts</string>
     <string name="search_contacts">Search contacts</string>
+    <string name="last_transfer_on">Last transfer on  %1$s</string>
     <string name="search_banks">Search banks</string>
     <string name="bank_code_format">Code: %1$s</string>
     <string name="select_bank_title">Select bank</string>

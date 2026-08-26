@@ -117,7 +117,7 @@ public final class BankPickerScreenController {
             FrequentBankItemBinding item = FrequentBankItemBinding.inflate(
                     inflater, binding.frequentBanksGrid, false);
             item.frequentBankName.setText(bank.getName());
-            prepareLogo(item.frequentBankLogo, bank);
+            prepareLogo(item.frequentBankLogo, bank, true);
             item.getRoot().setContentDescription(bank.getName());
             item.getRoot().setOnClickListener(view -> listener.onBankPicked(bank));
 
@@ -148,7 +148,7 @@ public final class BankPickerScreenController {
             PickerBankItemBinding item = PickerBankItemBinding.inflate(
                     inflater, binding.allBanksContainer, false);
             item.pickerBankName.setText(bank.getName());
-            prepareLogo(item.pickerBankLogo, bank);
+            prepareLogo(item.pickerBankLogo, bank, false);
             item.getRoot().setContentDescription(bank.getName());
             item.getRoot().setOnClickListener(view -> listener.onBankPicked(bank));
             binding.allBanksContainer.addView(item.getRoot(), new LinearLayout.LayoutParams(
@@ -219,9 +219,12 @@ public final class BankPickerScreenController {
         return Character.isLetter(first) ? first : '#';
     }
 
-    private void prepareLogo(android.widget.ImageView image, BankInstitution bank) {
+    private void prepareLogo(android.widget.ImageView image, BankInstitution bank, boolean showFrame) {
         image.setTag(null);
         int fallback = fallbackLogo(bank);
+        image.setBackgroundResource(showFrame || fallback == R.drawable.ic_bank_building
+                ? R.drawable.bg_recipient_circle
+                : android.R.color.transparent);
         image.setImageResource(fallback);
         if (fallback == R.drawable.ic_bank_building) {
             ImageViewCompat.setImageTintList(image, ColorStateList.valueOf(
@@ -237,6 +240,18 @@ public final class BankPickerScreenController {
         String value = bank.getName().toLowerCase(Locale.US);
         if (value.contains("palmpay")) {
             return R.drawable.bank_logo_palmpay;
+        }
+        if (value.contains("78 finance")) {
+            return R.drawable.bank_logo_78;
+        }
+        if (value.equals("9 psb")) {
+            return R.drawable.bank_logo_9psb;
+        }
+        if (value.contains("9japay")) {
+            return R.drawable.bank_logo_9japay;
+        }
+        if (value.contains("aaa finance")) {
+            return R.drawable.bank_logo_aaa;
         }
         if (value.contains("access bank")) {
             return R.drawable.bank_logo_access;
