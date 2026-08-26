@@ -1,5 +1,6 @@
 package damjay.palmpay.clone.transfer.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -16,9 +17,12 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import damjay.palmpay.clone.R;
 import damjay.palmpay.clone.databinding.ActivityTransferBinding;
 import damjay.palmpay.clone.transfer.data.LocalTransferRepository;
+import damjay.palmpay.clone.transfer.model.BankInstitution;
 
 /** Transfer-to-bank screen, kept as a separate activity for the requested page transition. */
 public final class TransferActivity extends AppCompatActivity {
+    private static final int REQUEST_BANK = 410;
+
     private ActivityTransferBinding binding;
     private TransferScreenController controller;
 
@@ -30,6 +34,26 @@ public final class TransferActivity extends AppCompatActivity {
         context.startActivity(intent);
         if (context instanceof AppCompatActivity) {
             ((AppCompatActivity) context).overridePendingTransition(0, 0);
+        }
+    }
+
+    public void openBankPicker() {
+        startActivityForResult(BankPickerActivity.createIntent(this), REQUEST_BANK);
+        overridePendingTransition(0, 0);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_BANK && resultCode == Activity.RESULT_OK && data != null
+                && controller != null) {
+            String name = data.getStringExtra(BankPickerActivity.EXTRA_BANK_NAME);
+            String code = data.getStringExtra(BankPickerActivity.EXTRA_BANK_CODE);
+            String logo = data.getStringExtra(BankPickerActivity.EXTRA_BANK_LOGO);
+            if (name != null) {
+                controller.selectBank(new BankInstitution(
+                        name, "", code == null ? "" : code, logo == null ? "" : logo));
+            }
         }
     }
 

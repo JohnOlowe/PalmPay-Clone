@@ -20,6 +20,9 @@ public final class BankLogoResolver {
         if (value.contains("moniepoint")) {
             return "https://logo.clearbit.com/moniepoint.com";
         }
+        if (value.contains("smartcash")) {
+            return "https://res.cloudinary.com/dweovytuc/image/upload/f_auto,q_auto/v1731834962/Airtel_Smartcash_PSB_oxqa5c.png";
+        }
         return "";
     }
 
@@ -27,10 +30,13 @@ public final class BankLogoResolver {
     public static int fallbackForProvider(String provider) {
         String value = normalize(provider);
         if (value.contains("opay")) {
-            return R.drawable.ic_opay_logo;
+            return R.drawable.recipient_opay;
         }
         if (value.contains("moniepoint")) {
-            return R.drawable.ic_moniepoint_logo;
+            return R.drawable.recipient_moniepoint;
+        }
+        if (value.contains("smartcash")) {
+            return R.drawable.recipient_smartcash;
         }
         return R.drawable.ic_bank_building;
     }

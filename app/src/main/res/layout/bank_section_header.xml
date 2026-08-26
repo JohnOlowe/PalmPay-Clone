@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bank_section_title"
+    android:layout_width="match_parent"
+    android:layout_height="44dp"
+    android:background="@color/transfer_field_surface"
+    android:gravity="center_vertical"
+    android:paddingStart="16dp"
+    android:textColor="@color/ink_secondary"
+    android:textSize="14sp" />

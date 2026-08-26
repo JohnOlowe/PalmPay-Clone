@@ -24,6 +24,7 @@ import damjay.palmpay.clone.databinding.TransferTabsBinding;
 import damjay.palmpay.clone.transfer.data.BankLogoLoader;
 import damjay.palmpay.clone.transfer.data.BankLogoResolver;
 import damjay.palmpay.clone.transfer.data.TransferRepository;
+import damjay.palmpay.clone.transfer.model.BankInstitution;
 import damjay.palmpay.clone.transfer.model.TransferRecipient;
 import damjay.palmpay.clone.transfer.model.TransferShortcut;
 
@@ -91,8 +92,10 @@ public final class TransferScreenController {
             } else {
                 ImageViewCompat.setImageTintList(item.recipientIcon, null);
             }
-            logoLoader.load(
-                    BankLogoResolver.forProvider(recipient.getProvider()), item.recipientIcon);
+            if (fallbackLogo == R.drawable.ic_bank_building) {
+                logoLoader.load(
+                        BankLogoResolver.forProvider(recipient.getProvider()), item.recipientIcon);
+            }
             item.getRoot().setContentDescription(recipient.getName());
             item.getRoot().setOnClickListener(view -> {
                 binding.accountNumberInput.setText(recipient.getAccountNumber());
@@ -137,12 +140,18 @@ public final class TransferScreenController {
     }
 
     private void showBankPicker() {
-        BankPickerDialog.show(context, bank -> {
-            bankSelected = true;
-            binding.selectedBankText.setText(bank.getName());
-            binding.selectedBankText.setTextColor(color(R.color.ink));
-            refreshNextState();
-        });
+        if (context instanceof TransferActivity) {
+            ((TransferActivity) context).openBankPicker();
+        } else {
+            BankPickerDialog.show(context, this::selectBank);
+        }
+    }
+
+    public void selectBank(BankInstitution bank) {
+        bankSelected = true;
+        binding.selectedBankText.setText(bank.getName());
+        binding.selectedBankText.setTextColor(color(R.color.ink));
+        refreshNextState();
     }
 
     private void refreshNextState() {

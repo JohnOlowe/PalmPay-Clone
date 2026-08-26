@@ -74,6 +74,10 @@
     <string name="search_contacts">Search contacts</string>
     <string name="search_banks">Search banks</string>
     <string name="bank_code_format">Code: %1$s</string>
+    <string name="select_bank_title">Select bank</string>
+    <string name="bank_search_hint">Search</string>
+    <string name="frequently_used_bank">Frequently Used Bank</string>
+    <string name="alphabet_index">#\nA\nB\nC\nD\nE\nF\nG\nH\nI\nJ\nK\nL\nM\nN\nO\nP\nQ\nR\nS\nT\nU\nV\nW\nX\nY\nZ</string>
     <string name="view_all">View All</string>
     <string name="transfer_support">Transfer support</string>
     <string name="transfer_history">Transfer history</string>

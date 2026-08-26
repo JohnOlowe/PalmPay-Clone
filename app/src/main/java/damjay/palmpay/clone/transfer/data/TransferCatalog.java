@@ -32,6 +32,8 @@ public final class TransferCatalog {
                 new TransferRecipient(
                         "JOHN OLUWADAMILARE OLOWE", "9112413798", "OPay", "Aug 25, 2026"),
                 new TransferRecipient(
+                        "JOHN OLOWE", "9112413798", "SmartCash PSB", "Aug 25, 2026"),
+                new TransferRecipient(
                         "ROSELINE YETUNDE AWOLEKE", "7082608683", "OPay", "Aug 24, 2026"),
                 new TransferRecipient(
                         "OLANIX SUPER MARKET - VARIETIES - ...", "9072698792", "Moniepoint", "Aug 24, 2026"),

@@ -34,10 +34,10 @@ public class TransferCatalogTest {
     public void recentRecipientsPreserveTheReferenceOrdering() {
         List<TransferRecipient> recipients = TransferCatalog.recentRecipients();
 
-        assertEquals(10, recipients.size());
+        assertEquals(11, recipients.size());
         assertEquals("JOHN OLUWADAMILARE OLOWE", recipients.get(0).getName());
         assertEquals("9112413798", recipients.get(0).getAccountNumber());
-        assertEquals("AISHAT OPEYEMI LATEEF", recipients.get(9).getName());
+        assertEquals("AISHAT OPEYEMI LATEEF", recipients.get(10).getName());
         for (TransferRecipient recipient : recipients) {
             assertFalse(recipient.getName().isEmpty());
             assertEquals(10, recipient.getAccountNumber().length());

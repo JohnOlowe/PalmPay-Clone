@@ -122,9 +122,16 @@ public final class BankDirectoryRepository {
         return value == null ? "" : value.trim();
     }
 
-    private List<BankInstitution> fallbackBanks() {
+    public List<BankInstitution> fallbackBanks() {
         String logoBase = "https://supermx1.github.io/nigerian-banks-api/logos/";
         String[][] entries = {
+                {"5TT MFB", "5tt-mfb", "51364"},
+                {"78 Finance Company Limited", "78-finance-company-ltd-bank78", "110072"},
+                {"9 PSB", "9mobile-9payment-service-bank-ng", "120001"},
+                {"9jaPay", "9japay", "120001"},
+                {"AAA FINANCE", "aaa-finance", "51265"},
+                {"AACB MFB", "aacb-mfb", "51289"},
+                {"AB Microfinance Bank", "ab-microfinance-bank", "090270"},
                 {"9mobile 9Payment Service Bank", "9mobile-9payment-service-bank-ng", "120001"},
                 {"Access Bank", "access-bank", "044"},
                 {"ALAT by WEMA", "alat-by-wema", "035A"},

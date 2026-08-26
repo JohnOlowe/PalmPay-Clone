@@ -3,7 +3,7 @@
     android:id="@+id/transfer_tabs_root"
     android:layout_width="match_parent"
     android:layout_height="54dp"
-    android:background="@color/transfer_surface"
+    android:background="@drawable/bg_transfer_surface"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingStart="14dp"
