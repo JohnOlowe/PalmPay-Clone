@@ -106,10 +106,9 @@ public final class AmountScreenController {
     }
 
     private void deleteLastAmountCharacter() {
-        TextView input = binding.amountInput;
-        int length = input.length();
+        int length = binding.amountInput.length();
         if (length > 0) {
-            input.getText().delete(length - 1, length);
+            binding.amountInput.getText().delete(length - 1, length);
         }
     }
 
