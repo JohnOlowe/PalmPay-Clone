@@ -34,6 +34,14 @@ public final class MainActivity extends AppCompatActivity {
         homeScreenController.bind();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (homeScreenController != null) {
+            homeScreenController.refreshBalance();
+        }
+    }
+
     private void configureSystemBars() {
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         getWindow().setStatusBarColor(Color.TRANSPARENT);

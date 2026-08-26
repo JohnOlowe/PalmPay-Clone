@@ -1,7 +1,6 @@
 package damjay.palmpay.clone.ui;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.drawable.GradientDrawable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -15,7 +14,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
-import androidx.core.widget.ImageViewCompat;
 
 import com.google.android.material.badge.BadgeDrawable;
 
@@ -23,6 +21,8 @@ import java.util.List;
 
 import damjay.palmpay.clone.R;
 import damjay.palmpay.clone.data.HomeCatalog;
+import damjay.palmpay.clone.data.WalletStore;
+import damjay.palmpay.clone.profile.ProfileActivity;
 import damjay.palmpay.clone.databinding.ActivityMainBinding;
 import damjay.palmpay.clone.databinding.PromoCardItemBinding;
 import damjay.palmpay.clone.databinding.QuickActionItemBinding;
@@ -41,12 +41,14 @@ public final class HomeScreenController {
     private final Context context;
     private final ActivityMainBinding binding;
     private final LayoutInflater inflater;
+    private final WalletStore walletStore;
     private boolean balanceVisible = true;
 
     public HomeScreenController(Context context, ActivityMainBinding binding) {
         this.context = context;
         this.binding = binding;
         this.inflater = LayoutInflater.from(context);
+        this.walletStore = new WalletStore(context);
     }
 
     public void bind() {
@@ -68,8 +70,7 @@ public final class HomeScreenController {
                     inflater, binding.quickActionsContainer, false);
             item.actionTitle.setText(action.getTitleRes());
             item.actionIcon.setImageResource(action.getIconRes());
-            tint(item.actionIcon, action.getIconColorRes());
-            item.actionBadge.setVisibility(index == 0 ? View.VISIBLE : View.GONE);
+            item.actionBadge.setVisibility(View.GONE);
             setRoundedBackground(
                     item.getRoot(),
                     color(action.getBackgroundColorRes()),
@@ -99,6 +100,12 @@ public final class HomeScreenController {
                     inflater, binding.servicesGrid, false);
             item.serviceTitle.setText(service.getTitleRes());
             item.serviceIcon.setImageResource(service.getIconRes());
+            if (service.getTitleRes() == R.string.service_refer_earn) {
+                ViewGroup.LayoutParams iconParams = item.serviceIconContainer.getLayoutParams();
+                iconParams.width = dp(45);
+                iconParams.height = dp(30);
+                item.serviceIconContainer.setLayoutParams(iconParams);
+            }
             item.getRoot().setContentDescription(context.getString(service.getTitleRes()));
             item.getRoot().setOnClickListener(view -> showSelection(service.getTitleRes()));
 
@@ -147,12 +154,17 @@ public final class HomeScreenController {
         }
     }
 
+    public void refreshBalance() {
+        binding.balanceAmount.setText(balanceVisible
+                ? walletStore.getBalanceDisplay()
+                : R.string.hidden_balance);
+    }
+
     private void bindBalanceCard() {
+        refreshBalance();
         binding.balanceVisibilityButton.setOnClickListener(view -> {
             balanceVisible = !balanceVisible;
-            binding.balanceAmount.setText(balanceVisible
-                    ? R.string.visible_balance
-                    : R.string.hidden_balance);
+            refreshBalance();
             binding.balanceVisibilityButton.setImageResource(balanceVisible
                     ? R.drawable.ic_eye_visible
                     : R.drawable.ic_eye_off);
@@ -166,7 +178,7 @@ public final class HomeScreenController {
     }
 
     private void bindHeader() {
-        binding.profileButton.setOnClickListener(view -> showMessage("Profile selected"));
+        binding.profileButton.setOnClickListener(view -> ProfileActivity.start(context));
         binding.supportButton.setOnClickListener(view -> showMessage("Customer support selected"));
         binding.notificationsButton.setOnClickListener(view -> showMessage("No new notifications"));
     }
@@ -201,11 +213,6 @@ public final class HomeScreenController {
 
     private void showMessage(String message) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-    }
-
-    private void tint(android.widget.ImageView imageView, @ColorRes int colorRes) {
-        @ColorInt int tintColor = color(colorRes);
-        ImageViewCompat.setImageTintList(imageView, ColorStateList.valueOf(tintColor));
     }
 
     private void setRoundedBackground(View view, @ColorInt int backgroundColor, float radius) {

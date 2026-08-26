@@ -24,22 +24,22 @@ public final class HomeCatalog {
         return Collections.unmodifiableList(Arrays.asList(
                 new QuickAction(
                         R.string.quick_action_to_bank,
-                        R.drawable.ic_to_bank,
+                        R.drawable.home_action_bank,
                         R.color.quick_card_surface,
                         R.color.icon_purple),
                 new QuickAction(
                         R.string.quick_action_palmpay,
-                        R.drawable.ic_palmpay_transfer,
+                        R.drawable.home_action_palmpay,
                         R.color.quick_card_surface,
                         R.color.icon_purple),
                 new QuickAction(
                         R.string.quick_action_savings,
-                        R.drawable.ic_savings,
+                        R.drawable.home_action_savings,
                         R.color.quick_card_surface,
                         R.color.icon_purple),
                 new QuickAction(
                         R.string.quick_action_cards,
-                        R.drawable.ic_card,
+                        R.drawable.home_action_cards,
                         R.color.quick_card_surface,
                         R.color.icon_purple)
         ));
@@ -47,21 +47,21 @@ public final class HomeCatalog {
 
     public static List<ServiceAction> services() {
         return Collections.unmodifiableList(Arrays.asList(
-                new ServiceAction(R.string.service_airtime, R.drawable.ic_airtime,
+                new ServiceAction(R.string.service_airtime, R.drawable.home_service_airtime,
                         R.color.service_card_surface, R.color.icon_blue),
-                new ServiceAction(R.string.service_data, R.drawable.ic_data,
+                new ServiceAction(R.string.service_data, R.drawable.home_service_data,
                         R.color.service_card_surface, R.color.icon_green),
-                new ServiceAction(R.string.service_betting, R.drawable.ic_betting,
+                new ServiceAction(R.string.service_betting, R.drawable.home_service_betting,
                         R.color.service_card_surface, R.color.icon_teal),
-                new ServiceAction(R.string.service_electricity, R.drawable.ic_electricity,
+                new ServiceAction(R.string.service_electricity, R.drawable.home_service_electricity,
                         R.color.service_card_surface, R.color.icon_green),
-                new ServiceAction(R.string.service_refer_earn, R.drawable.ic_refer_earn,
+                new ServiceAction(R.string.service_refer_earn, R.drawable.home_service_refer,
                         R.color.service_card_surface, R.color.icon_purple),
-                new ServiceAction(R.string.service_insurance, R.drawable.ic_insurance,
+                new ServiceAction(R.string.service_insurance, R.drawable.home_service_insurance,
                         R.color.service_card_surface, R.color.icon_blue),
-                new ServiceAction(R.string.service_loan, R.drawable.ic_loan_service,
+                new ServiceAction(R.string.service_loan, R.drawable.home_service_loan,
                         R.color.service_card_surface, R.color.icon_teal),
-                new ServiceAction(R.string.service_more, R.drawable.ic_more,
+                new ServiceAction(R.string.service_more, R.drawable.home_service_more,
                         R.color.service_card_surface, R.color.icon_purple)
         ));
     }

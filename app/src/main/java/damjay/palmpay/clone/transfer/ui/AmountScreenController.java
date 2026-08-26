@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
 
 import damjay.palmpay.clone.R;
+import damjay.palmpay.clone.data.WalletStore;
 import damjay.palmpay.clone.databinding.ActivityAmountBinding;
 import damjay.palmpay.clone.transfer.data.BankLogoResolver;
 import damjay.palmpay.clone.transfer.model.TransferRecipient;
@@ -36,6 +37,9 @@ public final class AmountScreenController {
         binding.amountRecipientName.setText(recipient.getName());
         binding.amountRecipientAccount.setText(recipient.getAccountNumber());
         binding.amountRecipientProvider.setText(recipient.getProvider());
+        WalletStore walletStore = new WalletStore(context);
+        binding.amountBalanceText.setText(context.getString(
+                R.string.balance_cashbox, walletStore.getBalanceDisplay()));
         int logo = BankLogoResolver.fallbackForProvider(recipient.getProvider());
         binding.amountRecipientLogo.setImageResource(logo);
         if (logo == R.drawable.ic_bank_building) {

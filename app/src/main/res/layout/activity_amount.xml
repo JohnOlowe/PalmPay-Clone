@@ -229,6 +229,7 @@
                                 android:layout_marginTop="7dp"
                                 android:layout_weight="1"
                                 android:background="@android:color/transparent"
+                                android:focusableInTouchMode="true"
                                 android:hint="@string/amount_hint"
                                 android:imeOptions="actionDone"
                                 android:includeFontPadding="false"

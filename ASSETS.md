@@ -3,6 +3,7 @@
 This project keeps the visual assets local so the app works offline and does not depend on a remote image host.
 
 - The utility and navigation glyphs are Android Vector Drawable adaptations of the open-source [Material Design Icons](https://github.com/google/material-design-icons) collection. The collection is distributed under the Apache License 2.0.
+- The supplied `home_action_*.png` and `home_service_*.png` assets are transparent crops of the corresponding icons from the user-provided home-screen reference. They preserve the reference artwork while the surrounding cards remain native XML.
 - The card and tile backgrounds are native Android shape drawables defined in `app/src/main/res/drawable`, rather than raster images. That keeps their corners and spacing crisp at every screen density.
 - `avatar_reference.jpg`, `claim_reference.png`, and `gift_reference.png` are density-neutral crops from the user-supplied reference screenshot in `screenshots/`. The claim and gift crops use transparent masks so they also blend correctly in the dark theme. The provider/logo crops (`recipient_*.png` and `bank_logo_*.png`) are similarly taken from the supplied To Bank reference so recent recipients and frequently used banks remain visually accurate even before network logos finish loading.
 - `ic_cashbox.xml` and `ic_fixed_savings.xml` are small, original vector illustrations created for this clone and are not copied from the PalmPay application.

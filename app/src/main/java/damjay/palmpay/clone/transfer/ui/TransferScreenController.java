@@ -3,6 +3,9 @@ package damjay.palmpay.clone.transfer.ui;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.text.Editable;
+import android.text.ForegroundColorSpan;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -181,7 +184,8 @@ public final class TransferScreenController {
             AccountSuggestionItemBinding item = AccountSuggestionItemBinding.inflate(
                     inflater, binding.accountSuggestionsContainer, false);
             item.suggestionName.setText(recipient.getName());
-            item.suggestionAccount.setText(recipient.getAccountNumber());
+            applyProgressiveAccountColor(
+                    item.suggestionAccount, recipient.getAccountNumber(), digits);
             item.suggestionProvider.setText(recipient.getProvider());
             applyProviderLogo(item.suggestionLogo, recipient.getProvider());
             item.getRoot().setContentDescription(recipient.getName());
@@ -194,6 +198,29 @@ public final class TransferScreenController {
             count++;
         }
         binding.accountSuggestionsContainer.setVisibility(count == 0 ? View.GONE : View.VISIBLE);
+    }
+
+    private void applyProgressiveAccountColor(
+            android.widget.TextView accountView,
+            String accountNumber,
+            String typedDigits) {
+        SpannableString account = new SpannableString(accountNumber);
+        int highlightedLength = Math.min(typedDigits.length(), accountNumber.length());
+        if (highlightedLength > 0) {
+            account.setSpan(
+                    new ForegroundColorSpan(color(R.color.brand_purple)),
+                    0,
+                    highlightedLength,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        if (highlightedLength < accountNumber.length()) {
+            account.setSpan(
+                    new ForegroundColorSpan(color(R.color.ink_secondary)),
+                    highlightedLength,
+                    accountNumber.length(),
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        accountView.setText(account);
     }
 
     private TransferRecipient trustedRecipientFor(String digits) {
