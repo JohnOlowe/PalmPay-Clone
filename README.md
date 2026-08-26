@@ -8,6 +8,8 @@ A Java and XML recreation of the PalmPay-style wallet home screen. It is an offl
 - Header profile/support/notification controls and branded quick actions.
 - Reusable service grid and savings promotion cards populated from immutable Java models.
 - Working balance visibility toggle, tap feedback, and bottom navigation selection.
+- Transfer-to-bank screen with a searchable online Nigerian bank directory, logo loading, offline fallback data, and recent recipients.
+- Sticky transfer tabs while the recipient list scrolls.
 - Local vector drawables and shape resources so the UI stays sharp on every density.
 
 ## Build

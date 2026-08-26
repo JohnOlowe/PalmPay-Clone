@@ -91,6 +91,9 @@ public final class TransferActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        if (controller != null) {
+            controller.onDestroy();
+        }
         controller = null;
         binding = null;
         super.onDestroy();

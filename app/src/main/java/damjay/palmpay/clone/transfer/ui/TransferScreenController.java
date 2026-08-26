@@ -1,6 +1,7 @@
 package damjay.palmpay.clone.transfer.ui;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -13,14 +14,15 @@ import androidx.annotation.ColorInt;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
 import java.util.List;
 
 import damjay.palmpay.clone.R;
 import damjay.palmpay.clone.databinding.ActivityTransferBinding;
 import damjay.palmpay.clone.databinding.RecipientItemBinding;
 import damjay.palmpay.clone.databinding.TransferShortcutItemBinding;
+import damjay.palmpay.clone.databinding.TransferTabsBinding;
+import damjay.palmpay.clone.transfer.data.BankLogoLoader;
+import damjay.palmpay.clone.transfer.data.BankLogoResolver;
 import damjay.palmpay.clone.transfer.data.TransferRepository;
 import damjay.palmpay.clone.transfer.model.TransferRecipient;
 import damjay.palmpay.clone.transfer.model.TransferShortcut;
@@ -31,6 +33,7 @@ public final class TransferScreenController {
     private final ActivityTransferBinding binding;
     private final LayoutInflater inflater;
     private final TransferRepository repository;
+    private final BankLogoLoader logoLoader = new BankLogoLoader();
     private boolean bankSelected;
 
     public TransferScreenController(
@@ -48,7 +51,9 @@ public final class TransferScreenController {
         renderRecipients(repository.getRecentRecipients());
         bindForm();
         bindToolbar();
-        bindTabs();
+        bindTabs(binding.transferTabsInline);
+        bindTabs(binding.transferTabsSticky);
+        bindStickyTabs();
     }
 
     private void renderShortcuts(List<TransferShortcut> shortcuts) {
@@ -77,6 +82,17 @@ public final class TransferScreenController {
             item.recipientAccount.setText(recipient.getAccountNumber());
             item.recipientProvider.setText(recipient.getProvider());
             item.recipientDate.setText(recipient.getLastTransferDate());
+            item.recipientIcon.setTag(null);
+            int fallbackLogo = BankLogoResolver.fallbackForProvider(recipient.getProvider());
+            item.recipientIcon.setImageResource(fallbackLogo);
+            if (fallbackLogo == R.drawable.ic_bank_building) {
+                ImageViewCompat.setImageTintList(item.recipientIcon, ColorStateList.valueOf(
+                        color(android.R.color.white)));
+            } else {
+                ImageViewCompat.setImageTintList(item.recipientIcon, null);
+            }
+            logoLoader.load(
+                    BankLogoResolver.forProvider(recipient.getProvider()), item.recipientIcon);
             item.getRoot().setContentDescription(recipient.getName());
             item.getRoot().setOnClickListener(view -> {
                 binding.accountNumberInput.setText(recipient.getAccountNumber());
@@ -121,16 +137,12 @@ public final class TransferScreenController {
     }
 
     private void showBankPicker() {
-        String[] banks = {"OPay", "Moniepoint", "PalmPay", "Access Bank"};
-        new MaterialAlertDialogBuilder(context)
-                .setTitle(R.string.choose_bank)
-                .setItems(banks, (dialog, which) -> {
-                    bankSelected = true;
-                    binding.selectedBankText.setText(banks[which]);
-                    binding.selectedBankText.setTextColor(color(R.color.ink));
-                    refreshNextState();
-                })
-                .show();
+        BankPickerDialog.show(context, bank -> {
+            bankSelected = true;
+            binding.selectedBankText.setText(bank.getName());
+            binding.selectedBankText.setTextColor(color(R.color.ink));
+            refreshNextState();
+        });
     }
 
     private void refreshNextState() {
@@ -149,20 +161,41 @@ public final class TransferScreenController {
         binding.transferBackButton.setOnClickListener(view -> closeScreen());
         binding.transferSupportButton.setOnClickListener(view -> showMessage("Transfer support selected"));
         binding.transferHistoryButton.setOnClickListener(view -> showMessage("Transfer history selected"));
-        binding.searchButton.setOnClickListener(view -> showMessage("Search contacts selected"));
         binding.viewAllButton.setOnClickListener(view -> showMessage("All contacts selected"));
     }
 
-    private void bindTabs() {
-        binding.recentTab.setOnClickListener(view -> showMessage("Recent selected"));
-        binding.favoritesTab.setOnClickListener(view -> showMessage("Favorites selected"));
-        binding.contactsTab.setOnClickListener(view -> showMessage("PalmPay Contacts selected"));
+    private void bindTabs(TransferTabsBinding tabs) {
+        tabs.recentTab.setOnClickListener(view -> showMessage("Recent selected"));
+        tabs.favoritesTab.setOnClickListener(view -> showMessage("Favorites selected"));
+        tabs.contactsTab.setOnClickListener(view -> showMessage("PalmPay Contacts selected"));
+        tabs.searchButton.setOnClickListener(view -> showMessage("Search contacts selected"));
+    }
+
+    private void bindStickyTabs() {
+        binding.transferTabsSticky.getRoot().setVisibility(View.GONE);
+        binding.transferScroll.setOnScrollChangeListener((view, scrollX, scrollY, oldScrollX, oldScrollY) ->
+                updateStickyTabs());
+        binding.transferScroll.post(this::updateStickyTabs);
+    }
+
+    private void updateStickyTabs() {
+        if (binding.transferScroll.getChildCount() == 0) {
+            return;
+        }
+        int recentTop = binding.recentCard.getTop();
+        boolean shouldStick = binding.transferScroll.getScrollY() >= recentTop;
+        binding.transferTabsSticky.getRoot().setVisibility(
+                shouldStick ? View.VISIBLE : View.GONE);
     }
 
     private void closeScreen() {
         if (context instanceof TransferActivity) {
             ((TransferActivity) context).finishFromTransfer();
         }
+    }
+
+    public void onDestroy() {
+        logoLoader.close();
     }
 
     private void showMessage(String message) {

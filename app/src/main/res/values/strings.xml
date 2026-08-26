@@ -72,6 +72,8 @@
     <string name="favorites">Favorites</string>
     <string name="palmpay_contacts">PalmPay Contacts</string>
     <string name="search_contacts">Search contacts</string>
+    <string name="search_banks">Search banks</string>
+    <string name="bank_code_format">Code: %1$s</string>
     <string name="view_all">View All</string>
     <string name="transfer_support">Transfer support</string>
     <string name="transfer_history">Transfer history</string>

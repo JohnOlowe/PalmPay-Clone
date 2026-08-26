@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/transfer_tabs_root"
+    android:layout_width="match_parent"
+    android:layout_height="54dp"
+    android:background="@color/transfer_surface"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="14dp"
+    android:paddingEnd="10dp">
+
+    <LinearLayout
+        android:id="@+id/recent_tab"
+        android:layout_width="70dp"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/recent_tab_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:text="@string/recent"
+            android:textColor="@color/brand_purple"
+            android:textSize="14sp" />
+
+        <View
+            android:layout_width="24dp"
+            android:layout_height="2dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_transfer_tab_indicator" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/favorites_tab"
+        android:layout_width="76dp"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:text="@string/favorites"
+        android:textColor="@color/ink"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/contacts_tab"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:gravity="center_vertical"
+        android:includeFontPadding="false"
+        android:text="@string/palmpay_contacts"
+        android:textColor="@color/ink"
+        android:textSize="14sp" />
+
+    <ImageButton
+        android:id="@+id/search_button"
+        android:layout_width="36dp"
+        android:layout_height="40dp"
+        android:background="@android:color/transparent"
+        android:clickable="true"
+        android:contentDescription="@string/search_contacts"
+        android:focusable="true"
+        android:padding="6dp"
+        android:src="@drawable/ic_search"
+        android:tint="@color/ink_secondary" />
+</LinearLayout>
