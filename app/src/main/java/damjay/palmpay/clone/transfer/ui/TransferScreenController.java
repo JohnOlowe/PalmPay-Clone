@@ -189,10 +189,7 @@ public final class TransferScreenController {
             item.suggestionProvider.setText(recipient.getProvider());
             applyProviderLogo(item.suggestionLogo, recipient.getProvider());
             item.getRoot().setContentDescription(recipient.getName());
-            item.getRoot().setOnClickListener(view -> {
-                selectTrustedRecipient(recipient, false);
-                openAmountScreen(recipient);
-            });
+            item.getRoot().setOnClickListener(view -> selectSuggestedRecipient(recipient));
             binding.accountSuggestionsContainer.addView(item.getRoot(), new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, dp(60)));
             count++;
@@ -242,13 +239,23 @@ public final class TransferScreenController {
     }
 
     private void selectRecentRecipient(TransferRecipient recipient) {
+        populateTrustedRecipient(recipient);
+        selectTrustedRecipient(recipient, true);
+        openAmountScreen(recipient);
+    }
+
+    private void selectSuggestedRecipient(TransferRecipient recipient) {
+        populateTrustedRecipient(recipient);
+        selectTrustedRecipient(recipient, true);
+    }
+
+    private void populateTrustedRecipient(TransferRecipient recipient) {
         String formatted = formatAccountNumber(recipient.getAccountNumber());
         formattingAccount = true;
         binding.accountNumberInput.setText(formatted);
         binding.accountNumberInput.setSelection(formatted.length());
         formattingAccount = false;
         binding.clearAccountButton.setVisibility(View.VISIBLE);
-        selectTrustedRecipient(recipient, true);
     }
 
     private void selectTrustedRecipient(TransferRecipient recipient, boolean showConfirmation) {
