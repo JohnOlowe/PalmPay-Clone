@@ -157,7 +157,7 @@ public final class HomeScreenController {
     public void refreshBalance() {
         binding.balanceAmount.setText(balanceVisible
                 ? walletStore.getBalanceDisplay()
-                : R.string.hidden_balance);
+                : context.getString(R.string.hidden_balance));
     }
 
     private void bindBalanceCard() {
