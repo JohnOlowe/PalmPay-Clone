@@ -1,2 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <color name="screen_background">#121212</color>
+    <color name="surface_white">#1E1E1E</color>
+    <color name="balance_surface">#865CFE</color>
+    <color name="notification_surface">#1E1E1E</color>
+    <color name="quick_card_surface">#1E1E1E</color>
+    <color name="service_card_surface">#1E1E1E</color>
+    <color name="promo_surface">#121212</color>
+    <color name="brand_purple">#865CFE</color>
+    <color name="brand_purple_dark">#6A35FF</color>
+    <color name="brand_purple_soft">#322457</color>
+    <color name="balance_action_background">#1E1E1E</color>
+    <color name="balance_action_text">#FFFFFF</color>
+    <color name="ink">#F5F3FA</color>
+    <color name="ink_secondary">#A8A5B0</color>
+    <color name="ink_muted">#77747E</color>
+    <color name="divider">#37353B</color>
+    <color name="icon_purple">#7B3CFF</color>
+    <color name="nav_unselected">#EEEAF5</color>
+    <color name="earnings_positive">#1EBC92</color>
+    <color name="transfer_background">#121212</color>
+    <color name="transfer_toolbar_surface">#1E1E1E</color>
+    <color name="transfer_surface">#1E1E1E</color>
+    <color name="transfer_field_surface">#121212</color>
+    <color name="transfer_hint">#6A6870</color>
+    <color name="transfer_green">#25B99F</color>
+    <color name="transfer_next_disabled">#3C3652</color>
+    <color name="transfer_next_text_disabled">#6F6A7C</color>
+    <color name="transfer_next_text_enabled">#FFFFFF</color>
+    <color name="recipient_circle">#BAB3DD</color>
+    <color name="shortcut_icon">#F3F0FA</color>
+    <color name="tab_inactive">#AAA7B2</color>
+    <color name="transfer_divider">#343338</color>
+    <color name="free_banner_surface">#3A206C</color>
+    <color name="free_banner_label">#8C39FF</color>
+    <color name="free_banner_text">#F5F3FA</color>
+    <color name="recipient_suggestion_surface">#DDF8F1</color>
+    <color name="recipient_suggestion_text">#27B897</color>
+    <color name="amount_chip_surface">#1E1E1E</color>
+    <color name="amount_chip_border">#3A383C</color>
+    <color name="cashbox_green">#176A4D</color>
+    <color name="fixed_savings_blue">#3C39A7</color>
+</resources>

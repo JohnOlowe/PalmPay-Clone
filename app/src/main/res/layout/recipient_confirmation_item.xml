@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/recipient_confirmation"
+    android:layout_width="match_parent"
+    android:layout_height="34dp"
+    android:background="@drawable/bg_recipient_confirmation"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="10dp"
+    android:paddingEnd="10dp">
+
+    <ImageView
+        android:id="@+id/confirmation_icon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:contentDescription=""
+        android:src="@drawable/ic_check_circle"
+        android:tint="@color/recipient_suggestion_text" />
+
+    <TextView
+        android:id="@+id/confirmation_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:includeFontPadding="false"
+        android:textColor="@color/recipient_suggestion_text"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+</LinearLayout>
