@@ -70,7 +70,9 @@ public final class HomeScreenController {
                     inflater, binding.quickActionsContainer, false);
             item.actionTitle.setText(action.getTitleRes());
             item.actionIcon.setImageResource(action.getIconRes());
-            item.actionBadge.setVisibility(View.GONE);
+            item.actionBadge.setVisibility(
+                    action.getTitleRes() == R.string.quick_action_to_bank
+                            ? View.VISIBLE : View.GONE);
             setRoundedBackground(
                     item.getRoot(),
                     color(action.getBackgroundColorRes()),
@@ -166,7 +168,7 @@ public final class HomeScreenController {
             balanceVisible = !balanceVisible;
             refreshBalance();
             binding.balanceVisibilityButton.setImageResource(balanceVisible
-                    ? R.drawable.ic_eye_visible
+                    ? R.drawable.exact_eye_visible
                     : R.drawable.ic_eye_off);
             binding.balanceVisibilityButton.setContentDescription(context.getString(
                     balanceVisible
