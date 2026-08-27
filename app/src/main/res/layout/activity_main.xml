@@ -618,12 +618,32 @@
                 app:cardElevation="0dp"
                 app:strokeWidth="0dp">
 
-                <ImageView
+                <ViewFlipper
+                    android:id="@+id/banner_flipper"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:contentDescription="@string/borrow_again"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/borrow_reference" />
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:contentDescription="@string/borrow_again"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/borrow_reference" />
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:contentDescription="@string/borrow_again"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/banner_verify" />
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:contentDescription="@string/borrow_again"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/banner_business" />
+                </ViewFlipper>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

@@ -38,6 +38,7 @@ import damjay.palmpay.clone.transfer.ui.TransferActivity;
  */
 public final class HomeScreenController {
     private boolean carouselAlive;
+    private boolean bannerAlive;
     private static final int BADGE_NONE = 0;
     private static final int BADGE_DOT = 1;
     private static final int BADGE_NEW = 2;
@@ -62,6 +63,7 @@ public final class HomeScreenController {
         bindHeader();
         bindClaimCard();
         bindPromoCarousel();
+        bindBannerCarousel();
         bindNavigation();
     }
 
@@ -106,6 +108,9 @@ public final class HomeScreenController {
                     inflater, binding.servicesGrid, false);
             item.serviceTitle.setText(service.getTitleRes());
             item.serviceIcon.setImageResource(service.getIconRes());
+            item.serviceBadge.setVisibility(
+                    service.getTitleRes() == R.string.service_data
+                            ? View.VISIBLE : View.GONE);
             if (service.getTitleRes() == R.string.service_refer_earn) {
                 ViewGroup.LayoutParams iconParams = item.serviceIconContainer.getLayoutParams();
                 iconParams.width = dp(45);
@@ -230,10 +235,33 @@ public final class HomeScreenController {
         }
     }
 
-    /** Stops the carousel ticker when the activity goes away. */
+    private void bindBannerCarousel() {
+        final android.widget.ViewFlipper flipper = binding.bannerFlipper;
+        flipper.setFlipInterval(4000);
+        flipper.setInAnimation(context, android.R.anim.fade_in);
+        flipper.setOutAnimation(context, android.R.anim.fade_out);
+        flipper.startFlipping();
+        bannerAlive = true;
+        final android.os.Handler handler = new android.os.Handler(
+                android.os.Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (!bannerAlive) {
+                    return;
+                }
+                handler.postDelayed(this, 4000);
+            }
+        });
+        flipper.setOnClickListener(view -> showMessage("Borrow selected"));
+    }
+
+    /** Stops the carousel tickers when the activity goes away. */
     public void release() {
         carouselAlive = false;
+        bannerAlive = false;
         binding.promoFlipper.stopFlipping();
+        binding.bannerFlipper.stopFlipping();
     }
 
     private void bindNavigation() {

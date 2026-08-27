@@ -69,17 +69,37 @@ public final class AmountScreenController {
         bindKey(binding.key0, "0");
         bindKey(binding.keyDot, ".");
         binding.keyBackspace.setOnClickListener(view -> deleteLastAmountCharacter());
-        binding.amountKeypadNext.setOnClickListener(view -> showMessage(
-                "Transfer amount entered"));
+        binding.amountKeypadNext.setOnClickListener(view -> {
+            if (binding.amountKeypadNext.isEnabled()) {
+                showMessage("Transfer amount entered");
+            }
+        });
+        binding.amountClear.setOnClickListener(view ->
+                binding.amountInput.setText(""));
 
         binding.amountProtectionButton.setOnClickListener(view -> showMessage(
                 "Transfer protection selected"));
         binding.amountBackButton.setOnClickListener(view -> closeScreen());
-        binding.amountSupportButton.setOnClickListener(view -> showMessage(
-                "Transfer support selected"));
-        binding.amountHistoryButton.setOnClickListener(view -> showMessage(
-                "Transfer history selected"));
         binding.amountInput.setShowSoftInputOnFocus(false);
+        binding.amountInput.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(
+                    CharSequence text, int start, int count, int after) {
+                // No-op.
+            }
+
+            @Override
+            public void onTextChanged(
+                    CharSequence text, int start, int before, int count) {
+                // No-op.
+            }
+
+            @Override
+            public void afterTextChanged(android.text.Editable editable) {
+                refreshAmountState();
+            }
+        });
+        refreshAmountState();
         binding.amountInput.setOnEditorActionListener((view, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 showMessage("Transfer amount entered");
@@ -88,6 +108,34 @@ public final class AmountScreenController {
             return false;
         });
         binding.amountInput.requestFocus();
+    }
+
+    private static final double MIN_AMOUNT = 10.0;
+    private static final double MAX_AMOUNT = 200000.0;
+    private static final double STAMP_DUTY_THRESHOLD = 10000.0;
+
+    private void refreshAmountState() {
+        String text = binding.amountInput.getText().toString();
+        boolean hasText = !text.isEmpty();
+        double value = parseAmount(text);
+        boolean inRange = hasText && value >= MIN_AMOUNT && value <= MAX_AMOUNT;
+        binding.amountClear.setVisibility(hasText ? View.VISIBLE : View.GONE);
+        binding.amountError.setVisibility(
+                hasText && !inRange ? View.VISIBLE : View.GONE);
+        binding.stampNoticeCard.setVisibility(
+                hasText && value >= STAMP_DUTY_THRESHOLD ? View.VISIBLE : View.GONE);
+        binding.amountKeypadNext.setEnabled(inRange);
+        binding.amountKeypadNext.setBackgroundResource(inRange
+                ? R.drawable.bg_keypad_next_enabled
+                : R.drawable.bg_keypad_next);
+    }
+
+    private double parseAmount(String text) {
+        try {
+            return Double.parseDouble(text);
+        } catch (NumberFormatException exception) {
+            return 0;
+        }
     }
 
     private void bindQuickAmount(TextView chip, int amountRes) {
