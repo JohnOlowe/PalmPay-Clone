@@ -54,6 +54,7 @@ public final class TransferScreenController {
     private List<BankInstitution> directoryBanks;
     private boolean directoryLoading;
     private final WalletStore walletStore;
+    private final List<String> listedBankNames = new ArrayList<>();
     private TransferRecipient resolvedRecipient;
     private boolean bankSelected;
     private boolean formattingAccount;
@@ -314,6 +315,18 @@ public final class TransferScreenController {
         hideAccountSuggestions();
         hideConfirmation();
         showResolvedBank(bank.getName(), bank.getLogoUrl());
+        String digits = digitsOnly(binding.accountNumberInput.getText());
+        if (digits.length() == DIGITS_REQUIRED) {
+            showStatus(R.string.verifying_account_name);
+            TransferRecipient historyMatch = historyRecipientFor(digits, bank.getName());
+            if (historyMatch != null) {
+                trustedRecipient = historyMatch;
+                showConfirmationName(historyMatch.getName());
+                hideStatus();
+            } else {
+                resolveNameViaPaystack(digits, bank);
+            }
+        }
         refreshNextState();
     }
 
@@ -350,22 +363,86 @@ public final class TransferScreenController {
             candidates.add(0, bankForProvider(historyMatch.getProvider()));
         }
         hideStatus();
-        if (candidates.isEmpty()) {
-            binding.bankExtraDivider.setVisibility(View.GONE);
+        listedBankNames.clear();
+        binding.matchingBanksContainer.removeAllViews();
+        for (BankInstitution bank : candidates) {
+            addMatchingBankRow(digits, bank);
+        }
+        if (!candidates.isEmpty()) {
+            binding.bankExtraDivider.setVisibility(View.VISIBLE);
+            binding.matchingBanksContainer.setVisibility(View.VISIBLE);
+        }
+        discoverWalletBanks(digits);
+    }
+
+    private void addMatchingBankRow(String digits, BankInstitution bank) {
+        listedBankNames.add(bank.getName().toLowerCase(Locale.US));
+        MatchingBankItemBinding item = MatchingBankItemBinding.inflate(
+                inflater, binding.matchingBanksContainer, false);
+        item.matchingBankName.setText(bank.getName());
+        applyBankLogo(item.matchingBankLogo, bank);
+        item.getRoot().setOnClickListener(view ->
+                selectMatchedBank(digits, bank));
+        binding.matchingBanksContainer.addView(item.getRoot());
+    }
+
+    /**
+     * Wallet providers never appear in NUBAN parsing, so with a Paystack key
+     * each known wallet is probed and any that recognise the account number
+     * joins the matching list (the user still chooses manually).
+     */
+    private void discoverWalletBanks(final String digits) {
+        String key = walletStore.getPaystackApiKey();
+        if (key.isEmpty()) {
+            return;
+        }
+        final PaystackClient client = new PaystackClient(key);
+        client.listBanks(banks -> {
+            if (banks.isEmpty()) {
+                return;
+            }
+            String[] wallets = {"opay", "palmpay", "moniepoint",
+                    "smartcash", "kuda", "momo"};
+            for (String wallet : wallets) {
+                BankInstitution paystackBank = null;
+                for (BankInstitution bank : banks) {
+                    if (bank.getName().toLowerCase(Locale.US).contains(wallet)) {
+                        paystackBank = bank;
+                        break;
+                    }
+                }
+                if (paystackBank == null) {
+                    continue;
+                }
+                final BankInstitution discovered = paystackBank;
+                client.resolveAccount(digits, discovered,
+                        new PaystackClient.ResolveCallback() {
+                            @Override
+                            public void onResolved(
+                                    String accountName, BankInstitution resolved) {
+                                appendDiscoveredBank(digits, discovered);
+                            }
+
+                            @Override
+                            public void onFailed() {
+                                // This wallet does not own the account.
+                            }
+                        });
+            }
+        });
+    }
+
+    private void appendDiscoveredBank(String digits, BankInstitution paystackBank) {
+        if (!digitsOnly(binding.accountNumberInput.getText()).equals(digits)) {
+            return;
+        }
+        String name = paystackBank.getName().toLowerCase(Locale.US);
+        if (listedBankNames.contains(name)) {
             return;
         }
         binding.bankExtraDivider.setVisibility(View.VISIBLE);
         binding.matchingBanksContainer.setVisibility(View.VISIBLE);
-        binding.matchingBanksContainer.removeAllViews();
-        for (BankInstitution bank : candidates) {
-            MatchingBankItemBinding item = MatchingBankItemBinding.inflate(
-                    inflater, binding.matchingBanksContainer, false);
-            item.matchingBankName.setText(bank.getName());
-            applyBankLogo(item.matchingBankLogo, bank);
-            item.getRoot().setOnClickListener(view ->
-                    selectMatchedBank(digits, bank));
-            binding.matchingBanksContainer.addView(item.getRoot());
-        }
+        addMatchingBankRow(digits, bankForProvider(paystackBank.getName()));
     }
 
     private boolean containsBankNamed(List<BankInstitution> banks, String name) {
@@ -457,11 +534,10 @@ public final class TransferScreenController {
                     break;
                 }
             }
-            if (paystackBank == null) {
-                hideStatus();
-                return;
-            }
-            client.resolveAccount(digits, paystackBank,
+            final BankInstitution target = paystackBank != null
+                    ? paystackBank
+                    : new BankInstitution(bank.getName(), "", bank.getCode(), "");
+            client.resolveAccount(digits, target,
                     new PaystackClient.ResolveCallback() {
                         @Override
                         public void onResolved(
@@ -476,6 +552,7 @@ public final class TransferScreenController {
                         @Override
                         public void onFailed() {
                             hideStatus();
+                            showMessage("Paystack could not verify this account");
                         }
                     });
         });
@@ -523,7 +600,17 @@ public final class TransferScreenController {
     }
 
     private TransferRecipient effectiveRecipient() {
-        return trustedRecipient != null ? trustedRecipient : resolvedRecipient;
+        if (trustedRecipient != null) {
+            return trustedRecipient;
+        }
+        if (resolvedRecipient != null) {
+            return resolvedRecipient;
+        }
+        return new TransferRecipient(
+                "",
+                digitsOnly(binding.accountNumberInput.getText()),
+                binding.selectedBankText.getText().toString(),
+                "");
     }
 
     private void openAmountScreen(TransferRecipient recipient) {
