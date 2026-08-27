@@ -41,7 +41,7 @@ public class PaystackLiveProbeTest {
             }
         }
 
-        JSONObject resolve = get("/bank/resolve?accountNumber=0001234567&bankCode="
+        JSONObject resolve = get("/bank/resolve?account_number=0001234567&bank_code="
                 + gtbCode);
         String detail = resolve == null ? "null response" : resolve.toString();
         assertTrue("no holder name for 0001234567 @" + gtbCode + " -> " + detail,

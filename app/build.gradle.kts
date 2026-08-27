@@ -75,6 +75,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.okhttp)
 
     testImplementation(libs.junit4)
     testImplementation(libs.robolectric)

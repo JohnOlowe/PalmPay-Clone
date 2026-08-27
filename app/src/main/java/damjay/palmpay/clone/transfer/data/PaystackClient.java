@@ -3,30 +3,30 @@ package damjay.palmpay.clone.transfer.data;
 import android.os.Handler;
 import android.os.Looper;
 
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import damjay.palmpay.clone.BuildConfig;
 import damjay.palmpay.clone.transfer.model.BankInstitution;
 
 /**
- * Minimal Paystack client used for automatic bank retrieval.
+ * Minimal Paystack client used for automatic bank retrieval, built on OkHttp.
  *
  * NUBAN check-digit arithmetic only identifies traditional 3-digit-code
  * banks, so wallet providers such as OPay or PalmPay are resolved through
- * Paystack's free account-resolution endpoint: the account number is probed
- * against the institution list until a bank validates it, which also returns
- * the account holder's name. The secret key is injected at build time via
- * PAYSTACK_API_KEY in local.properties or the environment; without a key the
- * client simply reports itself as unconfigured and the app falls back to the
+ * Paystack's account-resolution endpoint. Note that, per Paystack's API,
+ * the resolve endpoint expects snake_case parameters (account_number and
+ * bank_code) while the institution list uses camelCase paging parameters.
+ * The secret key is supplied at runtime from the Profile screen; without a
+ * key the client reports itself unconfigured and the app falls back to the
  * transfer history and the NUBAN resolver.
  */
 public final class PaystackClient {
@@ -43,16 +43,16 @@ public final class PaystackClient {
     private static final String BASE_URL = "https://api.paystack.co";
 
     private final String apiKey;
-    private final ExecutorService executor = Executors.newFixedThreadPool(2);
+    private final OkHttpClient http;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
-    private List<BankInstitution> cachedBanks;
-
-    public PaystackClient() {
-        this(BuildConfig.PAYSTACK_API_KEY);
-    }
+    private volatile List<BankInstitution> cachedBanks;
 
     public PaystackClient(String apiKey) {
         this.apiKey = apiKey == null ? "" : apiKey.trim();
+        this.http = new OkHttpClient.Builder()
+                .connectTimeout(8, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .build();
     }
 
     public boolean isConfigured() {
@@ -60,19 +60,27 @@ public final class PaystackClient {
     }
 
     /** Fetches the Nigerian institution list (names + bank codes). */
-    public void listBanks(BanksCallback callback) {
-        if (cachedBanks != null) {
-            callback.onBanks(cachedBanks);
+    public void listBanks(final BanksCallback callback) {
+        List<BankInstitution> cached = cachedBanks;
+        if (cached != null) {
+            callback.onBanks(cached);
             return;
         }
-        executor.execute(() -> {
+        HttpUrl url = HttpUrl.get(BASE_URL + "/bank").newBuilder()
+                .addQueryParameter("country", "nigeria")
+                .addQueryParameter("perPage", "500")
+                .addQueryParameter("page", "1")
+                .build();
+        get(url, body -> {
             final List<BankInstitution> banks = new ArrayList<>();
-            try {
-                JSONObject body = get("/bank?country=nigeria&perPage=500&page=1");
-                if (body != null && body.optBoolean("status")) {
-                    JSONArray data = body.getJSONArray("data");
+            if (body != null && body.optBoolean("status")) {
+                JSONArray data = body.optJSONArray("data");
+                if (data != null) {
                     for (int i = 0; i < data.length(); i++) {
-                        JSONObject bank = data.getJSONObject(i);
+                        JSONObject bank = data.optJSONObject(i);
+                        if (bank == null) {
+                            continue;
+                        }
                         String name = bank.optString("name", "");
                         String code = bank.optString("code", "");
                         if (!name.isEmpty() && !code.isEmpty()) {
@@ -80,8 +88,6 @@ public final class PaystackClient {
                         }
                     }
                 }
-            } catch (Exception ignored) {
-                // Network or parsing failure: report an empty list.
             }
             if (!banks.isEmpty()) {
                 cachedBanks = banks;
@@ -92,19 +98,18 @@ public final class PaystackClient {
 
     /** Resolves the holder name of an account at the given bank. */
     public void resolveAccount(
-            final String accountNumber, final BankInstitution bank,
-            final ResolveCallback callback) {
-        executor.execute(() -> {
+            String accountNumber, BankInstitution bank, final ResolveCallback callback) {
+        HttpUrl url = HttpUrl.get(BASE_URL + "/bank/resolve").newBuilder()
+                .addQueryParameter("account_number", accountNumber)
+                .addQueryParameter("bank_code", bank.getCode())
+                .build();
+        get(url, body -> {
             String accountName = null;
-            try {
-                JSONObject body = get("/bank/resolve?accountNumber="
-                        + accountNumber + "&bankCode=" + bank.getCode());
-                if (body != null && body.optBoolean("status")) {
-                    accountName = body.getJSONObject("data")
-                            .optString("account_name", "");
+            if (body != null && body.optBoolean("status")) {
+                JSONObject data = body.optJSONObject("data");
+                if (data != null) {
+                    accountName = data.optString("account_name", "");
                 }
-            } catch (Exception ignored) {
-                // A failed probe simply means "not this bank".
             }
             final String name = accountName;
             mainHandler.post(() -> {
@@ -117,38 +122,35 @@ public final class PaystackClient {
         });
     }
 
-    public void close() {
-        executor.shutdownNow();
+    public interface BodyCallback {
+        void onBody(JSONObject body);
     }
 
-    private JSONObject get(String path) throws Exception {
-        HttpURLConnection connection = (HttpURLConnection)
-                new URL(BASE_URL + path).openConnection();
-        try {
-            connection.setRequestMethod("GET");
-            connection.setConnectTimeout(8_000);
-            connection.setReadTimeout(10_000);
-            connection.setRequestProperty("Authorization", "Bearer " + apiKey);
-            connection.setRequestProperty("Accept", "application/json");
-            if (connection.getResponseCode() != 200) {
-                return null;
+    private void get(HttpUrl url, final BodyCallback callback) {
+        Request request = new Request.Builder()
+                .url(url)
+                .header("Authorization", "Bearer " + apiKey)
+                .header("Accept", "application/json")
+                .build();
+        http.newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(okhttp3.Call call, java.io.IOException exception) {
+                mainHandler.post(() -> callback.onBody(null));
             }
-            try (InputStream stream = connection.getInputStream()) {
-                return new JSONObject(new String(
-                        readAll(stream), java.nio.charset.StandardCharsets.UTF_8));
-            }
-        } finally {
-            connection.disconnect();
-        }
-    }
 
-    private static byte[] readAll(InputStream stream) throws Exception {
-        java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
-        byte[] buffer = new byte[4096];
-        int read;
-        while ((read = stream.read(buffer)) != -1) {
-            out.write(buffer, 0, read);
-        }
-        return out.toByteArray();
+            @Override
+            public void onResponse(okhttp3.Call call, Response response) {
+                JSONObject body = null;
+                try (Response closed = response) {
+                    if (closed.isSuccessful() && closed.body() != null) {
+                        body = new JSONObject(closed.body().string());
+                    }
+                } catch (Exception ignored) {
+                    // Malformed payloads are reported as an empty body.
+                }
+                final JSONObject result = body;
+                mainHandler.post(() -> callback.onBody(result));
+            }
+        });
     }
 }
