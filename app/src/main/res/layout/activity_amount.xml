@@ -197,13 +197,30 @@
                                 android:textColor="@color/ink"
                                 android:textSize="14sp" />
 
-                            <EditText
-                                android:id="@+id/amount_input"
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="0dp"
                                 android:layout_marginTop="7dp"
                                 android:layout_weight="1"
-                                android:background="@android:color/transparent"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:includeFontPadding="false"
+                                    android:text="@string/naira_sign"
+                                    android:textColor="@color/ink"
+                                    android:textSize="22sp"
+                                    android:textStyle="bold" />
+
+                                <EditText
+                                    android:id="@+id/amount_input"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginStart="8dp"
+                                    android:layout_weight="1"
+                                    android:background="@android:color/transparent"
                                 android:focusableInTouchMode="true"
                                 android:hint="@string/amount_hint"
                                 android:imeOptions="actionDone"
@@ -214,6 +231,7 @@
                                 android:textColor="@color/ink"
                                 android:textColorHint="@color/transfer_hint"
                                 android:textSize="22sp" />
+                            </LinearLayout>
 
                             <View
                                 android:layout_width="match_parent"
@@ -276,6 +294,8 @@
                             android:id="@+id/chip_500"
                             android:layout_width="0dp"
                             android:layout_height="32dp"
+                            android:layout_column="0"
+                            android:layout_row="0"
                             android:background="@drawable/bg_amount_chip"
                             android:gravity="center"
                             android:text="@string/amount_500"
@@ -287,6 +307,8 @@
                             android:id="@+id/chip_1000"
                             android:layout_width="0dp"
                             android:layout_height="32dp"
+                            android:layout_column="1"
+                            android:layout_row="0"
                             android:background="@drawable/bg_amount_chip"
                             android:gravity="center"
                             android:text="@string/amount_1000"
@@ -298,6 +320,8 @@
                             android:id="@+id/chip_2000"
                             android:layout_width="0dp"
                             android:layout_height="32dp"
+                            android:layout_column="2"
+                            android:layout_row="0"
                             android:background="@drawable/bg_amount_chip"
                             android:gravity="center"
                             android:text="@string/amount_2000"
@@ -308,6 +332,7 @@
                             android:id="@+id/chip_5000"
                             android:layout_width="0dp"
                             android:layout_height="32dp"
+                            android:layout_column="0"
                             android:layout_row="1"
                             android:background="@drawable/bg_amount_chip"
                             android:gravity="center"
@@ -321,6 +346,7 @@
                             android:id="@+id/chip_9999"
                             android:layout_width="0dp"
                             android:layout_height="32dp"
+                            android:layout_column="1"
                             android:layout_row="1"
                             android:background="@drawable/bg_amount_chip"
                             android:gravity="center"
@@ -334,6 +360,7 @@
                             android:id="@+id/chip_10000"
                             android:layout_width="0dp"
                             android:layout_height="32dp"
+                            android:layout_column="2"
                             android:layout_row="1"
                             android:background="@drawable/bg_amount_chip"
                             android:gravity="center"
