@@ -533,6 +533,7 @@ public final class TransferScreenController {
         if (cachedName != null) {
             resolvedRecipient = new TransferRecipient(
                     cachedName, digits, bank.getName(), "");
+            resolvedRecipient.setLogoUrl(bank.getLogoUrl());
             showConfirmationName(cachedName);
             refreshNextState();
             return;
@@ -593,6 +594,7 @@ public final class TransferScreenController {
                                 String accountName, BankInstitution resolved) {
                             resolvedRecipient = new TransferRecipient(
                                     accountName, digits, bank.getName(), "");
+                            resolvedRecipient.setLogoUrl(bank.getLogoUrl());
                             showConfirmationName(accountName);
                             hideStatus();
                             refreshNextState();

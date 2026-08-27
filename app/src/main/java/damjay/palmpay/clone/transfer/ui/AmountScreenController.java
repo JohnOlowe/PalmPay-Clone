@@ -14,6 +14,7 @@ import androidx.core.widget.ImageViewCompat;
 import damjay.palmpay.clone.R;
 import damjay.palmpay.clone.data.WalletStore;
 import damjay.palmpay.clone.databinding.ActivityAmountBinding;
+import damjay.palmpay.clone.transfer.data.BankLogoLoader;
 import damjay.palmpay.clone.transfer.data.BankLogoResolver;
 import damjay.palmpay.clone.transfer.model.TransferRecipient;
 
@@ -32,6 +33,9 @@ public final class AmountScreenController {
         this.recipient = recipient;
     }
 
+    private final BankLogoLoader logoLoader = new BankLogoLoader();
+    private boolean formattingAmount;
+
     public void bind() {
         binding.amountRecipientName.setText(recipient.getName());
         binding.amountRecipientAccount.setText(recipient.getAccountNumber());
@@ -41,13 +45,19 @@ public final class AmountScreenController {
                 R.string.balance_cashbox,
                 walletStore.getBalanceDisplay()));
 
-        int logo = BankLogoResolver.fallbackForProvider(recipient.getProvider());
-        binding.amountRecipientLogo.setImageResource(logo);
-        if (logo == R.drawable.ic_bank_building) {
-            ImageViewCompat.setImageTintList(binding.amountRecipientLogo, ColorStateList.valueOf(
-                    color(android.R.color.white)));
-        } else {
+        String logoUrl = recipient.getLogoUrl();
+        if (logoUrl != null && !logoUrl.isEmpty()) {
             ImageViewCompat.setImageTintList(binding.amountRecipientLogo, null);
+            logoLoader.load(logoUrl, binding.amountRecipientLogo);
+        } else {
+            int logo = BankLogoResolver.fallbackForProvider(recipient.getProvider());
+            binding.amountRecipientLogo.setImageResource(logo);
+            if (logo == R.drawable.ic_bank_building) {
+                ImageViewCompat.setImageTintList(binding.amountRecipientLogo,
+                        ColorStateList.valueOf(color(android.R.color.white)));
+            } else {
+                ImageViewCompat.setImageTintList(binding.amountRecipientLogo, null);
+            }
         }
 
         bindQuickAmount(binding.chip500, R.string.amount_500);
@@ -96,6 +106,16 @@ public final class AmountScreenController {
 
             @Override
             public void afterTextChanged(android.text.Editable editable) {
+                if (formattingAmount) {
+                    return;
+                }
+                String formatted = formatAmount(editable.toString());
+                if (!formatted.contentEquals(editable)) {
+                    formattingAmount = true;
+                    binding.amountInput.setText(formatted);
+                    binding.amountInput.setSelection(formatted.length());
+                    formattingAmount = false;
+                }
                 refreshAmountState();
             }
         });
@@ -132,10 +152,33 @@ public final class AmountScreenController {
 
     private double parseAmount(String text) {
         try {
-            return Double.parseDouble(text);
+            return Double.parseDouble(text.replace(",", ""));
         } catch (NumberFormatException exception) {
             return 0;
         }
+    }
+
+    private String formatAmount(String raw) {
+        String cleaned = raw.replace(",", "");
+        String intPart = cleaned;
+        String decPart = null;
+        int dot = cleaned.indexOf('.');
+        if (dot >= 0) {
+            intPart = cleaned.substring(0, dot);
+            decPart = cleaned.substring(dot + 1);
+        }
+        StringBuilder grouped = new StringBuilder();
+        for (int i = 0; i < intPart.length(); i++) {
+            grouped.append(intPart.charAt(i));
+            int remaining = intPart.length() - 1 - i;
+            if (remaining > 0 && remaining % 3 == 0) {
+                grouped.append(',');
+            }
+        }
+        if (decPart != null) {
+            grouped.append('.').append(decPart);
+        }
+        return grouped.toString();
     }
 
     private void bindQuickAmount(TextView chip, int amountRes) {

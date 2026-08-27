@@ -244,6 +244,25 @@
                         android:textSize="13sp"
                         android:visibility="gone" />
 
+                    <LinearLayout
+                        android:id="@+id/stamp_notice_card"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/bg_amount_input"
+                        android:orientation="vertical"
+                        android:padding="12dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:includeFontPadding="false"
+                            android:text="@string/stamp_duty_notice"
+                            android:textColor="@color/ink"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
                     <GridLayout
                         android:id="@+id/amount_chips_grid"
                         android:layout_width="match_parent"
@@ -337,28 +356,7 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/stamp_notice_card"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:visibility="gone"
-                app:cardBackgroundColor="@color/transfer_surface"
-                app:cardCornerRadius="14dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="0dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:includeFontPadding="false"
-                    android:padding="14dp"
-                    android:text="@string/stamp_duty_notice"
-                    android:textColor="@color/ink"
-                    android:textSize="14sp" />
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
+<com.google.android.material.card.MaterialCardView
                 android:id="@+id/note_card"
                 android:layout_width="match_parent"
                 android:layout_height="72dp"

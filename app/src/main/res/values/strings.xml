@@ -87,7 +87,8 @@
     <string name="free_label">FREE</string>
     <string name="free_transfer_message">All Transfers are Free on PalmPay</string>
     <string name="amount">Amount</string>
-    <string name="amount_hint">₦ 10.00-200,000.00</string>
+    <string name="amount_hint">10.00-200,000.00</string>
+    <string name="naira_sign">₦</string>
     <string name="amount_range_error">The amount should be within ₦10.00 - ₦200,000.00.</string>
     <string name="stamp_duty_notice">In line with FIRS regulations, sender will be charged ₦50 Stamp Duties. No charge applies below ₦10,000.</string>
     <string name="promo_badge">Promo</string>

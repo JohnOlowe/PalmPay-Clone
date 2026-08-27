@@ -6,6 +6,7 @@ public final class TransferRecipient {
     private final String accountNumber;
     private final String provider;
     private final String lastTransferDate;
+    private String logoUrl = "";
 
     public TransferRecipient(
             String name,
@@ -16,6 +17,14 @@ public final class TransferRecipient {
         this.accountNumber = accountNumber;
         this.provider = provider;
         this.lastTransferDate = lastTransferDate;
+    }
+
+    public String getLogoUrl() {
+        return logoUrl;
+    }
+
+    public void setLogoUrl(String url) {
+        this.logoUrl = url == null ? "" : url;
     }
 
     public String getName() {
