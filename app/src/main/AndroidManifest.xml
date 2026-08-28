@@ -27,7 +27,7 @@
 			android:name=".transfer.ui.AmountActivity"
 			android:exported="false"
 			android:screenOrientation="portrait"
-			android:windowSoftInputMode="adjustNothing|stateAlwaysHidden" />
+			android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
 
 		<activity
 			android:name=".profile.ProfileActivity"
