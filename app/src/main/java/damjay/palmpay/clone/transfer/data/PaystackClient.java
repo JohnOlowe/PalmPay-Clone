@@ -1,5 +1,7 @@
 package damjay.palmpay.clone.transfer.data;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -65,9 +67,19 @@ public final class PaystackClient {
         return !apiKey.isEmpty();
     }
 
-    /** Fetches the Nigerian institution list (names + bank codes). */
+    /**
+     * Fetches the Nigerian institution list (names + bank codes). Served
+     * from memory or the on-device cache when warm so repeat lookups skip
+     * the network entirely.
+     */
     public void listBanks(final BanksCallback callback) {
         List<BankInstitution> cached = cachedBanks;
+        if (cached == null) {
+            cached = loadCachedBanks();
+            if (cached != null) {
+                cachedBanks = cached;
+            }
+        }
         if (cached != null) {
             callback.onBanks(cached);
             return;
@@ -97,6 +109,7 @@ public final class PaystackClient {
             }
             if (!banks.isEmpty()) {
                 cachedBanks = banks;
+                persistBanks(banks);
             }
             mainHandler.post(() -> callback.onBanks(banks));
         });
@@ -126,6 +139,57 @@ public final class PaystackClient {
                 }
             });
         });
+    }
+
+    private List<BankInstitution> loadCachedBanks() {
+        if (context == null) {
+            return null;
+        }
+        SharedPreferences prefs = context.getApplicationContext()
+                .getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        String json = prefs.getString(BANKS_KEY, null);
+        if (json == null) {
+            return null;
+        }
+        try {
+            JSONArray array = new JSONArray(json);
+            List<BankInstitution> banks = new ArrayList<>();
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject bank = array.optJSONObject(i);
+                if (bank == null) {
+                    continue;
+                }
+                String name = bank.optString("name", "");
+                String code = bank.optString("code", "");
+                if (!name.isEmpty() && !code.isEmpty()) {
+                    banks.add(new BankInstitution(name, "", code, ""));
+                }
+            }
+            return banks.isEmpty() ? null : banks;
+        } catch (Exception exception) {
+            return null;
+        }
+    }
+
+    private void persistBanks(List<BankInstitution> banks) {
+        if (context == null) {
+            return;
+        }
+        try {
+            JSONArray array = new JSONArray();
+            for (BankInstitution bank : banks) {
+                array.put(new JSONObject()
+                        .put("name", bank.getName())
+                        .put("code", bank.getCode()));
+            }
+            context.getApplicationContext()
+                    .getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                    .edit()
+                    .putString(BANKS_KEY, array.toString())
+                    .apply();
+        } catch (Exception ignored) {
+            // A failed cache write just means the next call refetches.
+        }
     }
 
     public interface BodyCallback {

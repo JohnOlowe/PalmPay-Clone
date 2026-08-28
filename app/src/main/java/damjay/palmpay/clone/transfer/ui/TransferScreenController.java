@@ -55,7 +55,7 @@ public final class TransferScreenController {
     private boolean directoryLoading;
     private static final String[] WALLET_PROVIDERS = {"opay", "palmpay",
             "moniepoint", "smartcash", "kuda", "momo"};
-    private static final int MAX_VERIFIED_PROBES = 15;
+    private static final int MAX_VERIFIED_PROBES = 10;
 
     private final WalletStore walletStore;
     private final List<String> listedBankNames = new ArrayList<>();
@@ -375,7 +375,7 @@ public final class TransferScreenController {
         // Verified mode: only banks that resolve a holder name are listed.
         // Candidates come from Paystack's own (fast) bank list, and every
         // probe is fired at once on the client's thread pool below.
-        final PaystackClient client = new PaystackClient(key);
+        final PaystackClient client = new PaystackClient(context, key);
         client.listBanks(directory -> {
             if (!digitsStillCurrent(digits)) {
                 return;
@@ -575,7 +575,7 @@ public final class TransferScreenController {
             hideStatus();
             return;
         }
-        final PaystackClient client = new PaystackClient(key);
+        final PaystackClient client = new PaystackClient(context, key);
         client.listBanks(banks -> {
             BankInstitution paystackBank = null;
             String name = bank.getName().toLowerCase(Locale.US);
