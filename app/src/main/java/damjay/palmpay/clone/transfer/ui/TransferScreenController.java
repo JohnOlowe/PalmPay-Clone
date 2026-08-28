@@ -30,6 +30,7 @@ import damjay.palmpay.clone.databinding.TransferShortcutItemBinding;
 import damjay.palmpay.clone.databinding.TransferTabsBinding;
 import damjay.palmpay.clone.data.WalletStore;
 import damjay.palmpay.clone.transfer.data.BankDirectoryRepository;
+import damjay.palmpay.clone.transfer.data.BankNameNormalizer;
 import damjay.palmpay.clone.transfer.data.BankLogoLoader;
 import damjay.palmpay.clone.transfer.data.BankLogoResolver;
 import damjay.palmpay.clone.transfer.data.NubanBankResolver;
@@ -47,7 +48,7 @@ public final class TransferScreenController {
     private final ActivityTransferBinding binding;
     private final LayoutInflater inflater;
     private final TransferRepository repository;
-    private final BankLogoLoader logoLoader = new BankLogoLoader();
+    private final BankLogoLoader logoLoader;
     private final BankDirectoryRepository directoryRepository =
             new BankDirectoryRepository();
     private final List<TransferRecipient> transferHistory = new ArrayList<>();
@@ -75,6 +76,7 @@ public final class TransferScreenController {
         this.inflater = LayoutInflater.from(context);
         this.repository = repository;
         this.walletStore = new WalletStore(context);
+        this.logoLoader = new BankLogoLoader(context);
     }
 
     public void bind() {
@@ -414,8 +416,8 @@ public final class TransferScreenController {
                                     String accountName, BankInstitution resolved) {
                                 if (digitsStillCurrent(digits)
                                         && !listedBankNames.contains(
-                                                resolved.getName()
-                                                        .toLowerCase(Locale.US))) {
+                                                BankNameNormalizer.canonical(
+                                                        resolved.getName()))) {
                                     addMatchingBankRow(digits,
                                             bankForProvider(resolved.getName()),
                                             accountName);
@@ -450,7 +452,7 @@ public final class TransferScreenController {
 
     private void addMatchingBankRow(
             String digits, BankInstitution bank, String resolvedName) {
-        listedBankNames.add(bank.getName().toLowerCase(Locale.US));
+        listedBankNames.add(BankNameNormalizer.canonical(bank.getName()));
         if (resolvedName != null) {
             resolvedNames.put(bank.getName().toLowerCase(Locale.US), resolvedName);
         }
@@ -489,8 +491,9 @@ public final class TransferScreenController {
     }
 
     private boolean containsBankNamed(List<BankInstitution> banks, String name) {
+        String key = BankNameNormalizer.canonical(name);
         for (BankInstitution bank : banks) {
-            if (bank.getName().equalsIgnoreCase(name)) {
+            if (BankNameNormalizer.canonical(bank.getName()).equals(key)) {
                 return true;
             }
         }

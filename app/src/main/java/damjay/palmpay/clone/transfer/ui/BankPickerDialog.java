@@ -1,4 +1,5 @@
-package damjay.palmpay.clone.transfer.ui;
+
+        this.logoLoader = new BankLogoLoader(context);package damjay.palmpay.clone.transfer.ui;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -22,7 +23,7 @@ import damjay.palmpay.clone.transfer.model.BankInstitution;
 public final class BankPickerDialog extends BottomSheetDialog {
     private final OnBankSelectedListener listener;
     private final BankDirectoryRepository repository = new BankDirectoryRepository();
-    private final BankLogoLoader logoLoader = new BankLogoLoader();
+    private final BankLogoLoader logoLoader;
     private DialogBankPickerBinding binding;
     private BankListAdapter adapter;
 
@@ -33,6 +34,7 @@ public final class BankPickerDialog extends BottomSheetDialog {
     private BankPickerDialog(@NonNull Context context, OnBankSelectedListener listener) {
         super(context);
         this.listener = listener;
+        this.logoLoader = new BankLogoLoader(context);
     }
 
     public static void show(Context context, OnBankSelectedListener listener) {

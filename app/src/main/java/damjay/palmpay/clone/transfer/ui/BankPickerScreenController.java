@@ -38,7 +38,7 @@ public final class BankPickerScreenController {
     private final ActivityBankPickerBinding binding;
     private final LayoutInflater inflater;
     private final BankDirectoryRepository repository;
-    private final BankLogoLoader logoLoader = new BankLogoLoader();
+    private final BankLogoLoader logoLoader;
     private final OnBankPickedListener listener;
     private final String accountDigits;
     private final List<BankInstitution> allBanks = new ArrayList<>();
@@ -58,6 +58,7 @@ public final class BankPickerScreenController {
         this.context = context;
         this.binding = binding;
         this.repository = repository;
+        this.logoLoader = new BankLogoLoader(context);
         this.listener = listener;
         this.accountDigits = accountDigits == null ? "" : accountDigits;
         this.inflater = LayoutInflater.from(context);

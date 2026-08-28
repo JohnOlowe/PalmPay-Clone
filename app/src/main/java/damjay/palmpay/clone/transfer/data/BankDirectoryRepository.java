@@ -54,7 +54,7 @@ public final class BankDirectoryRepository {
             if (banks.isEmpty()) {
                 banks = fallbackBanks();
             }
-            List<BankInstitution> result = banks;
+            List<BankInstitution> result = BankNameNormalizer.dedupe(banks);
             boolean online = fromNetwork;
             mainHandler.post(() -> callback.onBanksLoaded(result, online));
         });

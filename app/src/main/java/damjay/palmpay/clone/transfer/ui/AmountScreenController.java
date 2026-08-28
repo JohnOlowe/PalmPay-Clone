@@ -31,9 +31,10 @@ public final class AmountScreenController {
         this.context = context;
         this.binding = binding;
         this.recipient = recipient;
+        this.logoLoader = new BankLogoLoader(context);
     }
 
-    private final BankLogoLoader logoLoader = new BankLogoLoader();
+    private final BankLogoLoader logoLoader;
     private boolean formattingAmount;
 
     public void bind() {
