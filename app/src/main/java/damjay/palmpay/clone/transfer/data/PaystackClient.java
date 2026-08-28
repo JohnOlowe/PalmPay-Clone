@@ -44,12 +44,18 @@ public final class PaystackClient {
 
     private static final String BASE_URL = "https://api.paystack.co";
 
+    private final Context context;
     private final String apiKey;
     private final OkHttpClient http;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private volatile List<BankInstitution> cachedBanks;
 
     public PaystackClient(String apiKey) {
+        this(null, apiKey);
+    }
+
+    public PaystackClient(Context context, String apiKey) {
+        this.context = context;
         this.apiKey = apiKey == null ? "" : apiKey.trim();
         // Fan every probe out at once: OkHttp's dispatcher defaults to five
         // concurrent calls per host, which serialized the bank probes.
