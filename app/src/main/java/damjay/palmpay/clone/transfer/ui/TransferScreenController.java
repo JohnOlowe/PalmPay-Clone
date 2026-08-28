@@ -62,6 +62,7 @@ public final class TransferScreenController {
     private final List<String> listedBankNames = new ArrayList<>();
     private final List<DirectoryCallback> pendingDirectoryCallbacks = new ArrayList<>();
     private final java.util.Map<String, String> resolvedNames = new java.util.HashMap<>();
+    private final java.util.Set<String> failedBankKeys = new java.util.HashSet<>();
     private TransferRecipient resolvedRecipient;
     private boolean bankSelected;
     private boolean formattingAccount;
@@ -328,8 +329,7 @@ public final class TransferScreenController {
         showResolvedBank(bank.getName(), bank.getLogoUrl());
         String digits = digitsOnly(binding.accountNumberInput.getText());
         if (digits.length() == DIGITS_REQUIRED) {
-            String cachedName = resolvedNames.get(
-                    BankNameNormalizer.canonical(bank.getName()));
+            String cachedName = cachedNameFor(bank);
             if (cachedName != null) {
                 // Already verified while the matching list was built: no
                 // second query needed.
@@ -337,6 +337,8 @@ public final class TransferScreenController {
                         cachedName, digits, bank.getName(), "");
                 resolvedRecipient.setLogoUrl(bank.getLogoUrl());
                 showConfirmationName(cachedName);
+            } else if (knownUnresolvable(bank)) {
+                showInvalidAccountBanner();
             } else {
                 showStatus(R.string.verifying_account_name);
                 TransferRecipient historyMatch =
@@ -364,6 +366,7 @@ public final class TransferScreenController {
         binding.matchingBanksContainer.setVisibility(View.GONE);
         listedBankNames.clear();
         resolvedNames.clear();
+        failedBankKeys.clear();
         showStatus(R.string.matching_banks);
 
         // Banks that already received a transfer always work for the account.
@@ -458,7 +461,12 @@ public final class TransferScreenController {
 
                             @Override
                             public void onFailed() {
-                                // This bank does not own the account: skip it.
+                                // This bank does not own the account: remember
+                                // so selecting it later never spins uselessly.
+                                failedBankKeys.add(
+                                        BankNameNormalizer.canonical(bank.getName()));
+                                failedBankKeys.add(
+                                        bank.getName().toLowerCase(Locale.US));
                                 if (outstanding.decrementAndGet() == 0) {
                                     finishMatchingList();
                                 }
@@ -483,6 +491,7 @@ public final class TransferScreenController {
             String digits, BankInstitution bank, String resolvedName) {
         listedBankNames.add(BankNameNormalizer.canonical(bank.getName()));
         if (resolvedName != null) {
+            resolvedNames.put(BankNameNormalizer.canonical(bank.getName()), resolvedName);
             resolvedNames.put(bank.getName().toLowerCase(Locale.US), resolvedName);
         }
         MatchingBankItemBinding item = MatchingBankItemBinding.inflate(
@@ -564,12 +573,17 @@ public final class TransferScreenController {
         binding.matchingBanksContainer.setVisibility(View.GONE);
         hideInvalidAccountBanner();
         showResolvedBank(bank.getName(), bank.getLogoUrl());
-        String cachedName = resolvedNames.get(BankNameNormalizer.canonical(bank.getName()));
+        String cachedName = cachedNameFor(bank);
         if (cachedName != null) {
             resolvedRecipient = new TransferRecipient(
                     cachedName, digits, bank.getName(), "");
             resolvedRecipient.setLogoUrl(bank.getLogoUrl());
             showConfirmationName(cachedName);
+            refreshNextState();
+            return;
+        }
+        if (knownUnresolvable(bank)) {
+            showInvalidAccountBanner();
             refreshNextState();
             return;
         }
@@ -653,6 +667,19 @@ public final class TransferScreenController {
 
     private void hideInvalidAccountBanner() {
         binding.invalidAccountBanner.setVisibility(View.GONE);
+    }
+
+    private String cachedNameFor(BankInstitution bank) {
+        String name = resolvedNames.get(BankNameNormalizer.canonical(bank.getName()));
+        if (name == null) {
+            name = resolvedNames.get(bank.getName().toLowerCase(Locale.US));
+        }
+        return name;
+    }
+
+    private boolean knownUnresolvable(BankInstitution bank) {
+        return failedBankKeys.contains(BankNameNormalizer.canonical(bank.getName()))
+                || failedBankKeys.contains(bank.getName().toLowerCase(Locale.US));
     }
 
     private void showStatus(int textRes) {
