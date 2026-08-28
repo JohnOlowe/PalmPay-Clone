@@ -1,5 +1,4 @@
-
-        this.logoLoader = new BankLogoLoader(context);package damjay.palmpay.clone.transfer.ui;
+package damjay.palmpay.clone.transfer.ui;
 
 import android.content.Context;
 import android.graphics.Color;
