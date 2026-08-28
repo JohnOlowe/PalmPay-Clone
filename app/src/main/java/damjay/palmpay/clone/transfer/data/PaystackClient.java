@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Dispatcher;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -30,6 +31,11 @@ import damjay.palmpay.clone.transfer.model.BankInstitution;
  * The secret key is supplied at runtime from the Profile screen; without a
  * key the client reports itself unconfigured and the app falls back to the
  * transfer history and the NUBAN resolver.
+ *
+ * The institution list is cached in memory and persisted on-device so that
+ * repeat matching-bank lookups skip the network entirely, and the OkHttp
+ * dispatcher is widened so every resolve probe flies at once instead of
+ * being serialized five at a time.
  */
 public final class PaystackClient {
     public interface BanksCallback {
@@ -42,7 +48,13 @@ public final class PaystackClient {
         void onFailed();
     }
 
+    public interface BodyCallback {
+        void onBody(JSONObject body);
+    }
+
     private static final String BASE_URL = "https://api.paystack.co";
+    private static final String PREFS_NAME = "palmpay_clone_paystack";
+    private static final String BANKS_KEY = "bank_directory_json";
 
     private final Context context;
     private final String apiKey;
@@ -59,7 +71,7 @@ public final class PaystackClient {
         this.apiKey = apiKey == null ? "" : apiKey.trim();
         // Fan every probe out at once: OkHttp's dispatcher defaults to five
         // concurrent calls per host, which serialized the bank probes.
-        okhttp3.Dispatcher dispatcher = new okhttp3.Dispatcher();
+        Dispatcher dispatcher = new Dispatcher();
         dispatcher.setMaxRequests(64);
         dispatcher.setMaxRequestsPerHost(40);
         this.http = new OkHttpClient.Builder()
@@ -123,7 +135,8 @@ public final class PaystackClient {
 
     /** Resolves the holder name of an account at the given bank. */
     public void resolveAccount(
-            String accountNumber, BankInstitution bank, final ResolveCallback callback) {
+            String accountNumber, BankInstitution bank,
+            final ResolveCallback callback) {
         HttpUrl url = HttpUrl.get(BASE_URL + "/bank/resolve").newBuilder()
                 .addQueryParameter("account_number", accountNumber)
                 .addQueryParameter("bank_code", bank.getCode())
@@ -196,10 +209,6 @@ public final class PaystackClient {
         } catch (Exception ignored) {
             // A failed cache write just means the next call refetches.
         }
-    }
-
-    public interface BodyCallback {
-        void onBody(JSONObject body);
     }
 
     private void get(HttpUrl url, final BodyCallback callback) {
