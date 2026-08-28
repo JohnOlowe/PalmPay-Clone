@@ -122,7 +122,8 @@ public final class AmountScreenController {
         });
         refreshAmountState();
         binding.amountInput.setOnEditorActionListener((view, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
+            if (actionId == EditorInfo.IME_ACTION_DONE
+                    && binding.amountKeypadNext.isEnabled()) {
                 showMessage("Transfer amount entered");
                 return true;
             }

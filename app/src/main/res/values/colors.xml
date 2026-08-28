@@ -52,9 +52,9 @@
     <color name="shortcut_icon">#22213D</color>
     <color name="tab_inactive">#696872</color>
     <color name="transfer_divider">#EEEEF1</color>
-    <color name="free_banner_surface">#3A206C</color>
+    <color name="free_banner_surface">#F0ECFB</color>
     <color name="free_banner_label">#7D2CFF</color>
-    <color name="free_banner_text">#FFFFFF</color>
+    <color name="free_banner_text">#14121D</color>
     <color name="recipient_suggestion_surface">#DDF8F1</color>
     <color name="recipient_suggestion_text">#27B897</color>
     <color name="amount_chip_surface">#FFFFFF</color>

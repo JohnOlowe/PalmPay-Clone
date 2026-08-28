@@ -147,7 +147,7 @@ public final class TransferScreenController {
         });
         binding.nextButton.setOnClickListener(view -> {
             if (!isFormReady()) {
-                showMessage("Choose a matching transfer history suggestion first");
+                // A disabled Next must stay silent and inert.
                 return;
             }
             openAmountScreen(effectiveRecipient());
