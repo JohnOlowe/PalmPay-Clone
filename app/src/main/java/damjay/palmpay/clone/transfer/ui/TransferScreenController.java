@@ -192,6 +192,7 @@ public final class TransferScreenController {
             resolvedRecipient = null;
             bankSelected = false;
             hideConfirmation();
+            hideInvalidAccountBanner();
             resetBankField();
             renderAccountSuggestions(digits);
             showMatchingBanks(digits);
@@ -339,6 +340,8 @@ public final class TransferScreenController {
         }
         refreshNextState();
     }
+
+
 
     /**
      * Shows every bank that could own the completed account number, in
@@ -533,8 +536,9 @@ public final class TransferScreenController {
         resolvedRecipient = null;
         hideConfirmation();
         binding.matchingBanksContainer.setVisibility(View.GONE);
+        hideInvalidAccountBanner();
         showResolvedBank(bank.getName(), bank.getLogoUrl());
-        String cachedName = resolvedNames.get(bank.getName().toLowerCase(Locale.US));
+        String cachedName = resolvedNames.get(BankNameNormalizer.canonical(bank.getName()));
         if (cachedName != null) {
             resolvedRecipient = new TransferRecipient(
                     cachedName, digits, bank.getName(), "");
@@ -555,6 +559,8 @@ public final class TransferScreenController {
         resolveNameViaPaystack(digits, bank);
         refreshNextState();
     }
+
+
 
     private TransferRecipient historyRecipientFor(String digits, String bankName) {
         for (TransferRecipient recipient : transferHistory) {
@@ -602,16 +608,25 @@ public final class TransferScreenController {
                             resolvedRecipient.setLogoUrl(bank.getLogoUrl());
                             showConfirmationName(accountName);
                             hideStatus();
+                            hideInvalidAccountBanner();
                             refreshNextState();
                         }
 
                         @Override
                         public void onFailed() {
                             hideStatus();
-                            showMessage("Paystack could not verify this account");
+                            showInvalidAccountBanner();
                         }
                     });
         });
+    }
+
+    private void showInvalidAccountBanner() {
+        binding.invalidAccountBanner.setVisibility(View.VISIBLE);
+    }
+
+    private void hideInvalidAccountBanner() {
+        binding.invalidAccountBanner.setVisibility(View.GONE);
     }
 
     private void showStatus(int textRes) {
@@ -651,8 +666,11 @@ public final class TransferScreenController {
     }
 
     private boolean isFormReady() {
+        // Next only activates once the account name has actually resolved,
+        // either from transfer history or from Paystack verification.
         return digitsOnly(binding.accountNumberInput.getText()).length() == 10
-                && bankSelected;
+                && bankSelected
+                && (trustedRecipient != null || resolvedRecipient != null);
     }
 
     private TransferRecipient effectiveRecipient() {
@@ -691,6 +709,7 @@ public final class TransferScreenController {
         binding.matchingBanksContainer.setVisibility(View.GONE);
         binding.bankStatusRow.setVisibility(View.GONE);
         binding.bankExtraDivider.setVisibility(View.GONE);
+        hideInvalidAccountBanner();
         resolvedRecipient = null;
     }
 

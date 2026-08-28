@@ -26,8 +26,36 @@ public final class BankLogoResolver {
         return "";
     }
 
+    /** Local pre-rounded artwork for well-known institutions, if any. */
+    @DrawableRes
+    public static int localLogoFor(String name) {
+        String key = BankNameNormalizer.canonical(name);
+        switch (key) {
+            case "OPAY":
+                return R.drawable.recipient_opay;
+            case "MONIEPOINT":
+                return R.drawable.bank_logo_monie;
+            case "SMARTCASH":
+                return R.drawable.recipient_smartcash;
+            case "PALMPAY":
+                return R.drawable.bank_logo_palmpay;
+            case "ACCESS":
+                return R.drawable.bank_logo_access;
+            case "FIRST":
+                return R.drawable.bank_logo_firstbank;
+            case "UBA":
+                return R.drawable.bank_logo_uba;
+            default:
+                return 0;
+        }
+    }
+
     @DrawableRes
     public static int fallbackForProvider(String provider) {
+        int local = localLogoFor(provider);
+        if (local != 0) {
+            return local;
+        }
         String value = normalize(provider);
         if (value.contains("opay")) {
             return R.drawable.recipient_opay;
