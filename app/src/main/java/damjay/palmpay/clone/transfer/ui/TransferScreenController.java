@@ -375,6 +375,19 @@ public final class TransferScreenController {
         }
 
         final String key = walletStore.getPaystackApiKey();
+        if (!key.isEmpty()) {
+            List<PaystackClient.VerifiedBank> verified =
+                    new PaystackClient(context, key).loadVerified(digits);
+            if (!verified.isEmpty()) {
+                for (PaystackClient.VerifiedBank entry : verified) {
+                    BankInstitution bank = new BankInstitution(
+                            entry.name, "", entry.code, "");
+                    addMatchingBankRow(digits, bank, entry.accountName);
+                }
+                finishMatchingList();
+                return;
+            }
+        }
         if (key.isEmpty()) {
             withDirectory(directory -> {
                 if (!digitsStillCurrent(digits)) {
@@ -429,6 +442,7 @@ public final class TransferScreenController {
                             @Override
                             public void onResolved(
                                     String accountName, BankInstitution resolved) {
+                                client.persistVerified(digits, resolved, accountName);
                                 if (digitsStillCurrent(digits)
                                         && !listedBankNames.contains(
                                                 BankNameNormalizer.canonical(

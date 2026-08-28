@@ -52,6 +52,21 @@ public final class PaystackClient {
         void onBody(JSONObject body);
     }
 
+    /** A bank that previously resolved for an account, with the holder name. */
+    public static final class VerifiedBank {
+        public final String name;
+        public final String code;
+        public final String accountName;
+
+        VerifiedBank(String name, String code, String accountName) {
+            this.name = name;
+            this.code = code;
+            this.accountName = accountName;
+        }
+    }
+
+    private static final String VERIFIED_KEY = "verified_results_json";
+
     private static final String BASE_URL = "https://api.paystack.co";
     private static final String PREFS_NAME = "palmpay_clone_paystack";
     private static final String BANKS_KEY = "bank_directory_json";
@@ -187,6 +202,70 @@ public final class PaystackClient {
             return banks.isEmpty() ? null : banks;
         } catch (Exception exception) {
             return null;
+        }
+    }
+
+    /** Verified banks for an account from the on-device cache, if any. */
+    public List<VerifiedBank> loadVerified(String accountNumber) {
+        List<VerifiedBank> result = new ArrayList<>();
+        if (context == null || accountNumber == null) {
+            return result;
+        }
+        String json = context.getApplicationContext()
+                .getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .getString(VERIFIED_KEY, null);
+        if (json == null) {
+            return result;
+        }
+        try {
+            JSONObject root = new JSONObject(json);
+            JSONArray array = root.optJSONArray(accountNumber);
+            if (array == null) {
+                return result;
+            }
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject entry = array.optJSONObject(i);
+                if (entry == null) {
+                    continue;
+                }
+                result.add(new VerifiedBank(
+                        entry.optString("name", ""),
+                        entry.optString("code", ""),
+                        entry.optString("accountName", "")));
+            }
+        } catch (Exception ignored) {
+            // Corrupt cache simply means re-verifying.
+        }
+        return result;
+    }
+
+    /** Persists one verified bank for an account so repeats are instant. */
+    public void persistVerified(
+            String accountNumber, BankInstitution bank, String accountName) {
+        if (context == null || accountNumber == null) {
+            return;
+        }
+        try {
+            SharedPreferences prefs = context.getApplicationContext()
+                    .getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+            JSONObject root;
+            try {
+                root = new JSONObject(prefs.getString(VERIFIED_KEY, "{}"));
+            } catch (Exception exception) {
+                root = new JSONObject();
+            }
+            JSONArray array = root.optJSONArray(accountNumber);
+            if (array == null) {
+                array = new JSONArray();
+            }
+            array.put(new JSONObject()
+                    .put("name", bank.getName())
+                    .put("code", bank.getCode() == null ? "" : bank.getCode())
+                    .put("accountName", accountName == null ? "" : accountName));
+            root.put(accountNumber, array);
+            prefs.edit().putString(VERIFIED_KEY, root.toString()).apply();
+        } catch (Exception ignored) {
+            // A failed write just re-verifies next time.
         }
     }
 
