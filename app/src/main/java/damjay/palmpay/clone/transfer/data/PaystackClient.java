@@ -49,9 +49,15 @@ public final class PaystackClient {
 
     public PaystackClient(String apiKey) {
         this.apiKey = apiKey == null ? "" : apiKey.trim();
+        // Fan every probe out at once: OkHttp's dispatcher defaults to five
+        // concurrent calls per host, which serialized the bank probes.
+        okhttp3.Dispatcher dispatcher = new okhttp3.Dispatcher();
+        dispatcher.setMaxRequests(64);
+        dispatcher.setMaxRequestsPerHost(40);
         this.http = new OkHttpClient.Builder()
-                .connectTimeout(8, TimeUnit.SECONDS)
-                .readTimeout(10, TimeUnit.SECONDS)
+                .dispatcher(dispatcher)
+                .connectTimeout(5, TimeUnit.SECONDS)
+                .readTimeout(8, TimeUnit.SECONDS)
                 .build();
     }
 

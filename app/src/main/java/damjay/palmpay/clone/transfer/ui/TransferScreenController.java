@@ -373,7 +373,10 @@ public final class TransferScreenController {
         }
 
         // Verified mode: only banks that resolve a holder name are listed.
-        withDirectory(directory -> {
+        // Candidates come from Paystack's own (fast) bank list, and every
+        // probe is fired at once on the client's thread pool below.
+        final PaystackClient client = new PaystackClient(key);
+        client.listBanks(directory -> {
             if (!digitsStillCurrent(digits)) {
                 return;
             }
@@ -403,7 +406,6 @@ public final class TransferScreenController {
             }
             final java.util.concurrent.atomic.AtomicInteger outstanding =
                     new java.util.concurrent.atomic.AtomicInteger(targets.size());
-            final PaystackClient client = new PaystackClient(key);
             for (final BankInstitution bank : targets) {
                 client.resolveAccount(digits, bank,
                         new PaystackClient.ResolveCallback() {
