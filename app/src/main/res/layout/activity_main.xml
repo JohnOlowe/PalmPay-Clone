@@ -21,11 +21,11 @@
             android:id="@+id/home_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:paddingStart="16dp"
             android:paddingTop="7dp"
+            android:paddingBottom="18dp"
             android:paddingEnd="16dp"
-            android:paddingBottom="18dp">
+            android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/top_bar"
@@ -53,6 +53,7 @@
                         android:contentDescription="@string/profile_content_description"
                         android:scaleType="centerCrop"
                         android:src="@drawable/avatar_reference" />
+
                 </FrameLayout>
 
                 <TextView
@@ -84,11 +85,11 @@
                         android:id="@+id/support_button"
                         android:layout_width="36dp"
                         android:layout_height="42dp"
+                        android:padding="4dp"
                         android:clickable="true"
                         android:contentDescription="@string/support_content_description"
                         android:focusable="true"
-                        android:foreground="?attr/selectableItemBackgroundBorderless"
-                        android:padding="4dp">
+                        android:foreground="?attr/selectableItemBackgroundBorderless">
 
                         <ImageView
                             android:layout_width="match_parent"
@@ -96,6 +97,7 @@
                             android:contentDescription=""
                             android:src="@drawable/exact_headset"
                             android:tint="@color/ink" />
+
                     </FrameLayout>
 
                     <FrameLayout
@@ -103,11 +105,11 @@
                         android:layout_width="42dp"
                         android:layout_height="42dp"
                         android:layout_marginStart="7dp"
+                        android:padding="4dp"
                         android:clickable="true"
                         android:contentDescription="@string/notifications_content_description"
                         android:focusable="true"
-                        android:foreground="?attr/selectableItemBackgroundBorderless"
-                        android:padding="4dp">
+                        android:foreground="?attr/selectableItemBackgroundBorderless">
 
                         <ImageView
                             android:layout_width="match_parent"
@@ -119,19 +121,22 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="20dp"
+                            android:paddingStart="4dp"
+                            android:paddingEnd="4dp"
                             android:layout_gravity="top|end"
                             android:background="@drawable/bg_notification_count"
                             android:gravity="center"
                             android:includeFontPadding="false"
                             android:minWidth="25dp"
-                            android:paddingStart="4dp"
-                            android:paddingEnd="4dp"
                             android:text="99+"
                             android:textColor="@android:color/white"
                             android:textSize="11sp"
                             android:textStyle="bold" />
+
                     </FrameLayout>
+
                 </LinearLayout>
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <com.google.android.material.card.MaterialCardView
@@ -153,11 +158,11 @@
                         android:id="@+id/balance_panel"
                         android:layout_width="match_parent"
                         android:layout_height="72dp"
-                        android:background="@drawable/bg_balance_panel"
                         android:paddingStart="16dp"
                         android:paddingTop="7dp"
+                        android:paddingBottom="6dp"
                         android:paddingEnd="16dp"
-                        android:paddingBottom="6dp">
+                        android:background="@drawable/bg_balance_panel">
 
                         <LinearLayout
                             android:id="@+id/balance_label_group"
@@ -188,11 +193,12 @@
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
                                 android:layout_marginStart="2dp"
+                                android:padding="2dp"
                                 android:background="@android:color/transparent"
                                 android:contentDescription="@string/balance_visible_description"
-                                android:padding="2dp"
                                 android:src="@drawable/exact_eye_visible"
                                 android:tint="@color/ink" />
+
                         </LinearLayout>
 
                         <LinearLayout
@@ -221,6 +227,7 @@
                                 android:contentDescription=""
                                 android:src="@drawable/ic_chevron_right"
                                 android:tint="@color/ink" />
+
                         </LinearLayout>
 
                         <LinearLayout
@@ -245,6 +252,8 @@
                                 android:id="@+id/add_money_button"
                                 android:layout_width="64dp"
                                 android:layout_height="28dp"
+                                android:paddingStart="0dp"
+                                android:paddingEnd="0dp"
                                 android:elevation="0dp"
                                 android:insetTop="0dp"
                                 android:insetBottom="0dp"
@@ -252,8 +261,6 @@
                                 android:minHeight="0dp"
                                 android:ellipsize="none"
                                 android:maxLines="1"
-                                android:paddingStart="0dp"
-                                android:paddingEnd="0dp"
                                 android:text="@string/add_money"
                                 android:textAllCaps="false"
                                 android:textColor="@color/balance_action_text"
@@ -262,17 +269,19 @@
                                 app:backgroundTint="@color/balance_action_background"
                                 app:cornerRadius="14dp"
                                 app:strokeWidth="0dp" />
+
                         </LinearLayout>
+
                     </RelativeLayout>
 
                     <LinearLayout
                         android:id="@+id/earnings_row"
                         android:layout_width="match_parent"
                         android:layout_height="34dp"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
                         android:paddingStart="14dp"
-                        android:paddingEnd="14dp">
+                        android:paddingEnd="14dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
                         <ImageView
                             android:layout_width="23dp"
@@ -308,13 +317,16 @@
                         <ImageView
                             android:layout_width="23dp"
                             android:layout_height="23dp"
+                            android:padding="5dp"
                             android:background="@drawable/bg_earnings_arrow"
                             android:contentDescription=""
-                            android:padding="5dp"
                             android:src="@drawable/ic_chevron_right"
                             android:tint="@color/brand_purple" />
+
                     </LinearLayout>
+
                 </LinearLayout>
+
             </com.google.android.material.card.MaterialCardView>
 
             <LinearLayout
@@ -345,9 +357,9 @@
                         android:id="@+id/notification_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
                         android:layout_alignParentStart="true"
                         android:layout_alignParentTop="true"
-                        android:layout_marginTop="8dp"
                         android:includeFontPadding="false"
                         android:maxLines="1"
                         android:text="@string/notification_title"
@@ -358,9 +370,9 @@
                         android:id="@+id/notification_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="9dp"
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
-                        android:layout_marginTop="9dp"
                         android:includeFontPadding="false"
                         android:text="@string/notification_time"
                         android:textColor="@color/ink_secondary"
@@ -370,16 +382,18 @@
                         android:id="@+id/notification_detail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
                         android:layout_alignParentStart="true"
                         android:layout_alignParentBottom="true"
-                        android:layout_marginBottom="8dp"
                         android:ellipsize="end"
                         android:includeFontPadding="false"
                         android:maxLines="1"
                         android:text="@string/notification_detail"
                         android:textColor="@color/ink_secondary"
                         android:textSize="12sp" />
+
                 </RelativeLayout>
+
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
@@ -397,13 +411,14 @@
                     android:id="@+id/services_grid"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:columnCount="4"
                     android:paddingStart="7dp"
                     android:paddingTop="6dp"
-                    android:paddingEnd="7dp"
                     android:paddingBottom="3dp"
+                    android:paddingEnd="7dp"
+                    android:columnCount="4"
                     android:rowCount="2"
                     android:useDefaultMargins="false" />
+
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
@@ -431,126 +446,136 @@
                             android:layout_height="match_parent"
                             android:orientation="horizontal">
 
-                    <ImageView
-                        android:id="@+id/claim_illustration"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="10dp"
-                        android:contentDescription="@string/claim_title"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/claim_reference" />
+                            <ImageView
+                                android:id="@+id/claim_illustration"
+                                android:layout_width="60dp"
+                                android:layout_height="60dp"
+                                android:layout_marginStart="10dp"
+                                android:layout_gravity="center_vertical"
+                                android:contentDescription="@string/claim_title"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/claim_reference" />
 
-                    <LinearLayout
-                        android:id="@+id/claim_copy"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="82dp"
-                        android:orientation="vertical">
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/claim_title"
+                            <LinearLayout
+                                android:id="@+id/claim_copy"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:ellipsize="end"
-                                android:includeFontPadding="false"
-                                android:maxWidth="145dp"
-                                android:maxLines="1"
-                                android:text="@string/claim_title"
-                                android:textColor="@color/ink"
-                                android:textSize="14sp"
-                                android:textStyle="bold" />
+                                android:layout_marginStart="82dp"
+                                android:layout_gravity="center_vertical"
+                                android:orientation="vertical">
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:id="@+id/claim_title"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:ellipsize="end"
+                                        android:includeFontPadding="false"
+                                        android:maxWidth="145dp"
+                                        android:maxLines="1"
+                                        android:text="@string/claim_title"
+                                        android:textColor="@color/ink"
+                                        android:textSize="14sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:id="@+id/claim_status"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="22dp"
+                                        android:layout_marginStart="7dp"
+                                        android:paddingStart="7dp"
+                                        android:paddingEnd="7dp"
+                                        android:background="@drawable/bg_claim_status"
+                                        android:gravity="center"
+                                        android:includeFontPadding="false"
+                                        android:text="@string/claim_status"
+                                        android:textColor="#31B3BE"
+                                        android:textSize="10sp" />
+
+                                </LinearLayout>
+
+                                <TextView
+                                    android:id="@+id/claim_subtitle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="5dp"
+                                    android:includeFontPadding="false"
+                                    android:text="@string/claim_subtitle"
+                                    android:textColor="@color/ink_secondary"
+                                    android:textSize="12sp" />
+
+                            </LinearLayout>
 
                             <TextView
-                                android:id="@+id/claim_status"
-                                android:layout_width="wrap_content"
-                                android:layout_height="22dp"
-                                android:layout_marginStart="7dp"
-                                android:background="@drawable/bg_claim_status"
+                                android:id="@+id/claim_action"
+                                android:layout_width="57dp"
+                                android:layout_height="34dp"
+                                android:layout_marginEnd="16dp"
+                                android:layout_gravity="center_vertical|end"
+                                android:background="@drawable/bg_claim_button"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?attr/selectableItemBackgroundBorderless"
                                 android:gravity="center"
-                                android:includeFontPadding="false"
-                                android:paddingStart="7dp"
-                                android:paddingEnd="7dp"
-                                android:text="@string/claim_status"
-                                android:textColor="#31B3BE"
-                                android:textSize="10sp" />
-                        </LinearLayout>
-
-                        <TextView
-                            android:id="@+id/claim_subtitle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:includeFontPadding="false"
-                            android:text="@string/claim_subtitle"
-                            android:textColor="@color/ink_secondary"
-                            android:textSize="12sp" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/claim_action"
-                        android:layout_width="57dp"
-                        android:layout_height="34dp"
-                        android:layout_gravity="center_vertical|end"
-                        android:layout_marginEnd="16dp"
-                        android:background="@drawable/bg_claim_button"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackgroundBorderless"
-                        android:gravity="center"
-                        android:text="@string/claim_action"
-                        android:textColor="@color/brand_purple"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
+                                android:text="@string/claim_action"
+                                android:textColor="@color/brand_purple"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
 
                         </LinearLayout>
 
                         <include
                             android:id="@+id/cashback_page"
                             layout="@layout/page_cashback" />
+
                     </ViewFlipper>
 
                     <LinearLayout
                         android:id="@+id/claim_dots"
                         android:layout_width="wrap_content"
                         android:layout_height="6dp"
-                        android:layout_gravity="bottom|center_horizontal"
                         android:layout_marginBottom="8dp"
+                        android:layout_gravity="bottom|center_horizontal"
                         android:orientation="horizontal">
 
                         <View
                             android:layout_width="10dp"
                             android:layout_height="6dp"
                             android:background="@drawable/bg_dot_active" />
+
                         <View
                             android:layout_width="10dp"
                             android:layout_height="6dp"
                             android:layout_marginStart="4dp"
                             android:background="@drawable/bg_dot_inactive" />
+
                         <View
                             android:layout_width="10dp"
                             android:layout_height="6dp"
                             android:layout_marginStart="4dp"
                             android:background="@drawable/bg_dot_inactive" />
+
                         <View
                             android:layout_width="10dp"
                             android:layout_height="6dp"
                             android:layout_marginStart="4dp"
                             android:background="@drawable/bg_dot_inactive" />
+
                         <View
                             android:layout_width="10dp"
                             android:layout_height="6dp"
                             android:layout_marginStart="4dp"
                             android:background="@drawable/bg_dot_inactive" />
+
                     </LinearLayout>
+
                 </FrameLayout>
+
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
@@ -565,8 +590,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="8dp">
+                    android:padding="8dp"
+                    android:orientation="vertical">
 
                     <LinearLayout
                         android:id="@+id/promotions_container"
@@ -579,8 +604,8 @@
                         android:id="@+id/more_wealth_row"
                         android:layout_width="wrap_content"
                         android:layout_height="34dp"
-                        android:layout_gravity="center_horizontal"
                         android:layout_marginTop="6dp"
+                        android:layout_gravity="center_horizontal"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:clickable="true"
                         android:focusable="true"
@@ -602,8 +627,11 @@
                             android:contentDescription=""
                             android:src="@drawable/ic_chevron_right"
                             android:tint="@color/ink_secondary" />
+
                     </LinearLayout>
+
                 </LinearLayout>
+
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
@@ -643,9 +671,13 @@
                         android:contentDescription="@string/borrow_again"
                         android:scaleType="centerCrop"
                         android:src="@drawable/banner_business" />
+
                 </ViewFlipper>
+
             </com.google.android.material.card.MaterialCardView>
+
         </LinearLayout>
+
     </androidx.core.widget.NestedScrollView>
 
     <LinearLayout
