@@ -278,7 +278,7 @@
                             android:includeFontPadding="false"
                             android:text="@string/stamp_duty_notice"
                             android:textColor="@color/ink"
-                            android:textSize="14sp" />
+                            android:textSize="13sp" />
                     </LinearLayout>
 
                     <GridLayout

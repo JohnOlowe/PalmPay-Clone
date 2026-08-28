@@ -92,6 +92,18 @@ public final class AmountScreenController {
                 "Transfer protection selected"));
         binding.amountBackButton.setOnClickListener(view -> closeScreen());
         binding.amountInput.setShowSoftInputOnFocus(false);
+        binding.amountInput.setOnFocusChangeListener((view, focused) -> {
+            if (focused) {
+                binding.amountKeypad.setVisibility(View.VISIBLE);
+                hideSystemKeyboard();
+            }
+        });
+        binding.noteInput.setOnFocusChangeListener((view, focused) -> {
+            binding.amountKeypad.setVisibility(focused ? View.GONE : View.VISIBLE);
+            if (!focused) {
+                hideSystemKeyboard();
+            }
+        });
         binding.amountInput.addTextChangedListener(new android.text.TextWatcher() {
             @Override
             public void beforeTextChanged(
@@ -202,6 +214,15 @@ public final class AmountScreenController {
         int length = binding.amountInput.length();
         if (length > 0) {
             binding.amountInput.getText().delete(length - 1, length);
+        }
+    }
+
+    private void hideSystemKeyboard() {
+        android.view.inputmethod.InputMethodManager imm =
+                (android.view.inputmethod.InputMethodManager)
+                        context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(binding.amountInput.getWindowToken(), 0);
         }
     }
 
