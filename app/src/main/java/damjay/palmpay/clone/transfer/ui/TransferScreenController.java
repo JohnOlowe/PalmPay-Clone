@@ -328,14 +328,26 @@ public final class TransferScreenController {
         showResolvedBank(bank.getName(), bank.getLogoUrl());
         String digits = digitsOnly(binding.accountNumberInput.getText());
         if (digits.length() == DIGITS_REQUIRED) {
-            showStatus(R.string.verifying_account_name);
-            TransferRecipient historyMatch = historyRecipientFor(digits, bank.getName());
-            if (historyMatch != null) {
-                trustedRecipient = historyMatch;
-                showConfirmationName(historyMatch.getName());
-                hideStatus();
+            String cachedName = resolvedNames.get(
+                    BankNameNormalizer.canonical(bank.getName()));
+            if (cachedName != null) {
+                // Already verified while the matching list was built: no
+                // second query needed.
+                resolvedRecipient = new TransferRecipient(
+                        cachedName, digits, bank.getName(), "");
+                resolvedRecipient.setLogoUrl(bank.getLogoUrl());
+                showConfirmationName(cachedName);
             } else {
-                resolveNameViaPaystack(digits, bank);
+                showStatus(R.string.verifying_account_name);
+                TransferRecipient historyMatch =
+                        historyRecipientFor(digits, bank.getName());
+                if (historyMatch != null) {
+                    trustedRecipient = historyMatch;
+                    showConfirmationName(historyMatch.getName());
+                    hideStatus();
+                } else {
+                    resolveNameViaPaystack(digits, bank);
+                }
             }
         }
         refreshNextState();

@@ -44,7 +44,7 @@ public final class AmountActivity extends AppCompatActivity {
         configureWindow();
         binding = ActivityAmountBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
                 | WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         TransferRecipient recipient = new TransferRecipient(
