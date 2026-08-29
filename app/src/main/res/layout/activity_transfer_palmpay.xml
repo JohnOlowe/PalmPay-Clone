@@ -212,10 +212,12 @@
                                 android:textSize="22sp" />
 
                             <View
+                                android:id="@+id/pp_underline"
                                 android:layout_width="match_parent"
                                 android:layout_height="1dp"
                                 android:layout_marginTop="8dp"
-                                android:background="@color/transfer_divider" />
+                                android:background="@color/transfer_divider"
+                                android:visibility="gone" />
 
                             <LinearLayout
                                 android:id="@+id/pp_suggestions_container"
