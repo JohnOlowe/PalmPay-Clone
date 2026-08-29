@@ -34,13 +34,13 @@ public final class PalmPayCatalog {
                         "8080868957", R.drawable.avatar_purple_woman, false,
                         "Aug 26, 2026"),
                 new PalmPayContact("ABIMBOLA BLESSING ADEPOJU",
-                        "8030780591", R.drawable.avatar_headwrap, false,
+                        "8030780591", R.drawable.avatar_gen_3, false,
                         "Aug 21, 2026"),
                 new PalmPayContact("MUHAMMAD LAWAN BUBA",
-                        "8138716828", R.drawable.avatar_blue, false,
+                        "8138716828", R.drawable.avatar_gen_4, false,
                         "Aug 19, 2026"),
                 new PalmPayContact("FRANKI IN CHINEDU ODILU",
-                        "8033145720", R.drawable.avatar_reference, false,
+                        "8033145720", R.drawable.avatar_gen_2, false,
                         "Aug 17, 2026")));
     }
 
@@ -49,13 +49,13 @@ public final class PalmPayCatalog {
                 new PalmPayContact("ADEOLA SAMSON OLOWE",
                         "8023875574", R.drawable.avatar_reference, false, null),
                 new PalmPayContact("BABAJIDE JAMES OLUOKUN",
-                        "8067237160", avatar_photo_man(), false, null),
+                        "8067237160", R.drawable.avatar_gen_4, false, null),
                 new PalmPayContact("FUNMILAYO - MAKINDE",
                         "8066264578", R.drawable.avatar_purple_woman, false, null),
                 new PalmPayContact("HELEN PRAYER ATENIOLA",
-                        "8080720404", R.drawable.avatar_purple_woman, false, null),
+                        "8080720404", R.drawable.avatar_gen_1, false, null),
                 new PalmPayContact("UKACHI MARVELLOUS AMAIKE",
-                        "8022892878", R.drawable.avatar_reference, false, null),
+                        "8022892878", R.drawable.avatar_gen_2, false, null),
                 new PalmPayContact("PRECIOUS OLUWADARASIMI AKINDELE",
                         "9133988400", R.drawable.avatar_purple_woman, false, null),
                 new PalmPayContact("ABIOLA GRACE AKANO",
@@ -63,15 +63,11 @@ public final class PalmPayCatalog {
                 new PalmPayContact("AMOS OGHENAKUGHE OGIAGA",
                         "9550470865", R.drawable.avatar_agent, true, null),
                 new PalmPayContact("BOSEDE ABIGEAL MABAWONKU",
-                        "7089565446", R.drawable.avatar_purple_woman, false, null)));
+                        "7089565446", R.drawable.avatar_gen_1, false, null)));
     }
 
     public static List<PalmPayContact> favorites() {
         return Collections.unmodifiableList(contacts().subList(0, 3));
     }
 
-    private static int avatar_photo_man() {
-        // The photo-style male avatar reuses the shipped reference art.
-        return R.drawable.avatar_reference;
-    }
 }

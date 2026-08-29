@@ -186,11 +186,13 @@ public final class TransferPalmPayController {
             if (selectedContact == null) {
                 return;
             }
-            ((TransferPalmPayActivity) context).openAmount(new TransferRecipient(
+            TransferRecipient recipient = new TransferRecipient(
                     selectedContact.getName(),
                     selectedContact.getAccountNumber(),
                     PROVIDER,
-                    ""));
+                    "");
+            recipient.setAvatarRes(selectedContact.getAvatarRes());
+            ((TransferPalmPayActivity) context).openAmount(recipient);
         });
         binding.ppAccountInput.addTextChangedListener(new TextWatcher() {
             @Override

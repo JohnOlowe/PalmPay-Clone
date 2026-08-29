@@ -7,6 +7,7 @@ public final class TransferRecipient {
     private final String provider;
     private final String lastTransferDate;
     private String logoUrl = "";
+    private int avatarRes;
 
     public TransferRecipient(
             String name,
@@ -25,6 +26,15 @@ public final class TransferRecipient {
 
     public void setLogoUrl(String url) {
         this.logoUrl = url == null ? "" : url;
+    }
+
+    /** Profile avatar for PalmPay recipients, 0 when none. */
+    public int getAvatarRes() {
+        return avatarRes;
+    }
+
+    public void setAvatarRes(int avatarRes) {
+        this.avatarRes = avatarRes;
     }
 
     public String getName() {

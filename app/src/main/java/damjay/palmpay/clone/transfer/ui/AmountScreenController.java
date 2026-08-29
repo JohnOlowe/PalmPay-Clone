@@ -46,6 +46,15 @@ public final class AmountScreenController {
                 R.string.balance_cashbox,
                 walletStore.getBalanceDisplay()));
 
+        if (recipient.getAvatarRes() != 0) {
+            ImageViewCompat.setImageTintList(binding.amountRecipientLogo, null);
+            binding.amountRecipientLogo.setImageResource(recipient.getAvatarRes());
+        } else {
+            bindProviderLogo();
+        }
+    }
+
+    private void bindProviderLogo() {
         String logoUrl = recipient.getLogoUrl();
         if (logoUrl != null && !logoUrl.isEmpty()) {
             ImageViewCompat.setImageTintList(binding.amountRecipientLogo, null);
