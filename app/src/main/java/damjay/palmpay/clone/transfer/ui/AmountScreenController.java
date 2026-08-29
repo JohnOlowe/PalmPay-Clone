@@ -53,6 +53,7 @@ public final class AmountScreenController {
         } else {
             bindProviderLogo();
         }
+        bindControls();
     }
 
     /** The official PalmPay amount page: person header, no provider, no
@@ -86,7 +87,9 @@ public final class AmountScreenController {
                 ImageViewCompat.setImageTintList(binding.amountRecipientLogo, null);
             }
         }
+    }
 
+    private void bindControls() {
         bindQuickAmount(binding.chip500, R.string.amount_500);
         bindQuickAmount(binding.chip1000, R.string.amount_1000);
         bindQuickAmount(binding.chip2000, R.string.amount_2000);
