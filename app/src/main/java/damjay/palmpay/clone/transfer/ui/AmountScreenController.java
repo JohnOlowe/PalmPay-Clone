@@ -49,9 +49,26 @@ public final class AmountScreenController {
         if (recipient.getAvatarRes() != 0) {
             ImageViewCompat.setImageTintList(binding.amountRecipientLogo, null);
             binding.amountRecipientLogo.setImageResource(recipient.getAvatarRes());
+            applyPalmPayVariant();
         } else {
             bindProviderLogo();
         }
+    }
+
+    /** The official PalmPay amount page: person header, no provider, no
+     *  toolbar extras, protection row above the card. */
+    private void applyPalmPayVariant() {
+        binding.amountTitle.setText(R.string.transfer_to_palmpay);
+        binding.amountSupportButton.setVisibility(View.GONE);
+        binding.amountHistoryButton.setVisibility(View.GONE);
+        binding.amountRecipientProvider.setVisibility(View.GONE);
+        android.view.ViewGroup card =
+                (android.view.ViewGroup) binding.amountProtectionButton.getParent();
+        android.view.ViewGroup outer =
+                (android.view.ViewGroup) card.getParent();
+        card.removeView(binding.amountProtectionButton);
+        outer.addView(binding.amountProtectionButton,
+                outer.indexOfChild(card));
     }
 
     private void bindProviderLogo() {

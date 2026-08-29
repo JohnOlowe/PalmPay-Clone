@@ -237,6 +237,7 @@ public final class TransferPalmPayController {
         binding.ppSuggestionsContainer.removeAllViews();
         if (digits.isEmpty()) {
             binding.ppSuggestionsContainer.setVisibility(View.GONE);
+            binding.ppInvalidBanner.setVisibility(View.GONE);
             refreshNextState();
             return;
         }
@@ -247,6 +248,9 @@ public final class TransferPalmPayController {
         }
         boolean any = binding.ppSuggestionsContainer.getChildCount() > 0;
         binding.ppSuggestionsContainer.setVisibility(any ? View.VISIBLE : View.GONE);
+        // A complete number nobody owns is an invalid account, as official.
+        binding.ppInvalidBanner.setVisibility(
+                !any && digits.length() >= 10 ? View.VISIBLE : View.GONE);
         refreshNextState();
     }
 
