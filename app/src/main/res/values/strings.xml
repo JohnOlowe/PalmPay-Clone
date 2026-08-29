@@ -58,6 +58,9 @@
     <string name="notifications_content_description">Notifications</string>
     <string name="free_transfer_badge">0 Fee</string>
     <string name="transfer_to_bank">Transfer to Bank</string>
+    <string name="transfer_to_palmpay">Transfer to PalmPay</string>
+    <string name="palmpay_account_hint">Enter Account No. or Phone No.</string>
+    <string name="agent_tag">Agent</string>
     <string name="add_extra_transfer_protection">Add Extra Transfer Protection</string>
     <string name="recipient_account">Recipient Account</string>
     <string name="account_number_hint">Enter 10 digits Account Number</string>
