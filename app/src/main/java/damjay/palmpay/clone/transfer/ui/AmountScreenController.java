@@ -60,8 +60,6 @@ public final class AmountScreenController {
      *  toolbar extras, protection row above the card. */
     private void applyPalmPayVariant() {
         binding.amountTitle.setText(R.string.transfer_to_palmpay);
-        binding.amountSupportButton.setVisibility(View.GONE);
-        binding.amountHistoryButton.setVisibility(View.GONE);
         binding.amountRecipientProvider.setVisibility(View.GONE);
         android.view.ViewGroup card =
                 (android.view.ViewGroup) binding.amountProtectionButton.getParent();
