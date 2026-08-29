@@ -220,12 +220,14 @@ public final class TransferPalmPayController {
                     binding.ppAccountInput.setSelection(formatted.length());
                     formattingAccount = false;
                 }
+                boolean hasText = !digits.isEmpty();
                 binding.ppClearButton.setVisibility(
-                        digits.isEmpty() ? View.GONE : View.VISIBLE);
+                        hasText ? View.VISIBLE : View.GONE);
+                binding.ppUnderline.setVisibility(
+                        hasText ? View.VISIBLE : View.GONE);
                 updateMatches(digits);
             }
         });
-        binding.ppAccountInput.setShowSoftInputOnFocus(false);
         refreshNextState();
     }
 
