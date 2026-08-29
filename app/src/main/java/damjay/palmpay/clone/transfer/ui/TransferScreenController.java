@@ -204,6 +204,12 @@ public final class TransferScreenController {
         trustedRecipient = null;
         bankSelected = false;
         hideConfirmation();
+        hideInvalidAccountBanner();
+        // Verification results never survive an edit: the next completed
+        // account number always triggers a fresh request.
+        resolvedNames.clear();
+        failedBankKeys.clear();
+        listedBankNames.clear();
         resetBankField();
         if (digits.length() > 0 && digits.length() < 10) {
             renderAccountSuggestions(digits);
