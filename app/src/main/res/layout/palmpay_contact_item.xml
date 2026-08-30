@@ -48,7 +48,7 @@
                     android:includeFontPadding="false"
                     android:maxLines="1"
                     android:textColor="@color/ink"
-                    android:textSize="14sp" />
+                    android:textSize="13sp" />
 
                 <TextView
                     android:id="@+id/contact_agent_tag"
@@ -73,7 +73,7 @@
                 android:layout_marginTop="6dp"
                 android:includeFontPadding="false"
                 android:textColor="@color/transfer_hint"
-                android:textSize="13sp" />
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/contact_date"
@@ -82,7 +82,7 @@
                 android:layout_marginTop="6dp"
                 android:includeFontPadding="false"
                 android:textColor="@color/transfer_hint"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:visibility="gone" />
         </LinearLayout>
     </LinearLayout>

@@ -208,7 +208,7 @@
                                 android:singleLine="true"
                                 android:textColor="@color/ink"
                                 android:textColorHint="@color/transfer_hint"
-                                android:textSize="22sp" />
+                                android:textSize="20sp" />
 
                             <View
                                 android:id="@+id/pp_underline"

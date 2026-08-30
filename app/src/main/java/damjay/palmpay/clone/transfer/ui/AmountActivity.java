@@ -24,6 +24,7 @@ public final class AmountActivity extends AppCompatActivity {
     private static final String EXTRA_RECIPIENT_ACCOUNT = "extra_recipient_account";
     private static final String EXTRA_RECIPIENT_PROVIDER = "extra_recipient_provider";
     private static final String EXTRA_RECIPIENT_LOGO = "extra_recipient_logo";
+    private static final String EXTRA_RECIPIENT_AVATAR = "extra_recipient_avatar";
     private static final int ENTER_DURATION_MS = 100;
 
     private ActivityAmountBinding binding;
@@ -35,6 +36,7 @@ public final class AmountActivity extends AppCompatActivity {
         intent.putExtra(EXTRA_RECIPIENT_ACCOUNT, recipient.getAccountNumber());
         intent.putExtra(EXTRA_RECIPIENT_PROVIDER, recipient.getProvider());
         intent.putExtra(EXTRA_RECIPIENT_LOGO, recipient.getLogoUrl());
+        intent.putExtra(EXTRA_RECIPIENT_AVATAR, recipient.getAvatarRes());
         return intent;
     }
 
@@ -53,6 +55,7 @@ public final class AmountActivity extends AppCompatActivity {
                 getIntent().getStringExtra(EXTRA_RECIPIENT_PROVIDER),
                 "");
         recipient.setLogoUrl(getIntent().getStringExtra(EXTRA_RECIPIENT_LOGO));
+        recipient.setAvatarRes(getIntent().getIntExtra(EXTRA_RECIPIENT_AVATAR, 0));
         controller = new AmountScreenController(this, binding, recipient);
         controller.bind();
         playEnterAnimation(binding.getRoot());
