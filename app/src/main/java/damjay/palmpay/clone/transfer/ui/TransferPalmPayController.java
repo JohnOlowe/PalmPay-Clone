@@ -42,6 +42,7 @@ public final class TransferPalmPayController {
     private final List<PalmPayContact> allContacts = new ArrayList<>();
     private boolean formattingAccount;
     private PalmPayContact selectedContact;
+    private damjay.palmpay.clone.transfer.data.PaystackClient paystackClient;
     private int activeTab = TAB_RECENT;
 
     private static final int TAB_RECENT = 0;
@@ -56,6 +57,9 @@ public final class TransferPalmPayController {
     }
 
     public void bind() {
+        paystackClient = new damjay.palmpay.clone.transfer.data.PaystackClient(
+                context, new damjay.palmpay.clone.data.WalletStore(context)
+                        .getPaystackApiKey());
         allContacts.clear();
         allContacts.addAll(PalmPayCatalog.recent());
         allContacts.addAll(PalmPayCatalog.contacts());
@@ -279,11 +283,81 @@ public final class TransferPalmPayController {
             }
         }
         boolean any = binding.ppSuggestionsContainer.getChildCount() > 0;
-        binding.ppSuggestionsContainer.setVisibility(any ? View.VISIBLE : View.GONE);
-        // A complete number nobody owns is an invalid account, as official.
-        binding.ppInvalidBanner.setVisibility(
-                !any && digits.length() >= 10 ? View.VISIBLE : View.GONE);
+        if (digits.length() >= 10) {
+            // Complete number: name must come from a real lookup.
+            binding.ppSuggestionsContainer.setVisibility(View.GONE);
+            PalmPayContact exact = null;
+            for (PalmPayContact contact : allContacts) {
+                if (contact.getAccountNumber().equals(digits)) {
+                    exact = contact;
+                    break;
+                }
+            }
+            if (exact != null) {
+                fillFromSuggestion(exact);
+            } else {
+                resolveNameViaPaystack(digits);
+            }
+        } else {
+            binding.ppSuggestionsContainer.setVisibility(any ? View.VISIBLE : View.GONE);
+            binding.ppInvalidBanner.setVisibility(View.GONE);
+        }
         refreshNextState();
+    }
+
+    /** Single fast resolve against PalmPay itself. */
+    private void resolveNameViaPaystack(final String digits) {
+        binding.ppInvalidBanner.setVisibility(View.GONE);
+        if (paystackClient == null || !paystackClient.isConfigured()) {
+            binding.ppInvalidBanner.setVisibility(View.VISIBLE);
+            return;
+        }
+        paystackClient.listBanks(banks -> {
+            damjay.palmpay.clone.transfer.model.BankInstitution palmPay = null;
+            for (damjay.palmpay.clone.transfer.model.BankInstitution bank : banks) {
+                if (bank.getName().toLowerCase(java.util.Locale.US)
+                        .contains("palmpay")) {
+                    palmPay = bank;
+                    break;
+                }
+            }
+            if (palmPay == null) {
+                binding.ppInvalidBanner.setVisibility(View.VISIBLE);
+                return;
+            }
+            paystackClient.resolveAccount(digits, palmPay,
+                    new damjay.palmpay.clone.transfer.data.PaystackClient
+                            .ResolveCallback() {
+                        @Override
+                        public void onResolved(
+                                String accountName,
+                                damjay.palmpay.clone.transfer.model.BankInstitution bank) {
+                            if (!digitsOnly(binding.ppAccountInput.getText())
+                                    .equals(digits)) {
+                                return;
+                            }
+                            selectedContact = new PalmPayContact(
+                                    accountName, digits,
+                                    R.drawable.avatar_reference, false, null);
+                            binding.ppConfirmationItem.confirmationName
+                                    .setText(accountName);
+                            binding.ppConfirmationItem.getRoot()
+                                    .setVisibility(View.VISIBLE);
+                            binding.ppInvalidBanner.setVisibility(View.GONE);
+                            refreshNextState();
+                        }
+
+                        @Override
+                        public void onFailed() {
+                            if (!digitsOnly(binding.ppAccountInput.getText())
+                                    .equals(digits)) {
+                                return;
+                            }
+                            binding.ppInvalidBanner.setVisibility(View.VISIBLE);
+                            refreshNextState();
+                        }
+                    });
+        });
     }
 
     private void refreshNextState() {
