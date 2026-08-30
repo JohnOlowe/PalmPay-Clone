@@ -192,7 +192,7 @@ public final class TransferPalmPayController {
 
     /** Tapping a suggestion fills the account and shows the name. */
     private void fillFromSuggestion(PalmPayContact contact) {
-        String formatted = formatAccountNumber(contact.getAccountNumber());
+        String formatted = formatInput(contact.getAccountNumber());
         formattingAccount = true;
         binding.ppAccountInput.setText(formatted);
         binding.ppAccountInput.setSelection(formatted.length());
@@ -393,15 +393,25 @@ public final class TransferPalmPayController {
         return digits.toString();
     }
 
-    private String formatAccountNumber(String digits) {
+    /** Phone numbers (11 digits, leading 0) group 4-3-4; accounts 3-3-4. */
+    private String formatInput(String digits) {
         StringBuilder formatted = new StringBuilder(digits.length() + 2);
+        boolean phone = digits.length() > 10 && digits.startsWith("0");
         for (int i = 0; i < digits.length(); i++) {
-            if (i == 3 || i == 6) {
+            if (phone ? (i == 4 || i == 7) : (i == 3 || i == 6)) {
                 formatted.append(' ');
             }
             formatted.append(digits.charAt(i));
         }
         return formatted.toString();
+    }
+
+    /** Paystack/PalmPay accounts carry no leading 0: 08080868957 -> 8080868957. */
+    private String probeDigitsFor(String raw) {
+        if (raw.length() == 11 && raw.startsWith("0")) {
+            return raw.substring(1);
+        }
+        return raw;
     }
 
     private void closeScreen() {
