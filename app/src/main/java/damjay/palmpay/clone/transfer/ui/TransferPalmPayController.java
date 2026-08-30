@@ -198,7 +198,6 @@ public final class TransferPalmPayController {
         binding.ppAccountInput.setSelection(formatted.length());
         formattingAccount = false;
         binding.ppClearButton.setVisibility(View.VISIBLE);
-        binding.ppUnderline.setVisibility(View.VISIBLE);
         binding.ppSuggestionsContainer.setVisibility(View.GONE);
         binding.ppInvalidBanner.setVisibility(View.GONE);
         selectedContact = contact;
@@ -224,12 +223,6 @@ public final class TransferPalmPayController {
             recipient.setAvatarRes(selectedContact.getAvatarRes());
             ((TransferPalmPayActivity) context).openAmount(recipient);
         });
-        android.text.SpannableString hint = new android.text.SpannableString(
-                context.getString(R.string.palmpay_account_hint));
-        hint.setSpan(new android.text.style.AbsoluteSizeSpan(17, true),
-                0, hint.length(),
-                android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        binding.ppAccountInput.setHint(hint);
         binding.ppAccountInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(
@@ -256,11 +249,8 @@ public final class TransferPalmPayController {
                     binding.ppAccountInput.setSelection(formatted.length());
                     formattingAccount = false;
                 }
-                boolean hasText = !digits.isEmpty();
                 binding.ppClearButton.setVisibility(
-                        hasText ? View.VISIBLE : View.GONE);
-                binding.ppUnderline.setVisibility(
-                        hasText ? View.VISIBLE : View.GONE);
+                        digits.isEmpty() ? View.GONE : View.VISIBLE);
                 updateMatches(digits);
             }
         });
