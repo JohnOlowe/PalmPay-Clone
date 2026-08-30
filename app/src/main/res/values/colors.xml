@@ -51,6 +51,7 @@
     <color name="recipient_circle">#BAB3DD</color>
     <color name="shortcut_icon">#22213D</color>
     <color name="tab_inactive">#696872</color>
+#    <color name="account_underline">#624D9A</color>
     <color name="transfer_divider">#EEEEF1</color>
     <color name="free_banner_surface">#F0ECFB</color>
     <color name="free_banner_label">#7D2CFF</color>

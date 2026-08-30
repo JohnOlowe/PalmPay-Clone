@@ -235,7 +235,7 @@
                             android:background="@android:color/transparent"
                             android:contentDescription="Clear account number"
                             android:scaleType="centerInside"
-                            android:src="@drawable/exact_clear_circle"
+                            android:src="@drawable/ic_clear_round"
                             android:visibility="gone" />
                     </FrameLayout>
 

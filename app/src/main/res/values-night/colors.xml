@@ -41,4 +41,5 @@
     <color name="amount_chip_border">#3A383C</color>
     <color name="cashbox_green">#176A4D</color>
     <color name="fixed_savings_blue">#3C39A7</color>
+    <color name="account_underline">#B7A6E3</color>
 </resources>
