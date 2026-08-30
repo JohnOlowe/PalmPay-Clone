@@ -242,7 +242,7 @@ public final class TransferPalmPayController {
                     return;
                 }
                 String digits = digitsOnly(editable);
-                String formatted = formatAccountNumber(digits);
+                String formatted = formatInput(digits);
                 if (!formatted.contentEquals(editable)) {
                     formattingAccount = true;
                     binding.ppAccountInput.setText(formatted);
