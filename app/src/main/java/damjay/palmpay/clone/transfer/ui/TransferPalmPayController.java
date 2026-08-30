@@ -164,14 +164,40 @@ public final class TransferPalmPayController {
             item.contactDate.setVisibility(View.GONE);
         }
         item.getRoot().setContentDescription(contact.getName());
-        item.getRoot().setOnClickListener(view -> selectContact(contact));
+        if (suggestion) {
+            item.getRoot().setOnClickListener(view ->
+                    fillFromSuggestion(contact));
+        } else {
+            item.getRoot().setOnClickListener(view ->
+                    openAmountFor(contact));
+        }
         (suggestion ? binding.ppSuggestionsContainer : binding.ppListContainer)
                 .addView(item.getRoot());
     }
 
-    private void selectContact(PalmPayContact contact) {
-        selectedContact = contact;
+    /** Tapping a history row goes straight to the amount page, like To Bank. */
+    private void openAmountFor(PalmPayContact contact) {
+        TransferRecipient recipient = new TransferRecipient(
+                contact.getName(),
+                contact.getAccountNumber(),
+                PROVIDER,
+                "");
+        recipient.setAvatarRes(contact.getAvatarRes());
+        ((TransferPalmPayActivity) context).openAmount(recipient);
+    }
+
+    /** Tapping a suggestion fills the account and shows the name. */
+    private void fillFromSuggestion(PalmPayContact contact) {
+        String formatted = formatAccountNumber(contact.getAccountNumber());
+        formattingAccount = true;
+        binding.ppAccountInput.setText(formatted);
+        binding.ppAccountInput.setSelection(formatted.length());
+        formattingAccount = false;
+        binding.ppClearButton.setVisibility(View.VISIBLE);
+        binding.ppUnderline.setVisibility(View.VISIBLE);
         binding.ppSuggestionsContainer.setVisibility(View.GONE);
+        binding.ppInvalidBanner.setVisibility(View.GONE);
+        selectedContact = contact;
         binding.ppConfirmationItem.confirmationName.setText(contact.getName());
         binding.ppConfirmationItem.getRoot().setVisibility(View.VISIBLE);
         refreshNextState();
@@ -194,6 +220,12 @@ public final class TransferPalmPayController {
             recipient.setAvatarRes(selectedContact.getAvatarRes());
             ((TransferPalmPayActivity) context).openAmount(recipient);
         });
+        android.text.SpannableString hint = new android.text.SpannableString(
+                context.getString(R.string.palmpay_account_hint));
+        hint.setSpan(new android.text.style.AbsoluteSizeSpan(17, true),
+                0, hint.length(),
+                android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        binding.ppAccountInput.setHint(hint);
         binding.ppAccountInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(
