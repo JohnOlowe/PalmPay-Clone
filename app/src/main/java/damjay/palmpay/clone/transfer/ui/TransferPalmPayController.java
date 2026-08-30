@@ -270,6 +270,7 @@ public final class TransferPalmPayController {
     private void updateMatches(String digits) {
         selectedContact = null;
         binding.ppConfirmationItem.getRoot().setVisibility(View.GONE);
+        binding.ppStatusRow.setVisibility(View.GONE);
         binding.ppSuggestionsContainer.removeAllViews();
         if (digits.isEmpty()) {
             binding.ppSuggestionsContainer.setVisibility(View.GONE);
@@ -308,7 +309,9 @@ public final class TransferPalmPayController {
     /** Single fast resolve against PalmPay itself. */
     private void resolveNameViaPaystack(final String digits) {
         binding.ppInvalidBanner.setVisibility(View.GONE);
+        binding.ppStatusRow.setVisibility(View.VISIBLE);
         if (paystackClient == null || !paystackClient.isConfigured()) {
+            binding.ppStatusRow.setVisibility(View.GONE);
             binding.ppInvalidBanner.setVisibility(View.VISIBLE);
             return;
         }
@@ -322,6 +325,7 @@ public final class TransferPalmPayController {
                 }
             }
             if (palmPay == null) {
+                binding.ppStatusRow.setVisibility(View.GONE);
                 binding.ppInvalidBanner.setVisibility(View.VISIBLE);
                 return;
             }
@@ -332,6 +336,7 @@ public final class TransferPalmPayController {
                         public void onResolved(
                                 String accountName,
                                 damjay.palmpay.clone.transfer.model.BankInstitution bank) {
+                            binding.ppStatusRow.setVisibility(View.GONE);
                             if (!digitsOnly(binding.ppAccountInput.getText())
                                     .equals(digits)) {
                                 return;
@@ -349,6 +354,7 @@ public final class TransferPalmPayController {
 
                         @Override
                         public void onFailed() {
+                            binding.ppStatusRow.setVisibility(View.GONE);
                             if (!digitsOnly(binding.ppAccountInput.getText())
                                     .equals(digits)) {
                                 return;

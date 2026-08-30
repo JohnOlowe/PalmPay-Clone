@@ -240,6 +240,30 @@
                     </FrameLayout>
 
                     <LinearLayout
+                        android:id="@+id/pp_status_row"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:visibility="gone">
+
+                        <ProgressBar
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:indeterminate="true" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:includeFontPadding="false"
+                            android:text="@string/verifying_account_name"
+                            android:textColor="@color/ink_secondary"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
                         android:id="@+id/pp_invalid_banner"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
