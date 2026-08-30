@@ -60,4 +60,5 @@
     <color name="recipient_suggestion_text">#27B897</color>
     <color name="amount_chip_surface">#FFFFFF</color>
     <color name="amount_chip_border">#E3E1E8</color>
+    <color name="palm_underline">#D5D3DE</color>
 </resources>
