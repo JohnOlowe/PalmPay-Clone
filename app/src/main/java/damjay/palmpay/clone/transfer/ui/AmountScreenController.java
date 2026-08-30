@@ -175,9 +175,16 @@ public final class AmountScreenController {
     private static final double MAX_AMOUNT = 200000.0;
     private static final double STAMP_DUTY_THRESHOLD = 10000.0;
 
+    private static final String[] PLACE_NAMES = {
+            "Ones", "Tens", "Hundreds", "Thousands", "Tens of Thousands",
+            "Hundreds of Thousands", "Millions", "Tens of Millions",
+            "Hundreds of Millions", "Billions"
+    };
+
     private void refreshAmountState() {
         String text = binding.amountInput.getText().toString();
         boolean hasText = !text.isEmpty();
+        updatePlaceTooltip(text);
         double value = parseAmount(text);
         boolean inRange = hasText && value >= MIN_AMOUNT && value <= MAX_AMOUNT;
         binding.amountClear.setVisibility(hasText ? View.VISIBLE : View.GONE);
@@ -242,6 +249,23 @@ public final class AmountScreenController {
         if (length > 0) {
             binding.amountInput.getText().delete(length - 1, length);
         }
+    }
+
+    /** Shows the official place-value bubble above the entered amount. */
+    private void updatePlaceTooltip(String text) {
+        String intPart = text.replace(",", "");
+        int dot = intPart.indexOf('.');
+        if (dot >= 0) {
+            intPart = intPart.substring(0, dot);
+        }
+        int length = intPart.length();
+        if (length == 0) {
+            binding.amountPlaceTooltip.setVisibility(View.GONE);
+            return;
+        }
+        int index = Math.min(length, PLACE_NAMES.length) - 1;
+        binding.amountPlaceTooltip.setText(PLACE_NAMES[index]);
+        binding.amountPlaceTooltip.setVisibility(View.VISIBLE);
     }
 
     private void hideSystemKeyboard() {

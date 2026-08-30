@@ -199,6 +199,21 @@
                                 android:textColor="@color/ink"
                                 android:textSize="14sp" />
 
+                            <TextView
+                                android:id="@+id/amount_place_tooltip"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:background="@drawable/bg_place_tooltip"
+                                android:includeFontPadding="false"
+                                android:paddingStart="6dp"
+                                android:paddingTop="2dp"
+                                android:paddingEnd="6dp"
+                                android:paddingBottom="2dp"
+                                android:textColor="#2B2E33"
+                                android:textSize="11sp"
+                                android:visibility="gone" />
+
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="0dp"
