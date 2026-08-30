@@ -393,12 +393,12 @@ public final class TransferPalmPayController {
         return digits.toString();
     }
 
-    /** Phone numbers (11 digits, leading 0) group 4-3-4; accounts 3-3-4. */
+    /** Phone numbers (11 digits, leading 0) group 3-4-4; accounts 3-3-4. */
     private String formatInput(String digits) {
         StringBuilder formatted = new StringBuilder(digits.length() + 2);
         boolean phone = digits.length() > 10 && digits.startsWith("0");
         for (int i = 0; i < digits.length(); i++) {
-            if (phone ? (i == 4 || i == 7) : (i == 3 || i == 6)) {
+            if (phone ? (i == 3 || i == 7) : (i == 3 || i == 6)) {
                 formatted.append(' ');
             }
             formatted.append(digits.charAt(i));
