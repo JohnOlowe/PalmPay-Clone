@@ -175,7 +175,7 @@ public final class AddMoneyController {
         JSONObject data = body != null && body.optBoolean("status")
                 ? body.optJSONObject("data") : null;
         if (data == null) {
-            fail();
+            fail(messageOf(body));
             return;
         }
         currentReference = data.optString("reference", currentReference);
@@ -218,7 +218,7 @@ public final class AddMoneyController {
             if (body != null && body.optBoolean("status")) {
                 verify();
             } else {
-                fail();
+                fail(messageOf(body));
             }
         });
     }
@@ -237,7 +237,7 @@ public final class AddMoneyController {
                         transfer();
                     } else if (data != null
                             && "failed".equals(data.optString("status"))) {
-                        fail();
+                        fail(messageOf(body));
                     } else {
                         pollVerification(attempt + 1);
                     }
@@ -251,7 +251,7 @@ public final class AddMoneyController {
             if (data != null && "success".equals(data.optString("status"))) {
                 transfer();
             } else {
-                fail();
+                fail(messageOf(body));
             }
         });
     }
@@ -272,15 +272,25 @@ public final class AddMoneyController {
                                 formatNaira(currentKobo / 100.0),
                                 mask(currentDestination)), true);
                     } else {
-                        showResult(context.getString(R.string.am_pending), true);
+                        fail(messageOf(body));
                     }
                 });
     }
 
-    private void fail() {
+    /** Only the destination gate uses the generic message. */
+    private void fail(String message) {
         busy = false;
         hideStatus();
-        showResult(context.getString(R.string.am_generic_fail), false);
+        showResult(message, false);
+    }
+
+    private String messageOf(JSONObject body) {
+        if (body == null) {
+            return "Network error. Check your connection and try again.";
+        }
+        String message = body.optString("message", "");
+        return message.isEmpty()
+                ? "Transaction failed. Please try again." : message;
     }
 
     private void showStatus(int textRes) {
