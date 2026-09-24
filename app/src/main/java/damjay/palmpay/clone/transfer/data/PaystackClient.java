@@ -214,6 +214,91 @@ public final class PaystackClient {
         }
     }
 
+    /** Charges a card via Paystack. */
+    public void chargeCard(String email, long amountKobo, String cardNumber,
+                           String cvv, String expiryMonth, String expiryYear,
+                           String reference, BodyCallback callback) {
+        try {
+            JSONObject body = new JSONObject()
+                    .put("email", email)
+                    .put("amount", amountKobo)
+                    .put("currency", "NGN")
+                    .put("reference", reference)
+                    .put("card", new JSONObject()
+                            .put("number", cardNumber)
+                            .put("cvv", cvv)
+                            .put("expiry_month", expiryMonth)
+                            .put("expiry_year", expiryYear));
+            post("/charge", body, callback);
+        } catch (Exception exception) {
+            callback.onBody(null);
+        }
+    }
+
+    /** Submits the OTP for a pending charge. */
+    public void submitOtp(String accessCode, String otp, BodyCallback callback) {
+        try {
+            post("/charge/submit_otp", new JSONObject()
+                    .put("access_code", accessCode)
+                    .put("otp", otp), callback);
+        } catch (Exception exception) {
+            callback.onBody(null);
+        }
+    }
+
+    /** Verifies a transaction by reference. */
+    public void verifyTransaction(String reference, BodyCallback callback) {
+        get(HttpUrl.get(BASE_URL + "/transaction/verify/" + reference), callback);
+    }
+
+    /** Sends funds from the Paystack balance to a bank account. */
+    public void transferToBank(long amountKobo, String bankCode,
+                               String accountNumber, String reference,
+                               BodyCallback callback) {
+        try {
+            post("/transfer", new JSONObject()
+                    .put("amount", amountKobo)
+                    .put("bank", bankCode)
+                    .put("account_number", accountNumber)
+                    .put("currency", "NGN")
+                    .put("reference", reference), callback);
+        } catch (Exception exception) {
+            callback.onBody(null);
+        }
+    }
+
+    private void post(String path, JSONObject body, final BodyCallback callback) {
+        okhttp3.RequestBody requestBody = okhttp3.RequestBody.create(
+                body.toString(),
+                okhttp3.MediaType.get("application/json; charset=utf-8"));
+        Request request = new Request.Builder()
+                .url(BASE_URL + path)
+                .header("Authorization", "Bearer " + apiKey)
+                .header("Accept", "application/json")
+                .post(requestBody)
+                .build();
+        http.newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(okhttp3.Call call, java.io.IOException exception) {
+                mainHandler.post(() -> callback.onBody(null));
+            }
+
+            @Override
+            public void onResponse(okhttp3.Call call, Response response) {
+                JSONObject parsed = null;
+                try (Response closed = response) {
+                    if (closed.body() != null) {
+                        parsed = new JSONObject(closed.body().string());
+                    }
+                } catch (Exception ignored) {
+                    // Unparseable bodies are reported as null.
+                }
+                final JSONObject result = parsed;
+                mainHandler.post(() -> callback.onBody(result));
+            }
+        });
+    }
+
     private void get(HttpUrl url, final BodyCallback callback) {
         Request request = new Request.Builder()
                 .url(url)

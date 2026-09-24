@@ -29,6 +29,7 @@ import damjay.palmpay.clone.databinding.ServiceActionItemBinding;
 import damjay.palmpay.clone.model.PromotionCard;
 import damjay.palmpay.clone.model.QuickAction;
 import damjay.palmpay.clone.model.ServiceAction;
+import damjay.palmpay.clone.transfer.ui.AddMoneyActivity;
 import damjay.palmpay.clone.transfer.ui.TransferActivity;
 import damjay.palmpay.clone.transfer.ui.TransferPalmPayActivity;
 
@@ -187,7 +188,7 @@ public final class HomeScreenController {
                             ? R.string.balance_visible_description
                             : R.string.balance_hidden_description));
         });
-        binding.addMoneyButton.setOnClickListener(view -> showMessage("Add Money selected"));
+        binding.addMoneyButton.setOnClickListener(view -> AddMoneyActivity.start(context));
         binding.historyButton.setOnClickListener(view -> showMessage("Transaction History selected"));
     }
 

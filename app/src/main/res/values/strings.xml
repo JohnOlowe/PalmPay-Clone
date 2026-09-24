@@ -127,4 +127,24 @@
     <string name="save_balance">Save balance</string>
     <string name="invalid_balance">Enter a valid amount greater than or equal to zero</string>
     <string name="balance_saved">Balance saved</string>
+    <string name="am_subtitle">Fund your PalmPay wallet from your VISA card.</string>
+    <string name="am_amount_label">Amount (₦)</string>
+    <string name="am_amount_hint">0.00</string>
+    <string name="am_card_label">VISA Card Number</string>
+    <string name="am_card_hint">0000 0000 0000 0000</string>
+    <string name="am_expiry_hint">MM/YY</string>
+    <string name="am_cvv_hint">CVV</string>
+    <string name="am_destination_label">PalmPay Phone Number</string>
+    <string name="am_destination_hint">080 0000 0000</string>
+    <string name="am_destination_note">Funds are always sent to your PalmPay wallet.</string>
+    <string name="am_otp_label">Enter the OTP sent to you</string>
+    <string name="am_otp_hint">OTP</string>
+    <string name="am_submit">Submit</string>
+    <string name="am_pay">Add Money</string>
+    <string name="am_processing">Processing…</string>
+    <string name="am_verifying">Verifying…</string>
+    <string name="am_sending">Sending to PalmPay…</string>
+    <string name="am_generic_fail">Transaction could not be completed. Please try again.</string>
+    <string name="am_success">₦%1$s sent to PalmPay %2$s.</string>
+    <string name="am_pending">Card charged successfully. PalmPay transfer is pending settlement.</string>
 </resources>
