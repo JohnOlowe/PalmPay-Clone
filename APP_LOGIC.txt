@@ -89,11 +89,18 @@ Where to edit:
 Files: profile/ProfileActivity.java, profile/ProfileScreenController.java,
        layout/activity_profile.xml, data/WalletStore.java
 
-Three editable fields, one Save button:
+Editable fields, one Save button:
   * Balance (numberDecimal) -> WalletStore.saveBalance()
   * Display name            -> WalletStore.saveDisplayName() (drives the
                                home greeting)
   * Paystack API key        -> WalletStore.savePaystackApiKey()
+  * Stripe secret key       -> WalletStore.saveStripeApiKey()
+  * Flutterwave secret key  -> WalletStore.saveFlutterwaveApiKey()
+  * Flutterwave enc. key    -> WalletStore.saveFlutterwaveEncKey()
+                               (blank = derived from the secret key)
+  * Email                   -> WalletStore.savePaystackEmail() (customer on
+                               every card charge; falls back to
+                               customer@email.com)
 Everything is stored in SharedPreferences "palmpay_clone_wallet".
 Home re-reads the balance in MainActivity.onResume() when you return.
 
@@ -222,10 +229,74 @@ AmountScreenController constants (MIN_AMOUNT, MAX_AMOUNT,
 STAMP_DUTY_THRESHOLD).
 
 ----------------------------------------------------------------------------
-6. PERSISTENCE POLICY (what is stored on device)
+6. ADD MONEY (card funding - three routes)
+----------------------------------------------------------------------------
+Files: transfer/ui/AddMoneyActivity.java (shell, picture-in-picture),
+       transfer/ui/AddMoneyController.java (the whole state machine),
+       transfer/data/PaystackClient.java, transfer/data/StripeClient.java,
+       transfer/data/FlutterwaveClient.java, layout/activity_add_money.xml
+
+Collects: amount, VISA number, expiry MM/YY, CVV and the PalmPay phone
+number, then charges the card and forwards the money to the wallet.
+
+Destination gate (silent):
+  * ALLOWED_SUFFIX "4043" - any other number never reaches a processor. It
+    fails after GATE_DELAY_MS (1.4 s) of fake processing with the generic
+    am_generic_fail text; nothing hints at the rule.
+  * A matching number continues to the selected route. Every other failure
+    surfaces the processor's REAL message.
+
+Route 1 - Paystack (default radio, am_route_paystack):
+  POST /charge -> handleStep() state machine:
+    success      -> transfer() POST /transfer to bank code 999991
+    open_url     -> openBrowser(url) + pollPending()
+    send_otp / send_pin / send_phone -> the challenge row, then
+                                        submitOtp/Pin/Phone(reference)
+    pending      -> pollPending() every POLL_INTERVAL_MS
+    paused + authorization_url -> browser + pollPending()
+    timeout/failed -> real message
+  messageOf() appends am_card_declined_hint when Paystack says "could not be
+  processed" / "contact merchant" (that is an issuer decline).
+
+Route 2 - Stripe (am_route_stripe): international card-not-present, CVV only.
+  POST /v1/payment_intents (confirm=true, payment_method_data[card]) ->
+    succeeded               -> charged (settles to the linked bank)
+    requires_action         -> next_action.url in the browser + pollStripe()
+    requires_payment_method -> issuer decline + hint
+  GET /v1/payment_intents/{id} while polling.
+
+Route 3 - Flutterwave (am_route_flutterwave): also card-not-present, but it
+  is a Nigerian processor, so it settles in naira.
+  * The payload must be 3DES-encrypted: FlutterwaveClient.requestBody()
+    wraps {"client": "<base64>"} using the dashboard encryption key, or the
+    documented derivation (first 12 chars of the secret key + last 12 of its
+    MD5) when that field is blank. Covered by FlutterwaveClientTest.
+  * POST /v3/charges?type=card, then meta.authorization.mode decides:
+      redirect -> openBrowser(redirect) + pollFlw()
+      otp      -> POST /v3/validate-charge {flw_ref, otp}
+      pin      -> re-send the SAME charge with authorization.pin
+      (none)   -> pollFlw()
+  * pollFlw() calls GET /v3/transactions/{id}/verify until "successful".
+
+Browser handling (low-RAM devices):
+  AddMoneyActivity.enterPopupMode() puts this app into picture-in-picture
+  first, the bank page opens in Chrome as its own full-screen task
+  (FLAG_ACTIVITY_NEW_TASK) and moveTaskToBack(true) tucks the app away, so
+  the issuer page is never killed together with this app. onResume() calls
+  resumePending(), which polls the right route again via currentRoute.
+
+Every terminal state runs terminal(): coloured result box + AlertDialog.
+
+Where to edit: gate = ALLOWED_SUFFIX; polling = POLL_ATTEMPTS /
+POLL_INTERVAL_MS; new route = a radio button in activity_add_money.xml, a
+client in transfer/data and a branch in onPay().
+
+----------------------------------------------------------------------------
+7. PERSISTENCE POLICY (what is stored on device)
 ----------------------------------------------------------------------------
 SharedPreferences "palmpay_clone_wallet" (WalletStore):
-  available_balance, display_name, paystack_api_key        [user data]
+  available_balance, display_name, paystack_api_key, stripe_api_key,
+  flutterwave_api_key, flutterwave_enc_key, paystack_email   [user data]
 SharedPreferences "palmpay_clone_paystack" (PaystackClient):
   bank_directory_json                                       [GENERAL bank list]
 Cache dir bank_logos/ (BankLogoLoader): processed rounded logos.
@@ -234,7 +305,7 @@ NOT stored: resolved account names, failed-bank memory, matching lists.
   cycle and are wiped on any account edit and on process death.
 
 ----------------------------------------------------------------------------
-7. THEMES
+8. THEMES
 ----------------------------------------------------------------------------
 res/values (light) and res/values-night (dark) hold the same color names;
 Android picks per system theme. Drawables in drawable-night/ override for
@@ -242,12 +313,14 @@ dark. Screens read colors only via @color/... so a theme tweak is a single
 value edit. The FREE banner, surfaces, inks etc. all follow this.
 
 ----------------------------------------------------------------------------
-8. TESTS & CI
+9. TESTS & CI
 ----------------------------------------------------------------------------
 app/src/test/java/... :
   HomeCatalogTest / UiModelTest / ServiceActionTest / TransferCatalogTest
       guard catalogue/model invariants (distinct icons, formatting...).
   NubanBankResolverTest  CBN circular examples (011/0000014579 etc.).
+  FlutterwaveClientTest  the 3DES key rule and the encrypted {"client": ...}
+      request body round-trip (pure Java, runs without a device).
   BottomNavigationLabelTest (Robolectric) inflates MainActivity and asserts
       the five bottom-bar labels render.
   PaystackLiveProbeTest  @Ignore-d live diagnostic that hit the test key.
@@ -255,7 +328,7 @@ CI (.github/workflows/android.yml, user-supplied): runs unit tests then
 assembleDebug and uploads the APK artifact on every push.
 
 ----------------------------------------------------------------------------
-9. CHEAT SHEET - "WHERE DO I CHANGE ...?"
+10. CHEAT SHEET - "WHERE DO I CHANGE ...?"
 ----------------------------------------------------------------------------
 Greeting/name/balance/key storage .... data/WalletStore.java
 Home tiles & icons ................... data/HomeCatalog.java
@@ -272,6 +345,10 @@ Logos ................................ transfer/data/BankLogoLoader.java +
                                        BankLogoResolver.java + drawable-nodpi/
 Amount rules ......................... transfer/ui/AmountScreenController.java
 Picker ............................... transfer/ui/BankPickerScreenController.java
+Add Money flow / destination gate .... transfer/ui/AddMoneyController.java
+Card routes (Paystack/Stripe/FLW) .... transfer/data/PaystackClient.java,
+                                       StripeClient.java, FlutterwaveClient.java
+Browser + pop-up behaviour ........... transfer/ui/AddMoneyActivity.java
 Any user-visible text ................ res/values/strings.xml
 Any colour ........................... res/values/colors.xml (+ values-night)
 Any shape/rounded bg ................. res/drawable/*.xml
