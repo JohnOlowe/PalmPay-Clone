@@ -191,7 +191,7 @@ public final class AddMoneyController {
                 context.startActivity(new Intent(
                         Intent.ACTION_VIEW, Uri.parse(redirect)));
             } catch (Exception ignored) {
-                fail();
+                fail("Could not open the bank authorisation page.");
                 return;
             }
             pollVerification(0);
@@ -225,7 +225,7 @@ public final class AddMoneyController {
 
     private void pollVerification(final int attempt) {
         if (attempt >= POLL_ATTEMPTS) {
-            fail();
+            fail("Verification timed out. Please try again.");
             return;
         }
         handler.postDelayed(() -> client.verifyTransaction(
