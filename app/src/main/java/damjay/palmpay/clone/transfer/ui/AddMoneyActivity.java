@@ -85,6 +85,25 @@ public final class AddMoneyActivity extends AppCompatActivity {
                 .start();
     }
 
+    /**
+     * The only pop-up mode Android allows an app to trigger itself is
+     * picture-in-picture: the app becomes a small floating window while
+     * Chrome runs the bank authorisation full-screen.
+     */
+    public void enterPopupMode() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O
+                && !isInPictureInPictureMode()) {
+            try {
+                enterPictureInPictureMode(
+                        new android.app.PictureInPictureParams.Builder()
+                                .setAspectRatio(new android.util.Rational(1, 1))
+                                .build());
+            } catch (Exception ignored) {
+                // Device refuses PiP; the user can still use OEM pop-up mode.
+            }
+        }
+    }
+
     public void finishFromAddMoney() {
         finish();
         overridePendingTransition(0, 0);

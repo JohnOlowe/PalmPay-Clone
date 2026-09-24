@@ -245,6 +245,9 @@ public final class AddMoneyController {
             return;
         }
         try {
+            if (context instanceof AddMoneyActivity) {
+                ((AddMoneyActivity) context).enterPopupMode();
+            }
             Intent browser = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             browser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(browser);
@@ -370,8 +373,14 @@ public final class AddMoneyController {
             return "Network error. Check your connection and try again.";
         }
         String message = body.optString("message", "");
-        return message.isEmpty()
-                ? "Transaction failed. Please try again." : message;
+        if (message.isEmpty()) {
+            return "Transaction failed. Please try again.";
+        }
+        if (message.contains("could not be processed")
+                || message.contains("contact merchant")) {
+            message += context.getString(R.string.am_card_declined_hint);
+        }
+        return message;
     }
 
     private void showStatus(int textRes) {

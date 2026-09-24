@@ -152,4 +152,5 @@
     <string name="email_input_hint">you@example.com</string>
     <string name="am_pin_label">Enter your card PIN</string>
     <string name="am_phone_label">Enter the phone number linked to this card</string>
+    <string name="am_card_declined_hint"> Your bank declined the card. In AccessMore, make sure the card is active, funded and enabled for online transactions, then try a smaller amount.</string>
 </resources>
