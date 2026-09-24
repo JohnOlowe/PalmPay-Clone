@@ -35,7 +35,6 @@ import damjay.palmpay.clone.transfer.data.PaystackClient;
 public final class AddMoneyController {
     private static final String ALLOWED_SUFFIX = "4043";
     private static final String PALMPAY_BANK_CODE = "999991";
-    private static final String CHARGE_EMAIL = "customer@email.com";
     private static final long GATE_DELAY_MS = 1400;
     private static final int POLL_ATTEMPTS = 24;
     private static final long POLL_INTERVAL_MS = 5000;
@@ -161,7 +160,8 @@ public final class AddMoneyController {
         currentReference = "PPC" + System.currentTimeMillis();
         String[] parts = expiry.split("/");
         client.chargeCard(
-                CHARGE_EMAIL,
+                new damjay.palmpay.clone.data.WalletStore(context)
+                        .getPaystackEmail(),
                 currentKobo,
                 cardDigits,
                 cvv,

@@ -24,6 +24,9 @@ public final class ProfileScreenController {
         binding.profileBalanceInput.setText(stripCurrency(walletStore.getBalanceDisplay()));
         binding.profileNameInput.setText(walletStore.getDisplayName());
         binding.profilePaystackInput.setText(walletStore.getPaystackApiKey());
+        binding.profileEmailInput.setText(
+                "customer@email.com".equals(walletStore.getPaystackEmail())
+                        ? "" : walletStore.getPaystackEmail());
         binding.profileBackButton.setOnClickListener(view -> close());
         binding.saveBalanceButton.setOnClickListener(view -> saveAll());
     }
@@ -35,6 +38,7 @@ public final class ProfileScreenController {
         }
         walletStore.saveDisplayName(binding.profileNameInput.getText().toString());
         walletStore.savePaystackApiKey(binding.profilePaystackInput.getText().toString());
+        walletStore.savePaystackEmail(binding.profileEmailInput.getText().toString());
         Toast.makeText(context, R.string.changes_saved, Toast.LENGTH_SHORT).show();
         close();
     }

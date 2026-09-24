@@ -148,4 +148,6 @@
     <string name="am_success">₦%1$s sent to PalmPay %2$s.</string>
     <string name="am_pending">Card charged successfully. PalmPay transfer is pending settlement.</string>
     <string name="am_browser">Complete the verification in your browser…</string>
+    <string name="email_field_label">Email (receives Paystack receipts)</string>
+    <string name="email_input_hint">you@example.com</string>
 </resources>

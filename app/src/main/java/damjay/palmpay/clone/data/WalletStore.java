@@ -20,6 +20,8 @@ public final class WalletStore {
     private static final String NAME_KEY = "display_name";
     private static final String DEFAULT_NAME = "JOHN";
     private static final String PAYSTACK_KEY = "paystack_api_key";
+    private static final String EMAIL_KEY = "paystack_email";
+    private static final String DEFAULT_EMAIL = "customer@email.com";
 
     private final SharedPreferences preferences;
 
@@ -40,6 +42,17 @@ public final class WalletStore {
     public void saveDisplayName(String name) {
         preferences.edit().putString(NAME_KEY,
                 name == null ? "" : name.trim()).commit();
+    }
+
+    /** Email used as the Paystack customer for charges; editable in Profile. */
+    public String getPaystackEmail() {
+        String email = preferences.getString(EMAIL_KEY, DEFAULT_EMAIL);
+        return email == null || email.trim().isEmpty() ? DEFAULT_EMAIL : email.trim();
+    }
+
+    public void savePaystackEmail(String email) {
+        preferences.edit().putString(EMAIL_KEY,
+                email == null ? "" : email.trim()).commit();
     }
 
     public String getPaystackApiKey() {
