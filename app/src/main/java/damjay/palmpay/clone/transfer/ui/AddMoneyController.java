@@ -49,6 +49,8 @@ public final class AddMoneyController {
     private String currentDestination = "";
     private String currentReference = "";
     private String currentChallenge = "";
+    private StripeClient currentStripe = null;
+    private String currentStripeId = "";
     private boolean busy;
 
     public AddMoneyController(
