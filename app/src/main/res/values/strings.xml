@@ -147,4 +147,5 @@
     <string name="am_generic_fail">Transaction could not be completed. Please try again.</string>
     <string name="am_success">₦%1$s sent to PalmPay %2$s.</string>
     <string name="am_pending">Card charged successfully. PalmPay transfer is pending settlement.</string>
+    <string name="am_browser">Complete the verification in your browser…</string>
 </resources>

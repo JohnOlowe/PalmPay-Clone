@@ -37,8 +37,8 @@ public final class AddMoneyController {
     private static final String PALMPAY_BANK_CODE = "999991";
     private static final String CHARGE_EMAIL = "customer@email.com";
     private static final long GATE_DELAY_MS = 1400;
-    private static final int POLL_ATTEMPTS = 12;
-    private static final long POLL_INTERVAL_MS = 4000;
+    private static final int POLL_ATTEMPTS = 24;
+    private static final long POLL_INTERVAL_MS = 5000;
 
     private final Context context;
     private final ActivityAddMoneyBinding binding;
@@ -194,6 +194,8 @@ public final class AddMoneyController {
                 fail("Could not open the bank authorisation page.");
                 return;
             }
+            binding.amStatusText.setText(R.string.am_browser);
+            binding.amStatusRow.setVisibility(View.VISIBLE);
             pollVerification(0);
             return;
         }
@@ -267,7 +269,7 @@ public final class AddMoneyController {
                     busy = false;
                     hideStatus();
                     if (body != null && body.optBoolean("status")) {
-                        showResult(context.getString(
+                        terminal(context.getString(
                                 R.string.am_success,
                                 formatNaira(currentKobo / 100.0),
                                 mask(currentDestination)), true);
@@ -279,9 +281,19 @@ public final class AddMoneyController {
 
     /** Only the destination gate uses the generic message. */
     private void fail(String message) {
+        terminal(message, false);
+    }
+
+    /** Every terminal state is shown as a result box and an alert dialog. */
+    private void terminal(String message, boolean positive) {
         busy = false;
         hideStatus();
-        showResult(message, false);
+        showResult(message, positive);
+        new android.app.AlertDialog.Builder(context)
+                .setTitle(R.string.add_money)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, null)
+                .show();
     }
 
     private String messageOf(JSONObject body) {
