@@ -137,7 +137,7 @@ public final class AddMoneyController {
                 || cardDigits.length() < 16
                 || expiry.length() != 5
                 || cvv.length() < 3
-                || destination.length() != 11) {
+                || (destination.length() != 10 && destination.length() != 11)) {
             showResult(context.getString(R.string.am_generic_fail), false);
             return;
         }
