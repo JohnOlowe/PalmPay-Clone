@@ -21,6 +21,7 @@ import java.util.Locale;
 import damjay.palmpay.clone.R;
 import damjay.palmpay.clone.databinding.ActivityAddMoneyBinding;
 import damjay.palmpay.clone.transfer.data.PaystackClient;
+import damjay.palmpay.clone.transfer.data.StripeClient;
 
 /**
  * Behaviour for the Add Money page: charge a VISA card via Paystack and
