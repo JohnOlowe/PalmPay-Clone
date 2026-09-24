@@ -36,7 +36,7 @@ public final class AddMoneyController {
     private static final String ALLOWED_SUFFIX = "4043";
     private static final String PALMPAY_BANK_CODE = "999991";
     private static final long GATE_DELAY_MS = 1400;
-    private static final int POLL_ATTEMPTS = 24;
+    private static final int POLL_ATTEMPTS = 60;
     private static final long POLL_INTERVAL_MS = 5000;
 
     private final Context context;
@@ -234,17 +234,36 @@ public final class AddMoneyController {
         }
     }
 
+    /**
+     * Opens the bank page in Chrome as its own full-screen task so low-RAM
+     * devices never kill it together with this app, then tucks the app to
+     * the back so it can be recalled as a pop-up while Chrome stays up.
+     */
     private void openBrowser(String url) {
         if (url == null || url.isEmpty() || !url.startsWith("http")) {
             fail("The bank did not provide an authorisation page.");
             return;
         }
         try {
-            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+            Intent browser = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            browser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(browser);
             binding.amStatusText.setText(R.string.am_browser);
             binding.amStatusRow.setVisibility(View.VISIBLE);
+            if (context instanceof AddMoneyActivity) {
+                ((AddMoneyActivity) context).moveTaskToBack(true);
+            }
         } catch (Exception ignored) {
             fail("Could not open the bank authorisation page.");
+        }
+    }
+
+    /** Called when the user returns: resume checking the paused charge. */
+    public void resumePending() {
+        if (busy && currentReference != null && !currentReference.isEmpty()) {
+            binding.amStatusText.setText(R.string.am_browser);
+            binding.amStatusRow.setVisibility(View.VISIBLE);
+            pollPending(0);
         }
     }
 

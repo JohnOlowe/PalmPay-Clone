@@ -96,6 +96,14 @@ public final class AddMoneyActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (controller != null) {
+            controller.resumePending();
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         controller = null;
         binding = null;
