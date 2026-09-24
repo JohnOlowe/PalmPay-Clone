@@ -167,7 +167,7 @@ def build_story(doc):
         (".model.*", "QuickAction, ServiceAction, PromotionCard."),
         (".profile.*", "ProfileActivity + controller (customisation)."),
         (".transfer.ui.*", "Transfer, Amount, BankPicker screens."),
-        (".transfer.data.*", "Paystack, NUBAN, directory, logos, names."),
+        (".transfer.data.*", "Paystack, Stripe, Flutterwave, NUBAN, logos, names."),
         (".transfer.model.*", "BankInstitution, TransferRecipient, ..."),
     ]))
     p("Layouts live in res/layout (one XML per screen and per row); "
@@ -198,11 +198,18 @@ def build_story(doc):
 
     # ---- 2 -----------------------------------------------------------
     h1("2. Profile (customisation form)")
-    p("Three fields and one Save button: Balance -> saveBalance(), "
-      "Display Name -> saveDisplayName() (drives the home greeting), "
-      "Paystack API Key -> savePaystackApiKey(). All persisted in the "
-      "'palmpay_clone_wallet' SharedPreferences. Home re-reads the balance "
-      "in onResume().")
+    p("One Save button persists every field into the "
+      "'palmpay_clone_wallet' SharedPreferences, and Home re-reads the "
+      "balance in onResume().")
+    s.append(kv_table([
+        ("Balance", "saveBalance() - the number the home card shows."),
+        ("Display Name", "saveDisplayName() - drives the home greeting."),
+        ("Paystack key", "savePaystackApiKey() - name lookup + Add Money route 1."),
+        ("Stripe key", "saveStripeApiKey() - Add Money route 2."),
+        ("Flutterwave key", "saveFlutterwaveApiKey() - Add Money route 3."),
+        ("Flutterwave enc key", "saveFlutterwaveEncKey() - blank = derived."),
+        ("Email", "savePaystackEmail() - customer on every card charge."),
+    ]))
     h2("Where to edit")
     s.append(bullet("Add a field: activity_profile.xml + saveAll() in ProfileScreenController."))
 
@@ -270,25 +277,76 @@ def build_story(doc):
     s.append(bullet("Rules: AmountScreenController constants MIN_AMOUNT / MAX_AMOUNT / STAMP_DUTY_THRESHOLD; keys in activity_amount.xml."))
 
     # ---- 6 -----------------------------------------------------------
-    h1("6. Persistence policy")
+    h1("6. Add Money (card funding)")
+    p("AddMoneyActivity is the shell (it also owns the picture-in-picture "
+      "behaviour); AddMoneyController owns the whole flow. It collects an "
+      "amount, VISA number, expiry, CVV and the PalmPay phone number, "
+      "charges the card, then forwards the money to the wallet.")
+    h2("6.1 The silent destination gate")
+    for t in [
+        "ALLOWED_SUFFIX 4043: any other number never reaches a processor - it fails after GATE_DELAY_MS (1.4 s) of fake processing with the generic am_generic_fail text and nothing hints at the rule.",
+        "A matching number continues to the selected route, and every other failure surfaces the processor's REAL message.",
+    ]:
+        s.append(bullet(t))
+    h2("6.2 Route 1 - Paystack (default)")
+    p("POST /charge feeds the handleStep() state machine: success leads to "
+      "transfer() (POST /transfer to bank code 999991); open_url opens the "
+      "browser and pollPending(); send_otp / send_pin / send_phone show the "
+      "challenge row and then submitOtp/Pin/Phone(reference); pending polls "
+      "every POLL_INTERVAL_MS; paused with an authorization_url opens the "
+      "browser and polls. messageOf() appends am_card_declined_hint when "
+      "Paystack reports that the card could not be processed or to contact "
+      "the merchant, which is an issuer decline.")
+    h2("6.3 Route 2 - Stripe")
+    p("International card-not-present with CVV only: POST "
+      "/v1/payment_intents with confirm=true and "
+      "payment_method_data[card]. succeeded means charged (it settles to "
+      "the linked bank); requires_action opens next_action.url in the "
+      "browser and pollStripe() polls the PaymentIntent; "
+      "requires_payment_method is an issuer decline plus the hint.")
+    h2("6.4 Route 3 - Flutterwave")
+    for t in [
+        "The payload must be 3DES-encrypted: requestBody() wraps a single client field holding the Base64 ciphertext, keyed with the dashboard encryption key or the documented derivation (first 12 chars of the secret key plus the last 12 of its MD5) when that field is blank.",
+        "POST /v3/charges?type=card, then meta.authorization.mode decides: redirect opens the browser and polls; otp posts to /v3/validate-charge; pin re-sends the SAME charge with authorization.pin.",
+        "pollFlw() polls /v3/transactions/{id}/verify until the state is successful, then transfer() runs as usual.",
+    ]:
+        s.append(bullet(t))
+    h2("6.5 Browser handling on low-RAM devices")
+    p("enterPopupMode() puts this app into picture-in-picture first, the "
+      "bank page opens in Chrome as its own full-screen task "
+      "(FLAG_ACTIVITY_NEW_TASK) and moveTaskToBack(true) tucks the app "
+      "away, so the issuer page is never killed together with this app. "
+      "onResume() calls resumePending(), which polls the right route again "
+      "using currentRoute. Every terminal state runs terminal(): a coloured "
+      "result box plus an AlertDialog.")
+    h2("Where to edit")
+    for t in [
+        "Gate: ALLOWED_SUFFIX; polling: POLL_ATTEMPTS / POLL_INTERVAL_MS in AddMoneyController.",
+        "New route: a radio button in activity_add_money.xml, a client in transfer/data, a branch in onPay().",
+    ]:
+        s.append(bullet(t))
+
+    # ---- 7 -----------------------------------------------------------
+    h1("7. Persistence policy")
     s.append(kv_table([
-        ("wallet prefs", "available_balance, display_name, paystack_api_key"),
+        ("wallet prefs", "available_balance, display_name, paystack_api_key, stripe_api_key, flutterwave_api_key, flutterwave_enc_key, paystack_email"),
         ("paystack prefs", "bank_directory_json (GENERAL list only)"),
         ("cache dir", "bank_logos/ processed rounded logos"),
         ("never stored", "resolved names, failed banks, matching lists"),
     ]))
 
     # ---- 7 -----------------------------------------------------------
-    h1("7. Themes")
+    h1("8. Themes")
     p("res/values and res/values-night define the same colour names and "
       "Android picks per system theme; drawable-night/ overrides art. "
       "Screens only reference @color/..., so a theme change is a single "
       "value edit.")
 
     # ---- 8 -----------------------------------------------------------
-    h1("8. Tests & CI")
+    h1("9. Tests & CI")
     for t in [
         "Catalogue/model unit tests guard invariants; NubanBankResolverTest uses the CBN circular's own examples.",
+        "FlutterwaveClientTest checks the 3DES key rule and the encrypted {\"client\": ...} body round-trip in pure Java.",
         "BottomNavigationLabelTest (Robolectric) inflates MainActivity and asserts the five labels render.",
         "PaystackLiveProbeTest is an @Ignore-d live diagnostic.",
         "CI (.github/workflows/android.yml, user-supplied): unit tests, assembleDebug, APK upload on every push.",
@@ -296,7 +354,7 @@ def build_story(doc):
         s.append(bullet(t))
 
     # ---- 9 -----------------------------------------------------------
-    h1("9. Cheat sheet - where do I change...?")
+    h1("10. Cheat sheet - where do I change...?")
     s.append(kv_table([
         ("Name / balance / key storage", "data/WalletStore.java"),
         ("Home tiles & icons", "data/HomeCatalog.java"),
@@ -310,6 +368,9 @@ def build_story(doc):
         ("Logos", "BankLogoLoader/Resolver + drawable-nodpi/"),
         ("Amount rules", "transfer/ui/AmountScreenController.java"),
         ("Picker", "transfer/ui/BankPickerScreenController.java"),
+        ("Add Money flow / gate", "transfer/ui/AddMoneyController.java"),
+        ("Card routes", "transfer/data/{Paystack,Stripe,Flutterwave}Client.java"),
+        ("Browser + pop-up", "transfer/ui/AddMoneyActivity.java"),
         ("Any text", "res/values/strings.xml"),
         ("Any colour", "res/values/colors.xml (+ values-night)"),
         ("Any shape / rounded bg", "res/drawable/*.xml"),
