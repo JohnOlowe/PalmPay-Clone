@@ -285,6 +285,31 @@
                         android:textSize="13sp"
                         android:visibility="gone" />
 
+                    <RadioGroup
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/am_route_paystack"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="@string/am_route_paystack"
+                            android:textColor="@color/ink"
+                            android:textSize="13sp" />
+
+                        <RadioButton
+                            android:id="@+id/am_route_stripe"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:text="@string/am_route_stripe"
+                            android:textColor="@color/ink"
+                            android:textSize="13sp" />
+                    </RadioGroup>
+
                     <TextView
                         android:id="@+id/am_pay_button"
                         android:layout_width="match_parent"

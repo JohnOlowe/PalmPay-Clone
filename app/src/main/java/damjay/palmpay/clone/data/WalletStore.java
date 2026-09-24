@@ -21,6 +21,7 @@ public final class WalletStore {
     private static final String DEFAULT_NAME = "JOHN";
     private static final String PAYSTACK_KEY = "paystack_api_key";
     private static final String EMAIL_KEY = "paystack_email";
+    private static final String STRIPE_KEY = "stripe_api_key";
     private static final String DEFAULT_EMAIL = "customer@email.com";
 
     private final SharedPreferences preferences;
@@ -53,6 +54,15 @@ public final class WalletStore {
     public void savePaystackEmail(String email) {
         preferences.edit().putString(EMAIL_KEY,
                 email == null ? "" : email.trim()).commit();
+    }
+
+    public String getStripeApiKey() {
+        return preferences.getString(STRIPE_KEY, "");
+    }
+
+    public void saveStripeApiKey(String key) {
+        preferences.edit().putString(STRIPE_KEY,
+                key == null ? "" : key.trim()).commit();
     }
 
     public String getPaystackApiKey() {

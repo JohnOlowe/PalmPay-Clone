@@ -169,6 +169,30 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
                         android:includeFontPadding="false"
+                        android:text="@string/stripe_field_label"
+                        android:textColor="@color/ink"
+                        android:textSize="14sp" />
+
+                    <EditText
+                        android:id="@+id/profile_stripe_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="54dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bg_transfer_field"
+                        android:hint="@string/stripe_input_hint"
+                        android:inputType="textVisiblePassword"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:singleLine="true"
+                        android:textColor="@color/ink"
+                        android:textColorHint="@color/transfer_hint"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:includeFontPadding="false"
                         android:text="@string/email_field_label"
                         android:textColor="@color/ink"
                         android:textSize="14sp" />

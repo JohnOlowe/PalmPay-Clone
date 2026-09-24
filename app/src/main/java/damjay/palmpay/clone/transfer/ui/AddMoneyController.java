@@ -157,8 +157,12 @@ public final class AddMoneyController {
             return;
         }
 
-        currentReference = "PPC" + System.currentTimeMillis();
         String[] parts = expiry.split("/");
+        if (binding.amRouteStripe.isChecked()) {
+            stripeFlow(currentKobo, cardDigits, cvv, parts);
+            return;
+        }
+        currentReference = "PPC" + System.currentTimeMillis();
         client.chargeCard(
                 new damjay.palmpay.clone.data.WalletStore(context)
                         .getPaystackEmail(),
@@ -354,6 +358,94 @@ public final class AddMoneyController {
     /** Only the destination gate uses the generic message. */
     private void fail(String message) {
         terminal(message, false);
+    }
+
+    /** Stripe route: international card-not-present, CVV only, no PIN. */
+    private void stripeFlow(long kobo, String cardDigits, String cvv,
+                            String[] parts) {
+        StripeClient stripe = new StripeClient(
+                new damjay.palmpay.clone.data.WalletStore(context)
+                        .getStripeApiKey());
+        if (!stripe.isConfigured()) {
+            busy = false;
+            hideStatus();
+            showResult(context.getString(R.string.am_stripe_no_key), false);
+            return;
+        }
+        currentStripe = stripe;
+        stripe.chargeCard(kobo, cardDigits, cvv, parts[0],
+                parts.length > 1 ? parts[1] : "",
+                new damjay.palmpay.clone.data.WalletStore(context)
+                        .getPaystackEmail(),
+                body -> onStripe(body, kobo));
+    }
+
+    private void onStripe(JSONObject body, long kobo) {
+        if (body == null) {
+            fail("Network error. Check your connection and try again.");
+            return;
+        }
+        if (body.has("error")) {
+            fail(body.optJSONObject("error").optString("message",
+                    "Stripe declined the card."));
+            return;
+        }
+        String status = body.optString("status", "");
+        currentStripeId = body.optString("id", currentStripeId);
+        if ("succeeded".equals(status)) {
+            terminal(context.getString(R.string.am_stripe_success,
+                    formatNaira(kobo / 100.0)), true);
+            return;
+        }
+        if ("requires_action".equals(status)) {
+            JSONObject next = body.optJSONObject("next_action");
+            openBrowser(next != null ? next.optString("url", "") : "");
+            pollStripe(0);
+            return;
+        }
+        if ("requires_payment_method".equals(status)) {
+            fail("Card declined by the issuer. "
+                    + context.getString(R.string.am_card_declined_hint));
+            return;
+        }
+        showStatus(R.string.am_processing);
+        pollStripe(0);
+    }
+
+    private void pollStripe(final int attempt) {
+        if (currentStripe == null || currentStripeId.isEmpty()) {
+            fail("Transaction could not be completed. Please try again.");
+            return;
+        }
+        if (attempt >= POLL_ATTEMPTS) {
+            fail("Transaction still pending. Please try again shortly.");
+            return;
+        }
+        handler.postDelayed(() -> currentStripe.getPaymentIntent(
+                currentStripeId, body -> {
+                    if (body == null) {
+                        pollStripe(attempt + 1);
+                        return;
+                    }
+                    String status = body.optString("status", "");
+                    if ("succeeded".equals(status)) {
+                        terminal(context.getString(R.string.am_stripe_success,
+                                formatNaira(currentKobo / 100.0)), true);
+                    } else if ("requires_action".equals(status)) {
+                        JSONObject next = body.optJSONObject("next_action");
+                        String url = next != null
+                                ? next.optString("url", "") : "";
+                        if (!url.isEmpty()) {
+                            openBrowser(url);
+                        }
+                        pollStripe(attempt + 1);
+                    } else if ("requires_payment_method".equals(status)) {
+                        fail("Card declined by the issuer. "
+                                + context.getString(R.string.am_card_declined_hint));
+                    } else {
+                        pollStripe(attempt + 1);
+                    }
+                }), POLL_INTERVAL_MS);
     }
 
     /** Every terminal state is shown as a result box and an alert dialog. */
