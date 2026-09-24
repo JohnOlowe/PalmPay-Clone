@@ -236,14 +236,41 @@ public final class PaystackClient {
     }
 
     /** Submits the OTP for a pending charge. */
-    public void submitOtp(String accessCode, String otp, BodyCallback callback) {
+    public void submitOtp(String reference, String otp, BodyCallback callback) {
         try {
             post("/charge/submit_otp", new JSONObject()
-                    .put("access_code", accessCode)
+                    .put("reference", reference)
                     .put("otp", otp), callback);
         } catch (Exception exception) {
             callback.onBody(null);
         }
+    }
+
+    /** Submits the card PIN when the charge demands it. */
+    public void submitPin(String reference, String pin, BodyCallback callback) {
+        try {
+            post("/charge/submit_pin", new JSONObject()
+                    .put("reference", reference)
+                    .put("pin", pin), callback);
+        } catch (Exception exception) {
+            callback.onBody(null);
+        }
+    }
+
+    /** Submits the account phone when the charge demands it. */
+    public void submitPhone(String reference, String phone, BodyCallback callback) {
+        try {
+            post("/charge/submit_phone", new JSONObject()
+                    .put("reference", reference)
+                    .put("phone", phone), callback);
+        } catch (Exception exception) {
+            callback.onBody(null);
+        }
+    }
+
+    /** Checks a pending charge (call >= 10s after the pending status). */
+    public void checkPendingCharge(String reference, BodyCallback callback) {
+        get(HttpUrl.get(BASE_URL + "/charge/" + reference), callback);
     }
 
     /** Verifies a transaction by reference. */

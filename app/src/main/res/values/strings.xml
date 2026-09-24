@@ -150,4 +150,6 @@
     <string name="am_browser">Complete the verification in your browser…</string>
     <string name="email_field_label">Email (receives Paystack receipts)</string>
     <string name="email_input_hint">you@example.com</string>
+    <string name="am_pin_label">Enter your card PIN</string>
+    <string name="am_phone_label">Enter the phone number linked to this card</string>
 </resources>

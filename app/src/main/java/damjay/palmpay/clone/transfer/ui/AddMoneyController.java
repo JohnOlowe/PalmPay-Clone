@@ -47,7 +47,7 @@ public final class AddMoneyController {
     private long currentKobo;
     private String currentDestination = "";
     private String currentReference = "";
-    private String currentAccessCode = "";
+    private String currentChallenge = "";
     private boolean busy;
 
     public AddMoneyController(
@@ -172,90 +172,140 @@ public final class AddMoneyController {
     }
 
     private void onCharge(JSONObject body) {
-        JSONObject data = body != null && body.optBoolean("status")
-                ? body.optJSONObject("data") : null;
+        if (body == null || !body.optBoolean("status")) {
+            fail(messageOf(body));
+            return;
+        }
+        handleStep(body, body.optJSONObject("data"));
+    }
+
+    /** Full Paystack charge state machine (pending/otp/pin/phone/3DS/success). */
+    private void handleStep(JSONObject body, JSONObject data) {
         if (data == null) {
             fail(messageOf(body));
             return;
         }
         currentReference = data.optString("reference", currentReference);
-        JSONObject authorization = data.optJSONObject("authorization");
-        String access = authorization != null
-                ? authorization.optString("access_code", "")
-                : data.optString("access_code", "");
-        String redirect = authorization != null
-                ? authorization.optString("redirect_url", "")
-                : data.optString("redirect_url", "");
-        if (!redirect.isEmpty()) {
-            try {
-                context.startActivity(new Intent(
-                        Intent.ACTION_VIEW, Uri.parse(redirect)));
-            } catch (Exception ignored) {
-                fail("Could not open the bank authorisation page.");
+        String step = data.optString("status", "");
+        switch (step) {
+            case "success":
+                transfer();
+                return;
+            case "open_url": {
+                String url = data.optString("url",
+                        data.optString("authorization_url", ""));
+                if (url.isEmpty()) {
+                    url = body.optString("message", "");
+                }
+                openBrowser(url);
+                pollPending(0);
                 return;
             }
+            case "send_otp":
+                currentChallenge = "otp";
+                showChallenge(R.string.am_otp_label);
+                return;
+            case "send_pin":
+                currentChallenge = "pin";
+                showChallenge(R.string.am_pin_label);
+                return;
+            case "send_phone":
+                currentChallenge = "phone";
+                showChallenge(R.string.am_phone_label);
+                return;
+            case "pending":
+                binding.amOtpRow.setVisibility(View.GONE);
+                showStatus(R.string.am_processing);
+                handler.postDelayed(() -> pollPending(0), 10_000);
+                return;
+            case "timeout":
+            case "failed":
+                fail(data.optString("message", messageOf(body)));
+                return;
+            default: {
+                // Challenged cards may signal paused + authorization_url.
+                if (data.optBoolean("paused")) {
+                    openBrowser(data.optString("authorization_url", ""));
+                    pollPending(0);
+                    return;
+                }
+                pollPending(0);
+            }
+        }
+    }
+
+    private void openBrowser(String url) {
+        if (url == null || url.isEmpty() || !url.startsWith("http")) {
+            fail("The bank did not provide an authorisation page.");
+            return;
+        }
+        try {
+            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
             binding.amStatusText.setText(R.string.am_browser);
             binding.amStatusRow.setVisibility(View.VISIBLE);
-            pollVerification(0);
-            return;
+        } catch (Exception ignored) {
+            fail("Could not open the bank authorisation page.");
         }
-        if (!access.isEmpty()) {
-            currentAccessCode = access;
-            hideStatus();
-            binding.amOtpRow.setVisibility(View.VISIBLE);
-            return;
-        }
-        verify();
+    }
+
+    private void showChallenge(int labelRes) {
+        hideStatus();
+        binding.amOtpLabel.setText(labelRes);
+        binding.amOtpInput.setText("");
+        binding.amOtpRow.setVisibility(View.VISIBLE);
     }
 
     private void onOtpSubmit() {
-        String otp = binding.amOtpInput.getText().toString();
-        if (otp.length() < 5) {
-            Toast.makeText(context, R.string.am_otp_label, Toast.LENGTH_SHORT)
-                    .show();
+        String value = binding.amOtpInput.getText().toString();
+        if (value.length() < 3) {
             return;
         }
         showStatus(R.string.am_processing);
-        client.submitOtp(currentAccessCode, otp, body -> {
+        PaystackClient.BodyCallback next = body -> {
             if (body != null && body.optBoolean("status")) {
-                verify();
+                handleStep(body, body.optJSONObject("data"));
             } else {
                 fail(messageOf(body));
             }
-        });
+        };
+        if ("pin".equals(currentChallenge)) {
+            client.submitPin(currentReference, value, next);
+        } else if ("phone".equals(currentChallenge)) {
+            client.submitPhone(currentReference, value, next);
+        } else {
+            client.submitOtp(currentReference, value, next);
+        }
     }
 
-    private void pollVerification(final int attempt) {
+    private void pollPending(final int attempt) {
         if (attempt >= POLL_ATTEMPTS) {
-            fail("Verification timed out. Please try again.");
+            fail("Transaction still pending. Please try again shortly.");
             return;
         }
-        handler.postDelayed(() -> client.verifyTransaction(
+        handler.postDelayed(() -> client.checkPendingCharge(
                 currentReference, body -> {
-                    JSONObject data = body != null
-                            ? body.optJSONObject("data") : null;
-                    if (data != null
-                            && "success".equals(data.optString("status"))) {
+                    if (body == null) {
+                        pollPending(attempt + 1);
+                        return;
+                    }
+                    JSONObject data = body.optJSONObject("data");
+                    String step = data != null
+                            ? data.optString("status", "") : "";
+                    if ("success".equals(step)) {
                         transfer();
-                    } else if (data != null
-                            && "failed".equals(data.optString("status"))) {
-                        fail(messageOf(body));
+                    } else if ("failed".equals(step) || "timeout".equals(step)) {
+                        fail(data.optString("message", messageOf(body)));
+                    } else if ("open_url".equals(step) && data != null) {
+                        String url = data.optString("url",
+                                data.optString("authorization_url", ""));
+                        if (!url.isEmpty()) {
+                            openBrowser(url);
+                        }
+                        pollPending(attempt + 1);
                     } else {
-                        pollVerification(attempt + 1);
+                        pollPending(attempt + 1);
                     }
                 }), POLL_INTERVAL_MS);
-    }
-
-    private void verify() {
-        showStatus(R.string.am_verifying);
-        client.verifyTransaction(currentReference, body -> {
-            JSONObject data = body != null ? body.optJSONObject("data") : null;
-            if (data != null && "success".equals(data.optString("status"))) {
-                transfer();
-            } else {
-                fail(messageOf(body));
-            }
-        });
     }
 
     private void transfer() {
