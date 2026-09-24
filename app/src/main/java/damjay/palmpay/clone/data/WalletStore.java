@@ -22,6 +22,8 @@ public final class WalletStore {
     private static final String PAYSTACK_KEY = "paystack_api_key";
     private static final String EMAIL_KEY = "paystack_email";
     private static final String STRIPE_KEY = "stripe_api_key";
+    private static final String FLUTTERWAVE_KEY = "flutterwave_api_key";
+    private static final String FLUTTERWAVE_ENC_KEY = "flutterwave_enc_key";
     private static final String DEFAULT_EMAIL = "customer@email.com";
 
     private final SharedPreferences preferences;
@@ -62,6 +64,26 @@ public final class WalletStore {
 
     public void saveStripeApiKey(String key) {
         preferences.edit().putString(STRIPE_KEY,
+                key == null ? "" : key.trim()).commit();
+    }
+
+    public String getFlutterwaveApiKey() {
+        return preferences.getString(FLUTTERWAVE_KEY, "");
+    }
+
+    public void saveFlutterwaveApiKey(String key) {
+        preferences.edit().putString(FLUTTERWAVE_KEY,
+                key == null ? "" : key.trim()).commit();
+    }
+
+    /** Optional 3DES key from Settings -> API; derived from the secret key
+     * when it is left blank. */
+    public String getFlutterwaveEncKey() {
+        return preferences.getString(FLUTTERWAVE_ENC_KEY, "");
+    }
+
+    public void saveFlutterwaveEncKey(String key) {
+        preferences.edit().putString(FLUTTERWAVE_ENC_KEY,
                 key == null ? "" : key.trim()).commit();
     }
 

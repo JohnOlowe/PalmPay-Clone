@@ -20,6 +20,7 @@ import java.util.Locale;
 
 import damjay.palmpay.clone.R;
 import damjay.palmpay.clone.databinding.ActivityAddMoneyBinding;
+import damjay.palmpay.clone.transfer.data.FlutterwaveClient;
 import damjay.palmpay.clone.transfer.data.PaystackClient;
 import damjay.palmpay.clone.transfer.data.StripeClient;
 
@@ -49,8 +50,12 @@ public final class AddMoneyController {
     private String currentDestination = "";
     private String currentReference = "";
     private String currentChallenge = "";
+    private String currentRoute = "paystack";
     private StripeClient currentStripe = null;
     private String currentStripeId = "";
+    private FlutterwaveClient currentFlutterwave = null;
+    private String currentFlwId = "";
+    private String currentFlwRef = "";
     private boolean busy;
 
     public AddMoneyController(
@@ -162,9 +167,16 @@ public final class AddMoneyController {
 
         String[] parts = expiry.split("/");
         if (binding.amRouteStripe.isChecked()) {
+            currentRoute = "stripe";
             stripeFlow(currentKobo, cardDigits, cvv, parts);
             return;
         }
+        if (binding.amRouteFlutterwave.isChecked()) {
+            currentRoute = "flutterwave";
+            flutterwaveFlow(currentKobo, cardDigits, cvv, parts);
+            return;
+        }
+        currentRoute = "paystack";
         currentReference = "PPC" + System.currentTimeMillis();
         client.chargeCard(
                 new damjay.palmpay.clone.data.WalletStore(context)
@@ -270,9 +282,16 @@ public final class AddMoneyController {
 
     /** Called when the user returns: resume checking the paused charge. */
     public void resumePending() {
-        if (busy && currentReference != null && !currentReference.isEmpty()) {
-            binding.amStatusText.setText(R.string.am_browser);
-            binding.amStatusRow.setVisibility(View.VISIBLE);
+        if (!busy) {
+            return;
+        }
+        binding.amStatusText.setText(R.string.am_browser);
+        binding.amStatusRow.setVisibility(View.VISIBLE);
+        if ("flutterwave".equals(currentRoute)) {
+            pollFlw(0);
+        } else if ("stripe".equals(currentRoute)) {
+            pollStripe(0);
+        } else if (currentReference != null && !currentReference.isEmpty()) {
             pollPending(0);
         }
     }
@@ -290,6 +309,15 @@ public final class AddMoneyController {
             return;
         }
         showStatus(R.string.am_processing);
+        if ("flw_otp".equals(currentChallenge)) {
+            currentFlutterwave.validateCharge(
+                    currentFlwRef, value, this::onFlutterwave);
+            return;
+        }
+        if ("flw_pin".equals(currentChallenge)) {
+            currentFlutterwave.submitPin(value, this::onFlutterwave);
+            return;
+        }
         PaystackClient.BodyCallback next = body -> {
             if (body != null && body.optBoolean("status")) {
                 handleStep(body, body.optJSONObject("data"));
@@ -338,6 +366,15 @@ public final class AddMoneyController {
     }
 
     private void transfer() {
+        if (!client.isConfigured()) {
+            // The card route charged the money but there is no Paystack key
+            // to push it across to the PalmPay number, so report the charge.
+            terminal(context.getString(
+                    R.string.am_success_no_transfer,
+                    formatNaira(currentKobo / 100.0),
+                    mask(currentDestination)), true);
+            return;
+        }
         showStatus(R.string.am_sending);
         client.transferToBank(
                 currentKobo,
@@ -447,6 +484,118 @@ public final class AddMoneyController {
                                 + context.getString(R.string.am_card_declined_hint));
                     } else {
                         pollStripe(attempt + 1);
+                    }
+                }), POLL_INTERVAL_MS);
+    }
+
+    /**
+     * Flutterwave route: a Nigerian processor that also takes international
+     * card-not-present (CVV only, no PIN) and returns the issuer's 3-D Secure
+     * page as a redirect URL.
+     */
+    private void flutterwaveFlow(long kobo, String cardDigits, String cvv,
+                                 String[] parts) {
+        damjay.palmpay.clone.data.WalletStore store =
+                new damjay.palmpay.clone.data.WalletStore(context);
+        FlutterwaveClient flutterwave = new FlutterwaveClient(
+                store.getFlutterwaveApiKey(), store.getFlutterwaveEncKey());
+        if (!flutterwave.isConfigured()) {
+            busy = false;
+            hideStatus();
+            showResult(context.getString(R.string.am_flw_no_key), false);
+            return;
+        }
+        currentFlutterwave = flutterwave;
+        currentFlwId = "";
+        currentFlwRef = "";
+        currentKobo = kobo;
+        String txRef = "PPW" + System.currentTimeMillis();
+        flutterwave.chargeCard(
+                kobo / 100.0,
+                cardDigits,
+                cvv,
+                parts[0],
+                parts.length > 1 ? parts[1] : "",
+                store.getPaystackEmail(),
+                store.getDisplayName(),
+                txRef,
+                this::onFlutterwave);
+    }
+
+    /**
+     * Flutterwave answers with meta.authorization.mode: "redirect" (open the
+     * issuer page), "otp" (validate), "pin" (re-charge with the PIN) or no
+     * authorization at all (verify immediately).
+     */
+    private void onFlutterwave(JSONObject body) {
+        if (body == null) {
+            fail("Network error. Check your connection and try again.");
+            return;
+        }
+        if ("error".equals(body.optString("status", ""))) {
+            fail(messageOf(body));
+            return;
+        }
+        JSONObject data = body.optJSONObject("data");
+        if (data == null) {
+            fail(messageOf(body));
+            return;
+        }
+        currentFlwId = data.optString("id", currentFlwId);
+        currentFlwRef = data.optString("flw_ref", currentFlwRef);
+        if ("successful".equals(data.optString("status", ""))) {
+            transfer();
+            return;
+        }
+        JSONObject meta = body.optJSONObject("meta");
+        JSONObject authorization = meta == null
+                ? null : meta.optJSONObject("authorization");
+        String mode = authorization == null
+                ? "" : authorization.optString("mode", "");
+        if ("pin".equals(mode)) {
+            currentChallenge = "flw_pin";
+            showChallenge(R.string.am_pin_label);
+            return;
+        }
+        if ("otp".equals(mode)) {
+            currentChallenge = "flw_otp";
+            showChallenge(R.string.am_otp_label);
+            return;
+        }
+        String url = authorization == null
+                ? "" : authorization.optString("redirect", "");
+        if (!url.isEmpty()) {
+            openBrowser(url);
+        }
+        pollFlw(0);
+    }
+
+    /** Polls the server-side verify endpoint after the browser round trip. */
+    private void pollFlw(final int attempt) {
+        if (currentFlutterwave == null || currentFlwId.isEmpty()) {
+            fail("Transaction could not be completed. Please try again.");
+            return;
+        }
+        if (attempt >= POLL_ATTEMPTS) {
+            fail("Transaction still pending. Please try again shortly.");
+            return;
+        }
+        handler.postDelayed(() -> currentFlutterwave.verifyTransaction(
+                currentFlwId, body -> {
+                    if (body == null) {
+                        pollFlw(attempt + 1);
+                        return;
+                    }
+                    JSONObject data = body.optJSONObject("data");
+                    String status = data == null
+                            ? "" : data.optString("status", "");
+                    if ("successful".equals(status)) {
+                        transfer();
+                    } else if ("failed".equals(status)) {
+                        fail(data.optString("processor_response",
+                                messageOf(body)));
+                    } else {
+                        pollFlw(attempt + 1);
                     }
                 }), POLL_INTERVAL_MS);
     }

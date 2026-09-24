@@ -158,5 +158,12 @@
     <string name="am_route_paystack">Paystack</string>
     <string name="am_route_stripe">Stripe (no PIN, like regular stores)</string>
     <string name="am_stripe_no_key">Add your Stripe secret key in Profile first.</string>
+    <string name="flutterwave_field_label">Flutterwave secret key (optional)</string>
+    <string name="flutterwave_input_hint">FLWSECK\u2026</string>
+    <string name="flutterwave_enc_field_label">Flutterwave encryption key (optional)</string>
+    <string name="flutterwave_enc_input_hint">FLWSECK\u2026 from Settings \u2192 API; leave blank to derive it</string>
+    <string name="am_route_flutterwave">Flutterwave (no PIN)</string>
+    <string name="am_flw_no_key">Add your Flutterwave secret key in Profile first.</string>
+    <string name="am_success_no_transfer">₦%1$s charged. Add a Paystack key to send it on to PalmPay %2$s.</string>
     <string name="am_stripe_success">₦%1$s charged via Stripe. It settles to your linked bank; move it to PalmPay as usual.</string>
 </resources>
