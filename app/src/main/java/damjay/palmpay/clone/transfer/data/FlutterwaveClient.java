@@ -2,12 +2,12 @@ package damjay.palmpay.clone.transfer.data;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Base64;
 
 import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 
 import javax.crypto.Cipher;
@@ -153,7 +153,11 @@ public final class FlutterwaveClient {
         return given.length == 24 ? encryptionKey : derivedKey(secretKey);
     }
 
-    /** 3DES-ECB + Base64, exactly as Flutterwave's own snippets do it. */
+    /**
+     * 3DES-ECB + Base64, exactly as Flutterwave's own snippets do it.
+     * java.util.Base64 (not android.util) so the cipher stays pure Java:
+     * same NO_WRAP alphabet, but it also runs in plain unit tests.
+     */
     static String encryptPayload(String plainJson, String secretKey,
                                  String encryptionKey) {
         try {
@@ -163,7 +167,7 @@ public final class FlutterwaveClient {
             cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(key, ALGORITHM));
             byte[] encrypted = cipher.doFinal(
                     plainJson.getBytes(StandardCharsets.UTF_8));
-            return Base64.encodeToString(encrypted, Base64.NO_WRAP);
+            return Base64.getEncoder().encodeToString(encrypted);
         } catch (Exception exception) {
             return "";
         }
