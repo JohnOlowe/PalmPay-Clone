@@ -29,7 +29,7 @@ import okhttp3.Response;
  * Two things make it different from the other two clients:
  *
  *  - the payload must be 3DES-encrypted ({"client": "..."}), using the
- *    encryption key from Settings -> API on the Flutterwave dashboard;
+ *    encryption key from Settings > API Keys on the dashboard;
  *  - the charge answer lives in meta.authorization.mode: "redirect" (open
  *    the URL and verify), "otp" (validate), "pin" (re-charge with the PIN)
  *    or nothing at all (verify straight away).
