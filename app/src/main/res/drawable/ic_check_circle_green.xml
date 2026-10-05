@@ -1,0 +1,16 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="20dp"
+    android:height="20dp"
+    android:viewportWidth="20"
+    android:viewportHeight="20">
+    <!-- A vector circle stays perfectly round at every density. -->
+    <path
+        android:fillColor="#27B897"
+        android:pathData="M10,0 a10,10 0 1,0 0.0001,0 Z" />
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M6,10.4 L8.8,13.2 L14.2,7.2" />
+</vector>

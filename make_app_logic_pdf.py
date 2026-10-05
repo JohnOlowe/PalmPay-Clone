@@ -229,6 +229,8 @@ def build_story(doc):
     for t in [
         "Clears the container, shows the 'Matching banks' spinner row.",
         "History banks for this account are added instantly with their saved holder names.",
+        "History rows open the amount page directly without filling the account box; typed digits always survive the round trip.",
+        "PresetBanks pins OPay / PalmPay / SmartCash / Moniepoint / Access Bank: a known sort code (or name token) always shows the bundled name and logo; logo circles are white, unpadded and perfectly round everywhere.",
         "With a key: PaystackClient.listBanks() (memory -> disk cache -> network) gives the general directory; targets = wallets (opay, palmpay, moniepoint, smartcash, kuda, momo) + up to MAX_VERIFIED_PROBES (10) NUBAN-valid banks.",
         "One resolveAccount() per target, ALL CONCURRENTLY (OkHttp dispatcher 64 / 40 per host). Successes stream in as rows; failures are remembered in failedBankKeys; the last settle hides the spinner.",
         "Without a key: offline NUBAN candidates from the GitHub-pages directory, no names.",

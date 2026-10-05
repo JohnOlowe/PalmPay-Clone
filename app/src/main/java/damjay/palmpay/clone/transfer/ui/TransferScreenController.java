@@ -32,6 +32,7 @@ import damjay.palmpay.clone.data.WalletStore;
 import damjay.palmpay.clone.transfer.data.BankDirectoryRepository;
 import damjay.palmpay.clone.transfer.data.BankNameNormalizer;
 import damjay.palmpay.clone.transfer.data.BankLogoLoader;
+import damjay.palmpay.clone.transfer.data.PresetBanks;
 import damjay.palmpay.clone.transfer.data.BankLogoResolver;
 import damjay.palmpay.clone.transfer.data.NubanBankResolver;
 import damjay.palmpay.clone.transfer.data.PaystackClient;
@@ -284,8 +285,8 @@ public final class TransferScreenController {
     }
 
     private void selectRecentRecipient(TransferRecipient recipient) {
-        populateTrustedRecipient(recipient);
-        selectTrustedRecipient(recipient, true);
+        // History rows go straight to the amount page: the account box is
+        // never filled, so coming back still shows exactly what was typed.
         openAmountScreen(recipient);
     }
 
@@ -438,12 +439,14 @@ public final class TransferScreenController {
                             @Override
                             public void onResolved(
                                     String accountName, BankInstitution resolved) {
+                                String shownName = PresetBanks.displayNameFor(
+                                        resolved.getCode(), resolved.getName());
                                 if (digitsStillCurrent(digits)
                                         && !listedBankNames.contains(
                                                 BankNameNormalizer.canonical(
-                                                        resolved.getName()))) {
+                                                        shownName))) {
                                     addMatchingBankRow(digits,
-                                            bankForProvider(resolved.getName()),
+                                            bankForProvider(shownName),
                                             accountName);
                                 }
                                 if (outstanding.decrementAndGet() == 0) {
@@ -481,17 +484,20 @@ public final class TransferScreenController {
 
     private void addMatchingBankRow(
             String digits, BankInstitution bank, String resolvedName) {
-        listedBankNames.add(BankNameNormalizer.canonical(bank.getName()));
+        // Preset institutions always show their own name and bundled logo,
+        // no matter what the directory or the resolver returned.
+        final BankInstitution shown = PresetBanks.apply(bank);
+        listedBankNames.add(BankNameNormalizer.canonical(shown.getName()));
         if (resolvedName != null) {
-            resolvedNames.put(BankNameNormalizer.canonical(bank.getName()), resolvedName);
-            resolvedNames.put(bank.getName().toLowerCase(Locale.US), resolvedName);
+            resolvedNames.put(BankNameNormalizer.canonical(shown.getName()), resolvedName);
+            resolvedNames.put(shown.getName().toLowerCase(Locale.US), resolvedName);
         }
         MatchingBankItemBinding item = MatchingBankItemBinding.inflate(
                 inflater, binding.matchingBanksContainer, false);
-        item.matchingBankName.setText(bank.getName());
-        applyBankLogo(item.matchingBankLogo, bank);
+        item.matchingBankName.setText(shown.getName());
+        applyBankLogo(item.matchingBankLogo, shown);
         item.getRoot().setOnClickListener(view ->
-                selectMatchedBank(digits, bank));
+                selectMatchedBank(digits, shown));
         binding.matchingBanksContainer.addView(item.getRoot());
     }
 
@@ -542,8 +548,13 @@ public final class TransferScreenController {
     }
 
     private void applyBankLogo(android.widget.ImageView image, BankInstitution bank) {
-        String url = bank.getLogoUrl();
         ImageViewCompat.setImageTintList(image, null);
+        if (PresetBanks.isPreset(bank.getCode(), bank.getName())) {
+            image.setImageResource(
+                    BankLogoResolver.fallbackForProvider(bank.getName()));
+            return;
+        }
+        String url = bank.getLogoUrl();
         if (url != null && !url.isEmpty()) {
             image.setImageResource(R.drawable.ic_bank_building);
             logoLoader.load(url, image);
@@ -552,7 +563,7 @@ public final class TransferScreenController {
             image.setImageResource(fallback);
             if (fallback == R.drawable.ic_bank_building) {
                 ImageViewCompat.setImageTintList(image, ColorStateList.valueOf(
-                        color(android.R.color.white)));
+                        color(R.color.transfer_hint)));
             }
         }
     }
@@ -635,8 +646,10 @@ public final class TransferScreenController {
                         @Override
                         public void onResolved(
                                 String accountName, BankInstitution resolved) {
+                            String provider = PresetBanks.displayNameFor(
+                                    bank.getCode(), bank.getName());
                             resolvedRecipient = new TransferRecipient(
-                                    accountName, digits, bank.getName(), "");
+                                    accountName, digits, provider, "");
                             resolvedRecipient.setLogoUrl(bank.getLogoUrl());
                             showConfirmationName(accountName);
                             hideStatus();
@@ -685,19 +698,25 @@ public final class TransferScreenController {
     }
 
     private void showResolvedBank(String name, String logoUrl) {
-        binding.selectedBankText.setText(name);
+        String shown = PresetBanks.displayNameFor(null, name);
+        binding.selectedBankText.setText(shown);
         binding.selectedBankText.setTextColor(color(R.color.ink));
         binding.selectedBankLogo.setVisibility(View.VISIBLE);
         ImageViewCompat.setImageTintList(binding.selectedBankLogo, null);
+        if (PresetBanks.isPreset(null, name)) {
+            binding.selectedBankLogo.setImageResource(
+                    BankLogoResolver.fallbackForProvider(shown));
+            return;
+        }
         if (logoUrl != null && !logoUrl.isEmpty()) {
             binding.selectedBankLogo.setImageResource(R.drawable.ic_bank_building);
             logoLoader.load(logoUrl, binding.selectedBankLogo);
         } else {
-            int fallback = BankLogoResolver.fallbackForProvider(name);
+            int fallback = BankLogoResolver.fallbackForProvider(shown);
             binding.selectedBankLogo.setImageResource(fallback);
             if (fallback == R.drawable.ic_bank_building) {
                 ImageViewCompat.setImageTintList(binding.selectedBankLogo,
-                        ColorStateList.valueOf(color(android.R.color.white)));
+                        ColorStateList.valueOf(color(R.color.transfer_hint)));
             }
         }
     }
@@ -759,11 +778,12 @@ public final class TransferScreenController {
     }
 
     private void applyProviderLogo(android.widget.ImageView image, String provider) {
-        int fallback = BankLogoResolver.fallbackForProvider(provider);
+        int fallback = BankLogoResolver.fallbackForProvider(
+                PresetBanks.displayNameFor(null, provider));
         image.setImageResource(fallback);
         if (fallback == R.drawable.ic_bank_building) {
             ImageViewCompat.setImageTintList(image, ColorStateList.valueOf(
-                    color(android.R.color.white)));
+                    color(R.color.transfer_hint)));
         } else {
             ImageViewCompat.setImageTintList(image, null);
         }

@@ -96,7 +96,7 @@ public final class AmountScreenController {
             binding.amountRecipientLogo.setImageResource(logo);
             if (logo == R.drawable.ic_bank_building) {
                 ImageViewCompat.setImageTintList(binding.amountRecipientLogo,
-                        ColorStateList.valueOf(color(android.R.color.white)));
+                        ColorStateList.valueOf(color(R.color.transfer_hint)));
             } else {
                 ImageViewCompat.setImageTintList(binding.amountRecipientLogo, null);
             }

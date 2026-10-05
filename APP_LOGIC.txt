@@ -321,6 +321,12 @@ Cache dir bank_logos/ (BankLogoLoader): processed rounded logos.
 NOT stored: resolved account names, failed-bank memory, matching lists.
   Those live only in TransferScreenController fields for the current request
   cycle and are wiped on any account edit and on process death.
+Logo circles are white with zero padding everywhere (picker list, history,
+matching banks, resolver field); the generic building glyph is tinted grey.
+History rows open the amount page DIRECTLY (selectRecentRecipient) without
+touching the account box, so a typed number always survives the round trip.
+The resolved-name green check is the round vector ic_check_circle_green at
+14 dp (30% smaller than the old 20 dp PNG).
 
 ----------------------------------------------------------------------------
 8. THEMES
@@ -356,6 +362,9 @@ Bottom bar look ...................... layout/bottom_nav_item.xml +
 Transfer flow (all of it) ............ transfer/ui/TransferScreenController.java
 Matching-bank request policy ......... same file: showMatchingBanks(),
                                        WALLET_PROVIDERS, MAX_VERIFIED_PROBES
+Preset bank identities ............... transfer/data/PresetBanks.java
+                                       (OPay/PalmPay/SmartCash/Moniepoint/
+                                       Access: code wins, bundled logo+name)
 Name resolution HTTP ................. transfer/data/PaystackClient.java
 Bank math ............................ transfer/data/NubanBankResolver.java
 Name variants/duplicates ............. transfer/data/BankNameNormalizer.java

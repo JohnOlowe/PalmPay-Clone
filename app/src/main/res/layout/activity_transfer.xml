@@ -101,6 +101,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
+                    android:fontFamily="@font/amount_font_medium"
                     android:text="@string/free_label"
                     android:textColor="@color/free_banner_label"
                     android:textSize="14sp"
@@ -158,11 +159,11 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="7dp"
+                            android:layout_marginStart="4dp"
                             android:includeFontPadding="false"
                             android:text="@string/add_extra_transfer_protection"
                             android:textColor="@color/transfer_green"
-                            android:textSize="14sp" />
+                            android:textSize="13sp" />
 
                         <ImageView
                             android:layout_width="16dp"

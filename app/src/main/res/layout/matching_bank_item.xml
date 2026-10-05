@@ -15,8 +15,7 @@
         android:background="@drawable/bg_recipient_circle"
         android:clipToOutline="true"
         android:contentDescription=""
-        android:padding="4dp"
-        android:scaleType="centerInside" />
+                android:scaleType="centerCrop" />
 
     <TextView
         android:id="@+id/matching_bank_name"

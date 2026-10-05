@@ -21,7 +21,7 @@
             android:id="@+id/contact_avatar"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@drawable/bg_recipient_circle"
+            android:background="@drawable/bg_contact_ring"
             android:clipToOutline="true"
             android:contentDescription=""
             android:scaleType="centerCrop" />

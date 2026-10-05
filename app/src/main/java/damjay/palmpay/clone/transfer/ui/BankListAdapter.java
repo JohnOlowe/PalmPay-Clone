@@ -16,6 +16,8 @@ import java.util.Locale;
 import damjay.palmpay.clone.R;
 import damjay.palmpay.clone.databinding.BankItemBinding;
 import damjay.palmpay.clone.transfer.data.BankLogoLoader;
+import damjay.palmpay.clone.transfer.data.BankLogoResolver;
+import damjay.palmpay.clone.transfer.data.PresetBanks;
 import damjay.palmpay.clone.transfer.model.BankInstitution;
 
 /** List adapter that renders every bank returned by the remote directory. */
@@ -82,13 +84,19 @@ public final class BankListAdapter extends BaseAdapter {
             binding = (BankItemBinding) recycled.getTag();
         }
 
-        BankInstitution bank = getItem(position);
+        BankInstitution bank = PresetBanks.apply(getItem(position));
         binding.bankName.setText(bank.getName());
         binding.bankCode.setText(context.getString(R.string.bank_code_format, bank.getCode()));
         binding.bankLogo.setTag(null);
+        ImageViewCompat.setImageTintList(binding.bankLogo, null);
+        if (PresetBanks.isPreset(bank.getCode(), bank.getName())) {
+            binding.bankLogo.setImageResource(
+                    BankLogoResolver.fallbackForProvider(bank.getName()));
+            return binding.getRoot();
+        }
         binding.bankLogo.setImageResource(R.drawable.ic_bank_building);
         ImageViewCompat.setImageTintList(binding.bankLogo, ColorStateList.valueOf(
-                ContextCompat.getColor(context, android.R.color.white)));
+                ContextCompat.getColor(context, R.color.transfer_hint)));
         logoLoader.load(bank.getLogoUrl(), binding.bankLogo);
         return binding.getRoot();
     }

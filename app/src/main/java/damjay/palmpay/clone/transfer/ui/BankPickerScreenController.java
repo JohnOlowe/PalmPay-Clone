@@ -28,6 +28,7 @@ import damjay.palmpay.clone.databinding.FrequentBankItemBinding;
 import damjay.palmpay.clone.databinding.PickerBankItemBinding;
 import damjay.palmpay.clone.databinding.ActivityBankPickerBinding;
 import damjay.palmpay.clone.transfer.data.BankDirectoryRepository;
+import damjay.palmpay.clone.transfer.data.PresetBanks;
 import damjay.palmpay.clone.transfer.data.NubanBankResolver;
 import damjay.palmpay.clone.transfer.data.BankLogoLoader;
 import damjay.palmpay.clone.transfer.model.BankInstitution;
@@ -119,12 +120,13 @@ public final class BankPickerScreenController {
         }
         List<BankInstitution> frequent = frequentBanks();
         for (BankInstitution bank : frequent) {
+            final BankInstitution shown = PresetBanks.apply(bank);
             FrequentBankItemBinding item = FrequentBankItemBinding.inflate(
                     inflater, binding.frequentBanksGrid, false);
-            item.frequentBankName.setText(bank.getName());
-            prepareLogo(item.frequentBankLogo, bank, true);
-            item.getRoot().setContentDescription(bank.getName());
-            item.getRoot().setOnClickListener(view -> listener.onBankPicked(bank));
+            item.frequentBankName.setText(shown.getName());
+            prepareLogo(item.frequentBankLogo, shown, true);
+            item.getRoot().setContentDescription(shown.getName());
+            item.getRoot().setOnClickListener(view -> listener.onBankPicked(shown));
 
             GridLayout.LayoutParams params = new GridLayout.LayoutParams(
                     GridLayout.spec(GridLayout.UNDEFINED),
@@ -150,12 +152,13 @@ public final class BankPickerScreenController {
                         ViewGroup.LayoutParams.MATCH_PARENT, dp(44)));
             }
 
+            final BankInstitution shown = PresetBanks.apply(bank);
             PickerBankItemBinding item = PickerBankItemBinding.inflate(
                     inflater, binding.allBanksContainer, false);
-            item.pickerBankName.setText(bank.getName());
-            prepareLogo(item.pickerBankLogo, bank, false);
-            item.getRoot().setContentDescription(bank.getName());
-            item.getRoot().setOnClickListener(view -> listener.onBankPicked(bank));
+            item.pickerBankName.setText(shown.getName());
+            prepareLogo(item.pickerBankLogo, shown, false);
+            item.getRoot().setContentDescription(shown.getName());
+            item.getRoot().setOnClickListener(view -> listener.onBankPicked(shown));
             binding.allBanksContainer.addView(item.getRoot(), new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, dp(64)));
         }
@@ -233,16 +236,18 @@ public final class BankPickerScreenController {
 
     private void prepareLogo(android.widget.ImageView image, BankInstitution bank, boolean showFrame) {
         image.setTag(null);
+        ImageViewCompat.setImageTintList(image, null);
+        if (PresetBanks.isPreset(bank.getCode(), bank.getName())) {
+            image.setBackgroundResource(R.drawable.bg_recipient_circle);
+            image.setImageResource(fallbackLogo(bank));
+            return;
+        }
         int fallback = fallbackLogo(bank);
-        image.setBackgroundResource(showFrame || fallback == R.drawable.ic_bank_building
-                ? R.drawable.bg_recipient_circle
-                : android.R.color.transparent);
+        image.setBackgroundResource(R.drawable.bg_recipient_circle);
         image.setImageResource(fallback);
         if (fallback == R.drawable.ic_bank_building) {
             ImageViewCompat.setImageTintList(image, ColorStateList.valueOf(
-                    color(android.R.color.white)));
-        } else {
-            ImageViewCompat.setImageTintList(image, null);
+                    color(R.color.transfer_hint)));
         }
         logoLoader.load(bank.getLogoUrl(), image);
     }

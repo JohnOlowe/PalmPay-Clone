@@ -26,7 +26,7 @@
             android:clipToOutline="true"
             android:contentDescription=""
             android:src="@drawable/ic_bank_building"
-            android:tint="@android:color/white" />
+            android:tint="@color/transfer_hint" />
     </FrameLayout>
 
     <LinearLayout

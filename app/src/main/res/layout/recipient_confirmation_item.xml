@@ -11,10 +11,10 @@
 
     <ImageView
         android:id="@+id/confirmation_icon"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
         android:contentDescription=""
-        android:src="@drawable/exact_check_circle" />
+        android:src="@drawable/ic_check_circle_green" />
 
     <TextView
         android:id="@+id/confirmation_name"
