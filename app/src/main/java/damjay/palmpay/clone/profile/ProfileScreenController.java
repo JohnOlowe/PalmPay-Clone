@@ -60,7 +60,8 @@ public final class ProfileScreenController {
             Intent intent;
             if (Build.VERSION.SDK_INT >= 30) {
                 intent = new Intent(Settings.ACTION_BIOMETRIC_ENROLL);
-                intent.putExtra(Settings.EXTRA_BIOMETRIC_AUTHENTICATORS,
+                intent.putExtra(
+                        Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
                         androidx.biometric.BiometricManager.Authenticators
                                 .BIOMETRIC_WEAK
                                 | androidx.biometric.BiometricManager
