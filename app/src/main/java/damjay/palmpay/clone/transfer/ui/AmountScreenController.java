@@ -1,8 +1,17 @@
 package damjay.palmpay.clone.transfer.ui;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Paint;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -10,6 +19,10 @@ import android.widget.Toast;
 import androidx.annotation.ColorInt;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
+
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 import damjay.palmpay.clone.R;
 import damjay.palmpay.clone.data.WalletStore;
@@ -35,7 +48,10 @@ public final class AmountScreenController {
     }
 
     private final BankLogoLoader logoLoader;
+    private final Handler handler = new Handler(Looper.getMainLooper());
     private boolean formattingAmount;
+    private Dialog paymentSheet;
+    private Dialog loadingOverlay;
 
     public void bind() {
         binding.amountRecipientName.setText(recipient.getName());
@@ -109,7 +125,7 @@ public final class AmountScreenController {
         binding.keyBackspace.setOnClickListener(view -> deleteLastAmountCharacter());
         binding.amountKeypadNext.setOnClickListener(view -> {
             if (binding.amountKeypadNext.isEnabled()) {
-                showMessage("Transfer amount entered");
+                showPaymentSheet();
             }
         });
         binding.amountClear.setOnClickListener(view ->
@@ -119,6 +135,14 @@ public final class AmountScreenController {
                 "Transfer protection selected"));
         binding.amountBackButton.setOnClickListener(view -> closeScreen());
         binding.amountInput.setShowSoftInputOnFocus(false);
+        // The digits render at display size now, so the range hint keeps a
+        // readable size of its own.
+        android.text.SpannableString hint = new android.text.SpannableString(
+                context.getString(R.string.amount_hint));
+        hint.setSpan(new android.text.style.AbsoluteSizeSpan(16, true),
+                0, hint.length(),
+                android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        binding.amountInput.setHint(hint);
         binding.amountInput.setOnFocusChangeListener((view, focused) -> {
             if (focused) {
                 binding.amountKeypad.setVisibility(View.VISIBLE);
@@ -163,7 +187,7 @@ public final class AmountScreenController {
         binding.amountInput.setOnEditorActionListener((view, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE
                     && binding.amountKeypadNext.isEnabled()) {
-                showMessage("Transfer amount entered");
+                showPaymentSheet();
                 return true;
             }
             return false;
@@ -229,9 +253,10 @@ public final class AmountScreenController {
         return grouped.toString();
     }
 
+    /** The official chips always land in the field with ".00" appended. */
     private void bindQuickAmount(TextView chip, int amountRes) {
         chip.setOnClickListener(view -> binding.amountInput.setText(
-                context.getString(amountRes).replace(",", "")));
+                context.getString(amountRes) + ".00"));
     }
 
     private void bindKey(TextView key, String value) {
@@ -260,12 +285,105 @@ public final class AmountScreenController {
         }
         int length = intPart.length();
         if (length == 0) {
-            binding.amountPlaceTooltip.setVisibility(View.GONE);
+            // Only the bubble hides; its slot keeps its height so the
+            // digits never shift.
+            binding.amountTooltipWrap.setVisibility(View.INVISIBLE);
             return;
         }
         int index = Math.min(length, PLACE_NAMES.length) - 1;
         binding.amountPlaceTooltip.setText(PLACE_NAMES[index]);
-        binding.amountPlaceTooltip.setVisibility(View.VISIBLE);
+        binding.amountTooltipWrap.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * The official confirmation: a bottom sheet over a dimmed screen with
+     * the purple total, the detail card and the CashBox payment method.
+     */
+    private void showPaymentSheet() {
+        if (paymentSheet != null && paymentSheet.isShowing()) {
+            return;
+        }
+        double value = parseAmount(binding.amountInput.getText().toString());
+        String decimal = new DecimalFormat("#,##0.00",
+                DecimalFormatSymbols.getInstance(Locale.US)).format(value);
+
+        Dialog dialog = new Dialog(context);
+        View sheet = LayoutInflater.from(context)
+                .inflate(R.layout.dialog_payment_sheet, null);
+        dialog.setContentView(sheet);
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawableResource(android.R.color.transparent);
+            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            window.setGravity(Gravity.BOTTOM);
+            window.setDimAmount(0.5f);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        }
+
+        TextView amount = sheet.findViewById(R.id.sheet_amount);
+        amount.setText(context.getString(R.string.naira_sign) + decimal);
+        TextView rowAmount = sheet.findViewById(R.id.sheet_row_amount);
+        rowAmount.setText(context.getString(R.string.naira_sign) + decimal);
+        TextView feeStrike = sheet.findViewById(R.id.sheet_fee_strike);
+        String fee = new DecimalFormat("#,##0.00",
+                DecimalFormatSymbols.getInstance(Locale.US))
+                .format(value * 0.009);
+        feeStrike.setText(context.getString(R.string.naira_sign) + fee);
+        feeStrike.setPaintFlags(
+                feeStrike.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        TextView rowAccount = sheet.findViewById(R.id.sheet_row_account);
+        rowAccount.setText(recipient.getAccountNumber());
+        TextView rowName = sheet.findViewById(R.id.sheet_row_name);
+        rowName.setText(recipient.getName());
+        TextView rowBank = sheet.findViewById(R.id.sheet_row_bank);
+        rowBank.setText(recipient.getProvider());
+        TextView cashboxBalance =
+                sheet.findViewById(R.id.sheet_cashbox_balance);
+        String balance = new WalletStore(context).getBalanceDisplay();
+        cashboxBalance.setText("(" + balance + ")");
+        cashboxBalance.setPaintFlags(
+                cashboxBalance.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+
+        sheet.findViewById(R.id.sheet_close)
+                .setOnClickListener(view -> dialog.dismiss());
+        sheet.findViewById(R.id.sheet_confirm)
+                .setOnClickListener(view -> confirmToPay(decimal));
+
+        paymentSheet = dialog;
+        dialog.show();
+    }
+
+    /** Confirm to Pay: the dimmed screen with the fluid PalmPay logo card. */
+    private void confirmToPay(String decimal) {
+        if (loadingOverlay != null && loadingOverlay.isShowing()) {
+            return;
+        }
+        Dialog loading = new Dialog(context,
+                android.R.style.Theme_Translucent_NoTitleBar);
+        loading.setContentView(LayoutInflater.from(context)
+                .inflate(R.layout.dialog_loading_logo, null));
+        Window window = loading.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawableResource(android.R.color.transparent);
+            window.setDimAmount(0f);
+        }
+        loading.setCancelable(false);
+        loadingOverlay = loading;
+        loading.show();
+
+        // One fill + hold + drain cycle, then settle the transfer.
+        handler.postDelayed(() -> {
+            if (loadingOverlay != null && loadingOverlay.isShowing()) {
+                loadingOverlay.dismiss();
+            }
+            if (paymentSheet != null && paymentSheet.isShowing()) {
+                paymentSheet.dismiss();
+            }
+            showMessage(context.getString(R.string.transfer_success_toast,
+                    decimal, recipient.getName()));
+            closeScreen();
+        }, 2600);
     }
 
     private void hideSystemKeyboard() {

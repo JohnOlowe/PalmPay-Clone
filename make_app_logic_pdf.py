@@ -268,8 +268,11 @@ def build_story(doc):
     h1("5. Amount screen")
     for t in [
         "Custom keypad (GridLayout amount_keypad); amount field suppresses the system keyboard; Note field shows Gboard and hides the keypad (focus choreography); manifest uses adjustResize.",
+        "Digits, naira sign, chips and keypad use Quicksand (res/font, OFL) to match the official rounded look.",
+        "The place-value bubble lives in a fixed-height slot above the digits so it never shifts the text; quick chips append '.00' exactly like the official app.",
         "Live comma grouping (formatAmount); parseAmount strips commas.",
         "Validation 10.00-200,000.00 with red amount_error and disabled Next; >= 10,000 shows the FIRS stamp-duty notice (13sp).",
+        "Next opens the Payment bottom sheet over a dimmed screen (purple total, detail card, CashBox method, Confirm to Pay); confirming shows the fluid PalmPay logo (fills 1s, holds 300ms, drains 1s) then settles the transfer.",
         "Balance line 'Balance: N 0.00  CashBox: <wallet>' (Balance is always 0 by product rule).",
     ]:
         s.append(bullet(t))

@@ -157,6 +157,17 @@
     <string name="stripe_input_hint">sk_live_...</string>
     <string name="am_route_paystack">Paystack</string>
     <string name="am_route_stripe">Stripe (no PIN, like regular stores)</string>
+    <string name="payment_title">Payment</string>
+    <string name="fee_label">Fee</string>
+    <string name="fee_free">\u20a60.00</string>
+    <string name="account_number_label">Account Number</string>
+    <string name="name_label">Name</string>
+    <string name="bank_label">Bank</string>
+    <string name="payment_method_label">Payment Method</string>
+    <string name="payment_method_all">All</string>
+    <string name="cashbox_label">CashBox</string>
+    <string name="confirm_to_pay">Confirm to Pay</string>
+    <string name="transfer_success_toast">\u20a6%1$s sent to %2$s</string>
     <string name="am_stripe_no_key">Add your Stripe secret key in Profile first.</string>
     <string name="flutterwave_field_label">Flutterwave secret key (optional)</string>
     <string name="flutterwave_input_hint">FLWSECK\u2026</string>

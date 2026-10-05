@@ -1,0 +1,34 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <!-- Rounded hexagon body: the round-joined stroke softens the corners. -->
+    <path
+        android:fillColor="#FF8800F8"
+        android:strokeColor="#FF8800F8"
+        android:strokeWidth="4"
+        android:strokeLineJoin="round"
+        android:pathData="M24,3 L42.5,13.5 L42.5,34.5 L24,45 L5.5,34.5 L5.5,13.5 Z" />
+    <!-- Left diagonal notch, entering from the west edge heading north-east. -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="1.6"
+        android:strokeLineJoin="round"
+        android:pathData="M3,27.5 L6,30.5 L20,16.5 L17,13.5 Z" />
+    <!-- Right diagonal notch, its 180 degree rotation. -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="1.6"
+        android:strokeLineJoin="round"
+        android:pathData="M45,20.5 L42,17.5 L28,31.5 L31,34.5 Z" />
+    <!-- Centre diamond. -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="1.2"
+        android:strokeLineJoin="round"
+        android:pathData="M24,21.4 L26.6,24 L24,26.6 L21.4,24 Z" />
+</vector>

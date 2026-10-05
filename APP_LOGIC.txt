@@ -216,17 +216,35 @@ Files: AmountActivity.java, AmountScreenController.java,
     allows Gboard; leaving Note restores the keypad and hides Gboard.
     Manifest uses adjustResize so content scrolls above the keyboard.
   * Input is comma-grouped live (formatAmount); parseAmount strips commas.
+  * FONT: the digits, naira sign, chips and keypad render in Quicksand
+    (res/font/amount_font_medium.ttf + amount_font_regular.ttf, OFL,
+    instanced from the variable font) to match the official rounded look.
+  * Place-value bubble (Ones..Billions) sits in a FIXED 26dp slot
+    (amount_tooltip_slot) above the digits; the bubble+tail
+    (amount_tooltip_wrap) only toggles INVISIBLE/VISIBLE so the digits
+    never shift. Bubble is grey #8D939B with white text and a tail vector.
   * Validation: 10.00 - 200,000.00; out-of-range shows the red
     amount_error text and disables Next (bg_keypad_next vs
     bg_keypad_next_enabled); >= 10,000 shows the FIRS stamp-duty notice
     (stamp_notice_card, 13sp).
   * Balance line: "Balance: (naira) 0.00  CashBox: <wallet balance>"
     (balance_cashbox string; Balance is always 0 by product rule).
-  * Quick chips 500..10,000 (explicit GridLayout rows/columns).
+  * Quick chips 500..10,000 (explicit GridLayout rows/columns). Clicking a
+    chip writes the value WITH ".00" appended, like the official app.
+  * Next (keypad, purple, spans 3 rows) opens the PAYMENT bottom sheet
+    (dialog_payment_sheet.xml): dimmed background, purple total, detail
+    card (Amount / Fee with struck original + free / Account Number /
+    Name / Bank), Payment Method row, CashBox row with green tick,
+    Confirm to Pay button.
+  * Confirm to Pay shows the LOADING overlay (dialog_loading_logo.xml):
+    translucent-white scrim + white rounded card holding FluidLogoView -
+    the PalmPay mark fills solid from the bottom in 1 s, holds 300 ms and
+    drains in 1 s (ic_palmpay_mark + ic_palmpay_hex_solid clipped). After
+    one cycle the sheet dismisses and the transfer toast fires.
 
 Where to edit: keypad keys = activity_amount.xml; rules =
 AmountScreenController constants (MIN_AMOUNT, MAX_AMOUNT,
-STAMP_DUTY_THRESHOLD).
+STAMP_DUTY_THRESHOLD); sheet/overlay = showPaymentSheet()/confirmToPay().
 
 ----------------------------------------------------------------------------
 6. ADD MONEY (card funding - three routes)

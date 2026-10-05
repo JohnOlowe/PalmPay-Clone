@@ -178,17 +178,17 @@
                     <FrameLayout
                         android:id="@+id/amount_field"
                         android:layout_width="match_parent"
-                        android:layout_height="94dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="11dp"
                         android:background="@drawable/bg_amount_input"
                         android:paddingStart="12dp"
                         android:paddingTop="14dp"
                         android:paddingEnd="12dp"
-                        android:paddingBottom="8dp">
+                        android:paddingBottom="10dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:orientation="vertical">
 
                             <TextView
@@ -199,37 +199,61 @@
                                 android:textColor="@color/ink"
                                 android:textSize="14sp" />
 
-                            <TextView
-                                android:id="@+id/amount_place_tooltip"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:background="@drawable/bg_place_tooltip"
-                                android:includeFontPadding="false"
-                                android:paddingStart="6dp"
-                                android:paddingTop="2dp"
-                                android:paddingEnd="6dp"
-                                android:paddingBottom="2dp"
-                                android:textColor="#2B2E33"
-                                android:textSize="11sp"
-                                android:visibility="gone" />
+                            <!-- Fixed-height slot: the bubble appears and
+                                 disappears inside it, so the digits below
+                                 never move. -->
+                            <FrameLayout
+                                android:id="@+id/amount_tooltip_slot"
+                                android:layout_width="match_parent"
+                                android:layout_height="26dp"
+                                android:layout_marginTop="4dp">
+
+                                <LinearLayout
+                                    android:id="@+id/amount_tooltip_wrap"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="22dp"
+                                    android:orientation="vertical"
+                                    android:visibility="gone">
+
+                                    <TextView
+                                        android:id="@+id/amount_place_tooltip"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:background="@drawable/bg_place_tooltip"
+                                        android:includeFontPadding="false"
+                                        android:paddingStart="7dp"
+                                        android:paddingTop="2dp"
+                                        android:paddingEnd="7dp"
+                                        android:paddingBottom="2dp"
+                                        android:textColor="#FFFFFF"
+                                        android:textSize="11sp" />
+
+                                    <ImageView
+                                        android:layout_width="10dp"
+                                        android:layout_height="5dp"
+                                        android:layout_marginStart="12dp"
+                                        android:layout_marginTop="-1dp"
+                                        android:contentDescription=""
+                                        android:src="@drawable/bg_tooltip_tail" />
+                                </LinearLayout>
+                            </FrameLayout>
 
                             <LinearLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="0dp"
-                                android:layout_marginTop="7dp"
-                                android:layout_weight="1"
+                                android:layout_height="54dp"
+                                android:layout_marginTop="2dp"
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal">
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
+                                    android:fontFamily="@font/amount_font_medium"
                                     android:includeFontPadding="false"
                                     android:text="@string/naira_sign"
                                     android:textColor="@color/ink"
-                                    android:textSize="22sp"
-                                    android:textStyle="bold" />
+                                    android:textSize="26sp" />
 
                                 <EditText
                                     android:id="@+id/amount_input"
@@ -238,22 +262,23 @@
                                     android:layout_marginStart="8dp"
                                     android:layout_weight="1"
                                     android:background="@android:color/transparent"
-                                android:focusableInTouchMode="true"
-                                android:hint="@string/amount_hint"
-                                android:imeOptions="actionDone"
-                                android:includeFontPadding="false"
-                                android:inputType="numberDecimal"
-                                android:padding="0dp"
-                                android:singleLine="true"
-                                android:textColor="@color/ink"
-                                android:textColorHint="@color/transfer_hint"
-                                android:textSize="22sp" />
+                                    android:focusableInTouchMode="true"
+                                    android:fontFamily="@font/amount_font_medium"
+                                    android:hint="@string/amount_hint"
+                                    android:imeOptions="actionDone"
+                                    android:includeFontPadding="false"
+                                    android:inputType="numberDecimal"
+                                    android:padding="0dp"
+                                    android:singleLine="true"
+                                    android:textColor="@color/ink"
+                                    android:textColorHint="@color/transfer_hint"
+                                    android:textSize="34sp" />
                             </LinearLayout>
 
                             <View
                                 android:layout_width="match_parent"
-                                android:layout_height="1dp"
-                                android:background="@color/transfer_divider" />
+                                android:layout_height="2dp"
+                                android:background="@color/ink" />
                         </LinearLayout>
 
                         <ImageButton
@@ -317,6 +342,7 @@
                             android:gravity="center"
                             android:text="@string/amount_500"
                             android:textColor="@color/ink"
+                            android:fontFamily="@font/amount_font_regular"
                             android:textSize="14sp"
                             android:layout_columnWeight="1"
                             android:layout_marginEnd="8dp" />
@@ -330,6 +356,7 @@
                             android:gravity="center"
                             android:text="@string/amount_1000"
                             android:textColor="@color/ink"
+                            android:fontFamily="@font/amount_font_regular"
                             android:textSize="14sp"
                             android:layout_columnWeight="1"
                             android:layout_marginEnd="8dp" />
@@ -343,6 +370,7 @@
                             android:gravity="center"
                             android:text="@string/amount_2000"
                             android:textColor="@color/ink"
+                            android:fontFamily="@font/amount_font_regular"
                             android:textSize="14sp"
                             android:layout_columnWeight="1" />
                         <TextView
@@ -355,6 +383,7 @@
                             android:gravity="center"
                             android:text="@string/amount_5000"
                             android:textColor="@color/ink"
+                            android:fontFamily="@font/amount_font_regular"
                             android:textSize="14sp"
                             android:layout_columnWeight="1"
                             android:layout_marginTop="8dp"
@@ -369,6 +398,7 @@
                             android:gravity="center"
                             android:text="@string/amount_9999"
                             android:textColor="@color/ink"
+                            android:fontFamily="@font/amount_font_regular"
                             android:textSize="14sp"
                             android:layout_columnWeight="1"
                             android:layout_marginTop="8dp"
@@ -383,6 +413,7 @@
                             android:gravity="center"
                             android:text="@string/amount_10000"
                             android:textColor="@color/ink"
+                            android:fontFamily="@font/amount_font_regular"
                             android:textSize="14sp"
                             android:layout_columnWeight="1"
                             android:layout_marginTop="8dp" />
@@ -468,6 +499,7 @@
             android:background="@drawable/bg_keypad_button"
             android:clickable="true"
             android:focusable="true"
+            android:fontFamily="@font/amount_font_regular"
             android:gravity="center"
             android:text="1"
             android:textColor="@color/ink"
@@ -483,6 +515,7 @@
             android:background="@drawable/bg_keypad_button"
             android:clickable="true"
             android:focusable="true"
+            android:fontFamily="@font/amount_font_regular"
             android:gravity="center"
             android:text="2"
             android:textColor="@color/ink"
@@ -498,6 +531,7 @@
             android:background="@drawable/bg_keypad_button"
             android:clickable="true"
             android:focusable="true"
+            android:fontFamily="@font/amount_font_regular"
             android:gravity="center"
             android:text="3"
             android:textColor="@color/ink"
@@ -529,6 +563,7 @@
             android:background="@drawable/bg_keypad_button"
             android:clickable="true"
             android:focusable="true"
+            android:fontFamily="@font/amount_font_regular"
             android:gravity="center"
             android:text="4"
             android:textColor="@color/ink"
@@ -544,6 +579,7 @@
             android:background="@drawable/bg_keypad_button"
             android:clickable="true"
             android:focusable="true"
+            android:fontFamily="@font/amount_font_regular"
             android:gravity="center"
             android:text="5"
             android:textColor="@color/ink"
@@ -559,6 +595,7 @@
             android:background="@drawable/bg_keypad_button"
             android:clickable="true"
             android:focusable="true"
+            android:fontFamily="@font/amount_font_regular"
             android:gravity="center"
             android:text="6"
             android:textColor="@color/ink"
@@ -594,6 +631,7 @@
             android:background="@drawable/bg_keypad_button"
             android:clickable="true"
             android:focusable="true"
+            android:fontFamily="@font/amount_font_regular"
             android:gravity="center"
             android:text="7"
             android:textColor="@color/ink"
@@ -609,6 +647,7 @@
             android:background="@drawable/bg_keypad_button"
             android:clickable="true"
             android:focusable="true"
+            android:fontFamily="@font/amount_font_regular"
             android:gravity="center"
             android:text="8"
             android:textColor="@color/ink"
@@ -624,6 +663,7 @@
             android:background="@drawable/bg_keypad_button"
             android:clickable="true"
             android:focusable="true"
+            android:fontFamily="@font/amount_font_regular"
             android:gravity="center"
             android:text="9"
             android:textColor="@color/ink"
@@ -640,6 +680,7 @@
             android:background="@drawable/bg_keypad_button"
             android:clickable="true"
             android:focusable="true"
+            android:fontFamily="@font/amount_font_regular"
             android:gravity="center"
             android:text="00"
             android:textColor="@color/ink"
@@ -655,6 +696,7 @@
             android:background="@drawable/bg_keypad_button"
             android:clickable="true"
             android:focusable="true"
+            android:fontFamily="@font/amount_font_regular"
             android:gravity="center"
             android:text="0"
             android:textColor="@color/ink"
@@ -670,6 +712,7 @@
             android:background="@drawable/bg_keypad_button"
             android:clickable="true"
             android:focusable="true"
+            android:fontFamily="@font/amount_font_regular"
             android:gravity="center"
             android:text="."
             android:textColor="@color/ink"
