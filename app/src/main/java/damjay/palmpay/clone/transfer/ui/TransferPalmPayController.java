@@ -65,6 +65,7 @@ public final class TransferPalmPayController {
         allContacts.addAll(PalmPayCatalog.contacts());
 
         renderShortcuts(PalmPayCatalog.shortcuts());
+        damjay.palmpay.clone.ui.BannerSlides.populate(binding.ppBannerCarousel);
         bindTabs();
         renderList();
         bindForm();

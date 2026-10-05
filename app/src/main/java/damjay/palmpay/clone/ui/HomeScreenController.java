@@ -39,8 +39,6 @@ import damjay.palmpay.clone.transfer.ui.TransferPalmPayActivity;
  * the reusable models into views and wires up their behaviour.
  */
 public final class HomeScreenController {
-    private boolean carouselAlive;
-    private boolean bannerAlive;
     private static final int BADGE_NONE = 0;
     private static final int BADGE_DOT = 1;
     private static final int BADGE_NEW = 2;
@@ -63,9 +61,7 @@ public final class HomeScreenController {
         renderPromotions(HomeCatalog.promotions());
         bindBalanceCard();
         bindHeader();
-        bindClaimCard();
         bindPromoCarousel();
-        bindBannerCarousel();
         bindNavigation();
     }
 
@@ -200,72 +196,15 @@ public final class HomeScreenController {
         binding.notificationsButton.setOnClickListener(view -> showMessage("No new notifications"));
     }
 
-    private void bindClaimCard() {
-        binding.claimAction.setOnClickListener(view -> showMessage("Claim selected"));
-    }
-
     private void bindPromoCarousel() {
-        final android.widget.ViewFlipper flipper = binding.promoFlipper;
-        flipper.setFlipInterval(4000);
-        flipper.setInAnimation(context, android.R.anim.fade_in);
-        flipper.setOutAnimation(context, android.R.anim.fade_out);
-        flipper.startFlipping();
-        carouselAlive = true;
-        final android.os.Handler handler = new android.os.Handler(
-                android.os.Looper.getMainLooper());
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (!carouselAlive) {
-                    return;
-                }
-                updatePromoDots(flipper.getDisplayedChild());
-                handler.postDelayed(this, 4000);
-            }
-        });
-        binding.cashbackPage.cashbackAction.setOnClickListener(
-                view -> showMessage("Cashback selected"));
+        BannerSlides.populate(binding.bannerCarousel);
         binding.moreWealthRow.setOnClickListener(
                 view -> showMessage("More wealth products selected"));
-        binding.borrowBanner.setOnClickListener(
-                view -> showMessage("Borrow selected"));
     }
 
-    private void updatePromoDots(int page) {
-        android.widget.LinearLayout dots = binding.claimDots;
-        for (int i = 0; i < dots.getChildCount(); i++) {
-            dots.getChildAt(i).setBackgroundResource(
-                    i == page ? R.drawable.bg_dot_active : R.drawable.bg_dot_inactive);
-        }
-    }
-
-    private void bindBannerCarousel() {
-        final android.widget.ViewFlipper flipper = binding.bannerFlipper;
-        flipper.setFlipInterval(4000);
-        flipper.setInAnimation(context, android.R.anim.fade_in);
-        flipper.setOutAnimation(context, android.R.anim.fade_out);
-        flipper.startFlipping();
-        bannerAlive = true;
-        final android.os.Handler handler = new android.os.Handler(
-                android.os.Looper.getMainLooper());
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (!bannerAlive) {
-                    return;
-                }
-                handler.postDelayed(this, 4000);
-            }
-        });
-        flipper.setOnClickListener(view -> showMessage("Borrow selected"));
-    }
-
-    /** Stops the carousel tickers when the activity goes away. */
+    /** Kept for the activity lifecycle; the rail stops itself on detach. */
     public void release() {
-        carouselAlive = false;
-        bannerAlive = false;
-        binding.promoFlipper.stopFlipping();
-        binding.bannerFlipper.stopFlipping();
+        // BannerCarousel cancels its handler in onDetachedFromWindow().
     }
 
     private void bindNavigation() {

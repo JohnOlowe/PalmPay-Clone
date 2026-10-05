@@ -184,14 +184,15 @@ def build_story(doc):
         "renderPromotions() - Team Up & Save and CashBox cards.",
         "bindBalanceCard() - WalletStore balance with hide/show eye; Add Money / History are toasts.",
         "bindHeader() - greeting 'Hi, <name>' from WalletStore; avatar opens Profile.",
-        "bindPromoCarousel() / bindBannerCarousel() - ViewFlippers auto-flipping every 4000 ms with fades; dots synced by a Handler loop.",
+        "bindPromoCarousel() - the native BannerCarousel rail (five promos: logo disc, title, subtitle, action pill, dots). Pages dwell 3 s then a fluid 2 s leftward scroll; a finger drags one page per gesture. The same rail runs on the To PalmPay page.",
+        "Header support/notification glyphs are crisp vectors at half the old crop size.",
         "bindNavigation() - custom bottom bar (icon masks tinted purple/ink, red dot on Loan, NEW pill on Wealth).",
     ]:
         s.append(bullet(t))
     h2("Where to edit")
     for t in [
         "Tile texts: res/values/strings.xml; which tiles exist: data/HomeCatalog.java.",
-        "Tap behaviour: ui/HomeScreenController.java; carousel speed: the setFlipInterval(4000) calls.",
+        "Tap behaviour: ui/HomeScreenController.java; carousel rhythm: BannerCarousel DWELL_MS / SCROLL_MS; slides: ui/BannerSlides.java.",
         "Colours per theme: res/values/colors.xml + res/values-night/colors.xml.",
     ]:
         s.append(bullet(t))

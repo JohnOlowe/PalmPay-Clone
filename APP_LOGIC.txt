@@ -64,12 +64,15 @@ Flow:
                            toggles hide/show; Add Money / History = toasts.
     bindHeader()           Greeting "Hi, <name>" from WalletStore display
                            name; profile button -> ProfileActivity.
-    bindClaimCard()        Claim button toast.
-    bindPromoCarousel()    ViewFlipper (id promo_flipper) auto-flips every
-                           4000 ms with fade animations; dots (claim_dots)
-                           are re-coloured by a Handler loop in sync.
-    bindBannerCarousel()   ViewFlipper (id banner_flipper) rotating the three
-                           bottom banners (borrow/verify/business), 4000 ms.
+    bindClaimCard()        (retired) claim button toast.
+    bindPromoCarousel()    Native BannerCarousel (id banner_carousel) built by
+                           ui/BannerSlides.populate(): five promos (logo disc,
+                           title, subtitle, action pill) with dots. Pages dwell
+                           3000 ms then a fluid 2000 ms leftward scroll reveals
+                           the next; a finger can drag and snaps one page per
+                           gesture (BannerCarousel.java). The same rail is
+                           populated on the To PalmPay page
+                           (pp_banner_carousel).
     bindNavigation()       Builds the custom bottom bar (bottom_bar) from
                            bottom_nav_item.xml rows: icon mask tinted purple
                            when selected else ink, label, red dot on Loan,
@@ -79,7 +82,10 @@ Where to edit:
   * Text of any tile/card ............ res/values/strings.xml
   * Which tiles exist / their icons .. data/HomeCatalog.java
   * Behaviour on tap ................. ui/HomeScreenController.java
-  * Carousel speed ................... the two setFlipInterval(4000) calls
+  * Carousel rhythm .................. BannerCarousel DWELL_MS / SCROLL_MS;
+                                       slide content = ui/BannerSlides.java
+  * Header glyphs .................... ic_headset / ic_notifications vectors,
+                                       14-17dp (50% smaller than the old crops)
   * Colours (light/dark) ............. res/values/colors.xml and
                                        res/values-night/colors.xml
 
