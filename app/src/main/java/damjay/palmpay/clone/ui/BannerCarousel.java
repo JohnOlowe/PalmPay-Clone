@@ -200,7 +200,7 @@ public final class BannerCarousel extends LinearLayout {
                 applyOffset((float) animation.getAnimatedValue()));
         animator.addListener(new android.animation.AnimatorListenerAdapter() {
             @Override
-            public void onAnimationEnd(android.animation.Animation a) {
+            public void onAnimationEnd(android.animation.Animator a) {
                 settleAt(target);
                 scheduleAuto();
             }
