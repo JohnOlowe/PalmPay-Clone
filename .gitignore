@@ -11,3 +11,5 @@ out/
 
 .externalNativeBuild
 .cxx/
+
+tools/precheck/
