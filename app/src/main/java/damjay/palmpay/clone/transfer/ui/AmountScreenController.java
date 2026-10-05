@@ -2,6 +2,7 @@ package damjay.palmpay.clone.transfer.ui;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.os.Build;
 import android.content.res.ColorStateList;
 import android.graphics.Paint;
 import android.os.Handler;
@@ -17,7 +18,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.ColorInt;
+import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
 import androidx.core.widget.ImageViewCompat;
 
 import java.text.DecimalFormat;
@@ -212,6 +215,7 @@ public final class AmountScreenController {
         double value = parseAmount(text);
         boolean inRange = hasText && value >= MIN_AMOUNT && value <= MAX_AMOUNT;
         binding.amountClear.setVisibility(hasText ? View.VISIBLE : View.GONE);
+        binding.amountUnderline.setVisibility(hasText ? View.VISIBLE : View.GONE);
         binding.amountError.setVisibility(
                 hasText && !inRange ? View.VISIBLE : View.GONE);
         binding.stampNoticeCard.setVisibility(
@@ -326,10 +330,7 @@ public final class AmountScreenController {
         TextView rowAmount = sheet.findViewById(R.id.sheet_row_amount);
         rowAmount.setText(context.getString(R.string.naira_sign) + decimal);
         TextView feeStrike = sheet.findViewById(R.id.sheet_fee_strike);
-        String fee = new DecimalFormat("#,##0.00",
-                DecimalFormatSymbols.getInstance(Locale.US))
-                .format(value * 0.009);
-        feeStrike.setText(context.getString(R.string.naira_sign) + fee);
+        feeStrike.setText(context.getString(R.string.naira_sign) + "10.00");
         feeStrike.setPaintFlags(
                 feeStrike.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         TextView rowAccount = sheet.findViewById(R.id.sheet_row_account);
@@ -354,8 +355,53 @@ public final class AmountScreenController {
         dialog.show();
     }
 
-    /** Confirm to Pay: the dimmed screen with the fluid PalmPay logo card. */
-    private void confirmToPay(String decimal) {
+    /** Confirm to Pay asks for the device security first (fingerprint,
+     *  face, PIN - whatever the person registered), then pays. */
+    private void confirmToPay(final String decimal) {
+        if (loadingOverlay != null && loadingOverlay.isShowing()) {
+            return;
+        }
+        if (!(context instanceof FragmentActivity)) {
+            proceedToLoading(decimal);
+            return;
+        }
+        FragmentActivity activity = (FragmentActivity) context;
+        BiometricPrompt prompt = new BiometricPrompt(activity,
+                new BiometricPrompt.AuthenticationCallback() {
+                    @Override
+                    public void onAuthenticationSucceeded(
+                            BiometricPrompt.AuthenticationResult result) {
+                        activity.runOnUiThread(() -> proceedToLoading(decimal));
+                    }
+
+                    @Override
+                    public void onAuthenticationError(int errorCode,
+                            CharSequence errString) {
+                        activity.runOnUiThread(() ->
+                                showMessage(context.getString(
+                                        R.string.payment_cancelled)));
+                    }
+                });
+        BiometricPrompt.PromptInfo.Builder info =
+                new BiometricPrompt.PromptInfo.Builder()
+                        .setTitle(context.getString(R.string.confirm_payment_title))
+                        .setSubtitle(context.getString(
+                                R.string.confirm_payment_sub,
+                                decimal, recipient.getName()));
+        if (Build.VERSION.SDK_INT >= 28) {
+            info.setAllowedAuthenticators(
+                    androidx.biometric.BiometricManager.Authenticators
+                            .BIOMETRIC_WEAK
+                            | androidx.biometric.BiometricManager.Authenticators
+                                    .DEVICE_CREDENTIAL);
+        } else {
+            info.setDeviceCredentialAllowed(true);
+        }
+        prompt.authenticate(info.build());
+    }
+
+    /** The dimmed screen with the fluid PalmPay logo card. */
+    private void proceedToLoading(String decimal) {
         if (loadingOverlay != null && loadingOverlay.isShowing()) {
             return;
         }
@@ -382,6 +428,10 @@ public final class AmountScreenController {
             }
             showMessage(context.getString(R.string.transfer_success_toast,
                     decimal, recipient.getName()));
+            damjay.palmpay.clone.data.NotificationHelper.postHeadsUp(context,
+                    context.getString(R.string.transfer_success_toast,
+                            decimal, recipient.getName()),
+                    recipient.getAccountNumber());
             closeScreen();
         }, 2600);
     }

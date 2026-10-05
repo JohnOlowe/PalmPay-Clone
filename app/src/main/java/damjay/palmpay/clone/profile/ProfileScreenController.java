@@ -1,10 +1,22 @@
 package damjay.palmpay.clone.profile;
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.provider.Settings;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 
 import android.widget.Toast;
 
 import damjay.palmpay.clone.R;
+import damjay.palmpay.clone.data.NotificationHelper;
 import damjay.palmpay.clone.data.WalletStore;
 import damjay.palmpay.clone.databinding.ActivityProfileBinding;
 
@@ -34,6 +46,97 @@ public final class ProfileScreenController {
                         ? "" : walletStore.getPaystackEmail());
         binding.profileBackButton.setOnClickListener(view -> close());
         binding.saveBalanceButton.setOnClickListener(view -> saveAll());
+        binding.profileSecurityButton.setOnClickListener(
+                view -> openSecurityEnrollment());
+        binding.profileNotificationsButton.setOnClickListener(
+                view -> showNotificationConsent());
+    }
+
+    private static final int NOTIFICATION_PERMISSION_REQUEST = 777;
+
+    /** Register fingerprint / face / screen lock through the system page. */
+    private void openSecurityEnrollment() {
+        try {
+            Intent intent;
+            if (Build.VERSION.SDK_INT >= 30) {
+                intent = new Intent(Settings.ACTION_BIOMETRIC_ENROLL);
+                intent.putExtra(Settings.EXTRA_BIOMETRIC_AUTHENTICATORS,
+                        androidx.biometric.BiometricManager.Authenticators
+                                .BIOMETRIC_WEAK
+                                | androidx.biometric.BiometricManager
+                                        .Authenticators.DEVICE_CREDENTIAL);
+            } else {
+                intent = new Intent(Settings.ACTION_SECURITY_SETTINGS);
+            }
+            context.startActivity(intent);
+        } catch (Exception exception) {
+            try {
+                context.startActivity(
+                        new Intent(Settings.ACTION_SECURITY_SETTINGS));
+            } catch (Exception fallback) {
+                Toast.makeText(context, "Security settings unavailable",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    /** In-app consent sheet: Allow asks the system, Later slides away. */
+    private void showNotificationConsent() {
+        final Dialog dialog = new Dialog(context);
+        final View sheet = LayoutInflater.from(context).inflate(
+                R.layout.dialog_notification_consent, null);
+        dialog.setContentView(sheet);
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawableResource(android.R.color.transparent);
+            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            window.setGravity(Gravity.BOTTOM);
+            window.setDimAmount(0.5f);
+        }
+        sheet.findViewById(R.id.notif_allow).setOnClickListener(view -> {
+            dialog.dismiss();
+            requestNotificationPermission();
+        });
+        sheet.findViewById(R.id.notif_later).setOnClickListener(view ->
+                sheet.animate()
+                        .translationY(Math.max(sheet.getHeight(), 300))
+                        .alpha(0f)
+                        .setDuration(300)
+                        .withEndAction(dialog::dismiss));
+        dialog.show();
+    }
+
+    private void requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= 33 && context instanceof Activity) {
+            androidx.core.app.ActivityCompat.requestPermissions(
+                    (Activity) context,
+                    new String[] {android.Manifest.permission.POST_NOTIFICATIONS},
+                    NOTIFICATION_PERMISSION_REQUEST);
+        } else {
+            onNotificationPermissionResult(true);
+        }
+    }
+
+    public void onRequestPermissionsResult(
+            int requestCode, int[] grantResults) {
+        if (requestCode != NOTIFICATION_PERMISSION_REQUEST) {
+            return;
+        }
+        boolean granted = grantResults.length > 0
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED;
+        onNotificationPermissionResult(granted);
+    }
+
+    private void onNotificationPermissionResult(boolean granted) {
+        if (granted) {
+            NotificationHelper.postHeadsUp(context,
+                    context.getString(R.string.notif_enabled_title),
+                    context.getString(R.string.notif_enabled_body));
+        } else {
+            Toast.makeText(context, "Notifications stay off",
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void saveAll() {

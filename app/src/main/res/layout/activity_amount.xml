@@ -212,7 +212,7 @@
                                     android:id="@+id/amount_tooltip_wrap"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginStart="22dp"
+                                    android:layout_marginStart="16dp"
                                     android:orientation="vertical"
                                     android:visibility="gone">
 
@@ -232,7 +232,7 @@
                                     <ImageView
                                         android:layout_width="10dp"
                                         android:layout_height="5dp"
-                                        android:layout_marginStart="12dp"
+                                        android:layout_marginStart="10dp"
                                         android:layout_marginTop="-1dp"
                                         android:contentDescription=""
                                         android:src="@drawable/bg_tooltip_tail" />
@@ -276,9 +276,11 @@
                             </LinearLayout>
 
                             <View
+                                android:id="@+id/amount_underline"
                                 android:layout_width="match_parent"
-                                android:layout_height="2dp"
-                                android:background="@color/ink" />
+                                android:layout_height="1dp"
+                                android:background="@color/ink"
+                                android:visibility="gone" />
                         </LinearLayout>
 
                         <ImageButton

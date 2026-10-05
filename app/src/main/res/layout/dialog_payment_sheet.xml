@@ -247,11 +247,10 @@
             android:layout_width="34dp"
             android:layout_height="34dp"
             android:background="@drawable/bg_recipient_circle"
-            android:backgroundTint="@color/brand_purple"
             android:contentDescription=""
-            android:padding="7dp"
-            android:src="@drawable/ic_cashbox"
-            android:tint="@android:color/white" />
+            android:padding="5dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/home_action_savings" />
 
         <TextView
             android:layout_width="wrap_content"

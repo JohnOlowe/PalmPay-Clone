@@ -31,7 +31,7 @@
         <View
             android:layout_width="24dp"
             android:layout_height="2dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="4dp"
             android:background="@drawable/bg_transfer_tab_indicator" />
     </LinearLayout>
 

@@ -778,8 +778,8 @@ public final class TransferScreenController {
     }
 
     private void applyProviderLogo(android.widget.ImageView image, String provider) {
-        int fallback = BankLogoResolver.fallbackForProvider(
-                PresetBanks.displayNameFor(null, provider));
+        String shown = PresetBanks.displayNameFor(null, provider);
+        int fallback = BankLogoResolver.fallbackForProvider(shown);
         image.setImageResource(fallback);
         if (fallback == R.drawable.ic_bank_building) {
             ImageViewCompat.setImageTintList(image, ColorStateList.valueOf(
@@ -787,6 +787,22 @@ public final class TransferScreenController {
         } else {
             ImageViewCompat.setImageTintList(image, null);
         }
+        if (PresetBanks.isPreset(null, provider)) {
+            // Preset institutions always keep their bundled artwork.
+            return;
+        }
+        // Until the real icon set arrives, history rows fetch the logo
+        // online (provider URL first, then the directory's own URL).
+        String url = BankLogoResolver.forProvider(shown);
+        if ((url == null || url.isEmpty()) && directoryBanks != null) {
+            for (BankInstitution bank : directoryBanks) {
+                if (bank.getName().equalsIgnoreCase(shown)) {
+                    url = bank.getLogoUrl();
+                    break;
+                }
+            }
+        }
+        logoLoader.load(url, image);
     }
 
     private void bindToolbar() {

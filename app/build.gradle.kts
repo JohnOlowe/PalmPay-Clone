@@ -76,6 +76,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.okhttp)
+    implementation(libs.androidx.biometric)
 
     testImplementation(libs.junit4)
     testImplementation(libs.robolectric)

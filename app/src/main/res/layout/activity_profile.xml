@@ -260,6 +260,58 @@
                         android:textColorHint="@color/transfer_hint"
                         android:textSize="14sp" />
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:includeFontPadding="false"
+                        android:text="@string/security_field_label"
+                        android:textColor="@color/ink"
+                        android:textSize="14sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/profile_security_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:layout_marginTop="8dp"
+                        android:elevation="0dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="@string/security_button"
+                        android:textAllCaps="false"
+                        android:textColor="@color/brand_purple"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:backgroundTint="@color/brand_purple_soft"
+                        app:cornerRadius="22dp"
+                        app:strokeWidth="0dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:includeFontPadding="false"
+                        android:text="@string/notifications_field_label"
+                        android:textColor="@color/ink"
+                        android:textSize="14sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/profile_notifications_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:layout_marginTop="8dp"
+                        android:elevation="0dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="@string/notifications_button"
+                        android:textAllCaps="false"
+                        android:textColor="@color/brand_purple"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:backgroundTint="@color/brand_purple_soft"
+                        app:cornerRadius="22dp"
+                        app:strokeWidth="0dp" />
+
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/save_balance_button"
                         android:layout_width="match_parent"
