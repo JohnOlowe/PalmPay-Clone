@@ -36,8 +36,10 @@ public final class BannerSlideView extends LinearLayout {
 
     public void bind(final Slide slide) {
         removeAllViews();
+        // Merge-root layouts only generate the two-arg inflate, which
+        // always attaches the inflated children to this view.
         BannerSlideItemBinding item = BannerSlideItemBinding.inflate(
-                LayoutInflater.from(getContext()), this, true);
+                LayoutInflater.from(getContext()), this);
         GradientDrawable disc = new GradientDrawable();
         disc.setShape(GradientDrawable.OVAL);
         disc.setColor(ContextCompat.getColor(getContext(), slide.discColorRes));
