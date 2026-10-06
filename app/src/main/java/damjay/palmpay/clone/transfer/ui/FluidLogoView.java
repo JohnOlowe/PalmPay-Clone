@@ -26,7 +26,6 @@ public final class FluidLogoView extends AppCompatImageView {
 
     private final android.graphics.drawable.Drawable solid =
             ContextCompat.getDrawable(getContext(), R.drawable.ic_palmpay_hex_solid);
-    private final android.graphics.Rect clip = new android.graphics.Rect();
     private float fill;
     private ValueAnimator animator;
 
@@ -83,15 +82,25 @@ public final class FluidLogoView extends AppCompatImageView {
         if (width == 0 || height == 0) {
             return;
         }
-        // The square drawable is centred; clip the same square so the fill
-        // line tracks the hexagon, not the padded bounds.
+        // The square drawable is centred; reveal the solid silhouette with a
+        // rounded clip that grows out of the centre and retreats back into
+        // it, instead of a flat bottom-up fill.
         int side = Math.min(width, height);
         int top = (height - side) / 2;
         int left = (width - side) / 2;
         solid.setBounds(left, top, left + side, top + side);
+
+        float cx = left + side / 2f;
+        float cy = top + side / 2f;
+        // 0.72 * side > half the diagonal (0.707), so at fill==1 the round
+        // clip fully covers the hexagon including its corners.
+        float half = side * 0.72f * fill;
+        float corner = half * 0.5f;
+        android.graphics.Path reveal = new android.graphics.Path();
+        reveal.addRoundRect(cx - half, cy - half, cx + half, cy + half,
+                corner, corner, android.graphics.Path.Direction.CW);
         canvas.save();
-        clip.set(left, top + Math.round(side * (1f - fill)), left + side, top + side);
-        canvas.clipRect(clip);
+        canvas.clipPath(reveal);
         solid.draw(canvas);
         canvas.restore();
     }
