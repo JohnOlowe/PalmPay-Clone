@@ -92,8 +92,8 @@
                         android:foreground="?attr/selectableItemBackgroundBorderless">
 
                         <ImageView
-                            android:layout_width="14dp"
-                            android:layout_height="17dp"
+                            android:layout_width="21dp"
+                            android:layout_height="26dp"
                             android:layout_gravity="center"
                             android:contentDescription=""
                             android:src="@drawable/ic_headset"
@@ -113,8 +113,8 @@
                         android:foreground="?attr/selectableItemBackgroundBorderless">
 
                         <ImageView
-                            android:layout_width="17dp"
-                            android:layout_height="17dp"
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
                             android:layout_gravity="center"
                             android:contentDescription=""
                             android:src="@drawable/ic_notifications"

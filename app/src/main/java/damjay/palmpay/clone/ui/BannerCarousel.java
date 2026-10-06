@@ -125,17 +125,33 @@ public final class BannerCarousel extends LinearLayout {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        pageWidth = w - getPaddingLeft() - getPaddingRight();
-        if (pageWidth <= 0) {
+        sizePages(w);
+        applyOffset(offsetFor(position));
+    }
+
+    /**
+     * Pages are sized at measure time, not in onSizeChanged: depending on
+     * when setSlides() runs relative to the first layout pass the size
+     * callback alone can fire before the pages exist (leaving them at their
+     * default wrap size: slide one hugging the top, the rest blank).
+     */
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        sizePages(MeasureSpec.getSize(widthMeasureSpec));
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    private void sizePages(int width) {
+        int usable = width - getPaddingLeft() - getPaddingRight();
+        if (usable <= 0 || usable == pageWidth) {
             return;
         }
+        pageWidth = usable;
         for (int i = 0; i < track.getChildCount(); i++) {
             ViewGroup.LayoutParams params = track.getChildAt(i).getLayoutParams();
             params.width = pageWidth;
             params.height = ViewGroup.LayoutParams.MATCH_PARENT;
-            track.getChildAt(i).setLayoutParams(params);
         }
-        applyOffset(offsetFor(position));
     }
 
     private float offsetFor(int pos) {

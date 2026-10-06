@@ -426,12 +426,11 @@ public final class AmountScreenController {
             if (paymentSheet != null && paymentSheet.isShowing()) {
                 paymentSheet.dismiss();
             }
-            showMessage(context.getString(R.string.transfer_success_toast,
-                    decimal, recipient.getName()));
             damjay.palmpay.clone.data.NotificationHelper.postHeadsUp(context,
-                    context.getString(R.string.transfer_success_toast,
-                            decimal, recipient.getName()),
-                    recipient.getAccountNumber());
+                    context.getString(R.string.notif_transfer_success_title),
+                    context.getString(R.string.notif_transfer_success_body,
+                            decimal, recipient.getName()));
+            TransferSuccessActivity.start(context, decimal, recipient);
             closeScreen();
         }, 2600);
     }
