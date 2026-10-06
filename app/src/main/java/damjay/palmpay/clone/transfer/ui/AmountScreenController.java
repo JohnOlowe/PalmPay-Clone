@@ -679,7 +679,7 @@ public final class AmountScreenController {
                             decimal, recipient.getName()));
             TransferSuccessActivity.start(context, decimal, recipient);
             closeScreen();
-        }, 2600);
+        }, 3400);
     }
 
     private void hideSystemKeyboard() {

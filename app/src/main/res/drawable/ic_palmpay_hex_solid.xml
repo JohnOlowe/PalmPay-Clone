@@ -3,11 +3,10 @@
     android:height="48dp"
     android:viewportWidth="48"
     android:viewportHeight="48">
-    <!-- Solid silhouette of the mark, used by the fluid fill animation. -->
     <path
         android:fillColor="#FF8800F8"
         android:strokeColor="#FF8800F8"
         android:strokeWidth="4"
         android:strokeLineJoin="round"
-        android:pathData="M24,3 L42.5,13.5 L42.5,34.5 L24,45 L5.5,34.5 L5.5,13.5 Z" />
+        android:pathData="M24,6 L44,15 L44,33 L24,42 L4,33 L4,15 Z" />
 </vector>

@@ -25,18 +25,20 @@ import damjay.palmpay.clone.R;
  * fill follows the hoses instead of blooming as a circle.
  */
 public final class FluidLogoView extends AppCompatImageView {
-    private static final long FILL_MS = 1000;
-    private static final long HOLD_MS = 300;
-    private static final long DRAIN_MS = 1000;
+    // 30% quicker than the original 1000/300/1000 so the cycle runs
+    // multiple times while the waiting card is up.
+    private static final long FILL_MS = 700;
+    private static final long HOLD_MS = 210;
+    private static final long DRAIN_MS = 700;
     private static final long CYCLE_MS = FILL_MS + HOLD_MS + DRAIN_MS;
 
     /** White channels in the 48-unit viewport, leaking past the hexagon. */
     private static final float[][] LEFT_SLASH = {
-            {1f, 29.5f}, {4f, 32.5f}, {20f, 16.5f}, {17f, 13.5f}};
+            {0f, 25f}, {4f, 29f}, {21f, 15f}, {17f, 11f}};
     private static final float[][] RIGHT_SLASH = {
-            {47f, 18.5f}, {44f, 15.5f}, {28f, 31.5f}, {31f, 34.5f}};
+            {48f, 23f}, {44f, 19f}, {27f, 33f}, {31f, 37f}};
     private static final float[][] DIAMOND = {
-            {24f, 21.4f}, {26.6f, 24f}, {24f, 26.6f}, {21.4f, 24f}};
+            {24f, 21.8f}, {26.2f, 24f}, {24f, 26.2f}, {21.8f, 24f}};
 
     private final Paint water = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Path channels = new Path();
@@ -130,7 +132,7 @@ public final class FluidLogoView extends AppCompatImageView {
         // degree turn that axis is horizontal, so a growing rect becomes a
         // front of water travelling up the left slash, through the diamond
         // and out of the right slash.
-        float halfSpan = 21f * (side / 48f);
+        float halfSpan = 20f * (side / 48f);
         canvas.save();
         canvas.clipPath(channels);
         canvas.rotate(-45f, cx, cy);
