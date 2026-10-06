@@ -7,10 +7,10 @@
     android:orientation="vertical">
 
     <ImageView
-        android:layout_width="44dp"
-        android:layout_height="44dp"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="96dp"
+        android:layout_marginTop="48dp"
         android:contentDescription=""
         android:src="@drawable/ic_success_check" />
 
@@ -18,23 +18,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="14dp"
+        android:fontFamily="sans-serif-medium"
         android:includeFontPadding="false"
         android:text="@string/success_title"
         android:textColor="@color/ink"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/success_amount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="14dp"
         android:fontFamily="@font/amount_font_medium"
         android:includeFontPadding="false"
         android:textColor="@color/ink"
-        android:textSize="40sp" />
+        android:textSize="44sp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -44,13 +44,13 @@
         android:includeFontPadding="false"
         android:text="@string/success_caption"
         android:textColor="@color/ink_secondary"
-        android:textSize="13sp" />
+        android:textSize="15sp" />
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="26dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         app:cardBackgroundColor="@color/transfer_surface"
         app:cardCornerRadius="14dp"
@@ -79,7 +79,7 @@
                     android:includeFontPadding="false"
                     android:text="@string/success_recipient_name"
                     android:textColor="@color/ink_secondary"
-                    android:textSize="15sp" />
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/success_name"
@@ -89,7 +89,7 @@
                     android:includeFontPadding="false"
                     android:maxLines="1"
                     android:textColor="@color/ink"
-                    android:textSize="14sp" />
+                    android:textSize="16sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -113,7 +113,7 @@
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
                     android:textColor="@color/ink"
-                    android:textSize="14sp" />
+                    android:textSize="16sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -137,7 +137,7 @@
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
                     android:textColor="@color/ink"
-                    android:textSize="14sp" />
+                    android:textSize="16sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -161,7 +161,7 @@
                     android:includeFontPadding="false"
                     android:text="@string/cashbox_label"
                     android:textColor="@color/ink"
-                    android:textSize="14sp" />
+                    android:textSize="16sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -182,7 +182,7 @@
                     android:includeFontPadding="false"
                     android:text="@string/success_view_details"
                     android:textColor="@color/ink_secondary"
-                    android:textSize="14sp" />
+                    android:textSize="15sp" />
 
                 <ImageView
                     android:layout_width="14dp"
@@ -199,11 +199,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="26dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:orientation="horizontal">
 
-        <TextView
+        <LinearLayout
             android:id="@+id/success_share"
             android:layout_width="0dp"
             android:layout_height="48dp"
@@ -213,15 +213,26 @@
             android:focusable="true"
             android:foreground="?attr/selectableItemBackgroundBorderless"
             android:gravity="center"
-            android:drawableStart="@drawable/ic_share_purple"
-            android:drawablePadding="8dp"
-            android:includeFontPadding="false"
-            android:text="@string/success_share"
-            android:textColor="@color/brand_purple"
-            android:textSize="15sp"
-            android:textStyle="bold" />
+            android:orientation="horizontal">
 
-        <TextView
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:contentDescription=""
+                android:src="@drawable/ic_share_purple" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="9dp"
+                android:includeFontPadding="false"
+                android:text="@string/success_share"
+                android:textColor="@color/brand_purple"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/success_favorite"
             android:layout_width="0dp"
             android:layout_height="48dp"
@@ -232,13 +243,24 @@
             android:focusable="true"
             android:foreground="?attr/selectableItemBackgroundBorderless"
             android:gravity="center"
-            android:drawableStart="@drawable/ic_heart_purple"
-            android:drawablePadding="8dp"
-            android:includeFontPadding="false"
-            android:text="@string/success_favorite"
-            android:textColor="@color/brand_purple"
-            android:textSize="15sp"
-            android:textStyle="bold" />
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:contentDescription=""
+                android:src="@drawable/ic_heart_purple" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="9dp"
+                android:includeFontPadding="false"
+                android:text="@string/success_favorite"
+                android:textColor="@color/brand_purple"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </LinearLayout>
     </LinearLayout>
 
     <View
@@ -261,6 +283,6 @@
         android:includeFontPadding="false"
         android:text="@string/success_complete"
         android:textColor="@android:color/white"
-        android:textSize="17sp"
+        android:textSize="18sp"
         android:textStyle="bold" />
 </LinearLayout>
