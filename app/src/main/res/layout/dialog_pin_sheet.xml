@@ -101,18 +101,28 @@
             android:tint="#9BA0A6" />
     </FrameLayout>
 
-    <LinearLayout
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="26dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:layout_marginTop="26dp">
+
+        <TextView
+            android:id="@+id/pin_divider_center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:includeFontPadding="false"
+            android:text="@string/pin_divider"
+            android:textColor="#9BA0A6"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/pin_forgot"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="14dp"
+            android:layout_toStartOf="@id/pin_divider_center"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
@@ -123,19 +133,12 @@
             android:textSize="14sp" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="14dp"
-            android:layout_marginEnd="14dp"
-            android:includeFontPadding="false"
-            android:text="@string/pin_divider"
-            android:textColor="#9BA0A6"
-            android:textSize="14sp" />
-
-        <TextView
             android:id="@+id/pin_touchid"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="14dp"
+            android:layout_toEndOf="@id/pin_divider_center"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
@@ -144,7 +147,7 @@
             android:text="@string/pin_verify_touchid"
             android:textColor="@color/brand_purple"
             android:textSize="14sp" />
-    </LinearLayout>
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

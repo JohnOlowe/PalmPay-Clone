@@ -3,20 +3,25 @@ package damjay.palmpay.clone.transfer.ui;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Path;
 import android.util.AttributeSet;
 import android.view.animation.LinearInterpolator;
 import android.animation.Keyframe;
 import android.animation.PropertyValuesHolder;
 
 import androidx.appcompat.widget.AppCompatImageView;
-import androidx.core.content.ContextCompat;
 
 import damjay.palmpay.clone.R;
 
 /**
- * The PalmPay mark that "fills with liquid": the hollow parts of the logo
- * are covered by the solid hexagon silhouette rising from the bottom (1 s),
- * holding solid for ~300 ms, then draining again (1 s), looping.
+ * The PalmPay mark that "fills with liquid": the white slashes and diamond
+ * are hoses - purple water runs in from the leaked outer ends, travels the
+ * channels through the centre, and at full fill the mark is solid; then the
+ * water drains back out the way it came (1 s in, 300 ms hold, 1 s out).
+ *
+ * Implemented as a 45-degree wipe clipped to the white channels, so the fill
+ * follows the hoses instead of blooming as a circle.
  */
 public final class FluidLogoView extends AppCompatImageView {
     private static final long FILL_MS = 1000;
@@ -24,9 +29,18 @@ public final class FluidLogoView extends AppCompatImageView {
     private static final long DRAIN_MS = 1000;
     private static final long CYCLE_MS = FILL_MS + HOLD_MS + DRAIN_MS;
 
-    private final android.graphics.drawable.Drawable solid =
-            ContextCompat.getDrawable(getContext(), R.drawable.ic_palmpay_hex_solid);
+    /** White channels in the 48-unit viewport, leaking past the hexagon. */
+    private static final float[][] LEFT_SLASH = {
+            {1f, 29.5f}, {4f, 32.5f}, {20f, 16.5f}, {17f, 13.5f}};
+    private static final float[][] RIGHT_SLASH = {
+            {47f, 18.5f}, {44f, 15.5f}, {28f, 31.5f}, {31f, 34.5f}};
+    private static final float[][] DIAMOND = {
+            {24f, 21.4f}, {26.6f, 24f}, {24f, 26.6f}, {21.4f, 24f}};
+
+    private final Paint water = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Path channels = new Path();
     private float fill;
+    private int builtFor;
     private ValueAnimator animator;
 
     public FluidLogoView(Context context) {
@@ -41,6 +55,8 @@ public final class FluidLogoView extends AppCompatImageView {
 
     private void init() {
         setImageResource(R.drawable.ic_palmpay_mark);
+        water.setColor(0xFF8800F8);
+        water.setStyle(Paint.Style.FILL);
         float fillStart = FILL_MS / (float) CYCLE_MS;
         float holdEnd = (FILL_MS + HOLD_MS) / (float) CYCLE_MS;
         PropertyValuesHolder values = PropertyValuesHolder.ofKeyframe(
@@ -71,10 +87,27 @@ public final class FluidLogoView extends AppCompatImageView {
         super.onDetachedFromWindow();
     }
 
+    private void buildChannels(int side, int left, int top) {
+        channels.reset();
+        addQuad(side, left, top, LEFT_SLASH);
+        addQuad(side, left, top, RIGHT_SLASH);
+        addQuad(side, left, top, DIAMOND);
+        channels.close();
+    }
+
+    private void addQuad(int side, int left, int top, float[][] pts) {
+        float s = side / 48f;
+        channels.moveTo(left + pts[0][0] * s, top + pts[0][1] * s);
+        for (int i = 1; i < pts.length; i++) {
+            channels.lineTo(left + pts[i][0] * s, top + pts[i][1] * s);
+        }
+        channels.close();
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (fill <= 0f || solid == null) {
+        if (fill <= 0f) {
             return;
         }
         int width = getWidth();
@@ -82,26 +115,27 @@ public final class FluidLogoView extends AppCompatImageView {
         if (width == 0 || height == 0) {
             return;
         }
-        // The square drawable is centred; reveal the solid silhouette with a
-        // rounded clip that grows out of the centre and retreats back into
-        // it, instead of a flat bottom-up fill.
         int side = Math.min(width, height);
         int top = (height - side) / 2;
         int left = (width - side) / 2;
-        solid.setBounds(left, top, left + side, top + side);
+        if (builtFor != side) {
+            buildChannels(side, left, top);
+            builtFor = side;
+        }
 
         float cx = left + side / 2f;
         float cy = top + side / 2f;
-        // 0.72 * side > half the diagonal (0.707), so at fill==1 the round
-        // clip fully covers the hexagon including its corners.
-        float half = side * 0.72f * fill;
-        float corner = half * 0.5f;
-        android.graphics.Path reveal = new android.graphics.Path();
-        reveal.addRoundRect(cx - half, cy - half, cx + half, cy + half,
-                corner, corner, android.graphics.Path.Direction.CW);
+        // The hoses run on the bottom-left/top-right diagonal; after a -45
+        // degree turn that axis is horizontal, so a growing rect becomes a
+        // front of water travelling up the left slash, through the diamond
+        // and out of the right slash.
+        float halfSpan = 21f * (side / 48f);
         canvas.save();
-        canvas.clipPath(reveal);
-        solid.draw(canvas);
+        canvas.clipPath(channels);
+        canvas.rotate(-45f, cx, cy);
+        float x0 = cx - halfSpan;
+        canvas.drawRect(x0, cy - side, x0 + 2f * halfSpan * fill,
+                cy + side, water);
         canvas.restore();
     }
 }
