@@ -16,12 +16,13 @@ import damjay.palmpay.clone.R;
 
 /**
  * The PalmPay mark that "fills with liquid": the white slashes and diamond
- * are hoses - purple water runs in from the leaked outer ends, travels the
- * channels through the centre, and at full fill the mark is solid; then the
- * water drains back out the way it came (1 s in, 300 ms hold, 1 s out).
+ * are hoses - purple water pours in from BOTH leaked outer ends at once,
+ * the two fronts run along the slashes and meet at the centre diamond, and
+ * at full fill the mark is solid; then the water drains back out the way it
+ * came (1 s in, 300 ms hold, 1 s out).
  *
- * Implemented as a 45-degree wipe clipped to the white channels, so the fill
- * follows the hoses instead of blooming as a circle.
+ * Implemented as two 45-degree wipes clipped to the white channels, so the
+ * fill follows the hoses instead of blooming as a circle.
  */
 public final class FluidLogoView extends AppCompatImageView {
     private static final long FILL_MS = 1000;
@@ -133,8 +134,13 @@ public final class FluidLogoView extends AppCompatImageView {
         canvas.save();
         canvas.clipPath(channels);
         canvas.rotate(-45f, cx, cy);
-        float x0 = cx - halfSpan;
-        canvas.drawRect(x0, cy - side, x0 + 2f * halfSpan * fill,
+        // Water enters from both leaked outer ends at once: the left front
+        // runs up the left slash, the right front down the right slash, and
+        // they meet (and fill the diamond) at the centre.
+        float reach = halfSpan * fill;
+        canvas.drawRect(cx - halfSpan, cy - side, cx - halfSpan + reach,
+                cy + side, water);
+        canvas.drawRect(cx + halfSpan - reach, cy - side, cx + halfSpan,
                 cy + side, water);
         canvas.restore();
     }
