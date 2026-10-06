@@ -347,8 +347,9 @@ public final class AmountScreenController {
         cashboxBalance.setPaintFlags(
                 cashboxBalance.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
 
+        dialog.setCancelable(false);
         sheet.findViewById(R.id.sheet_close)
-                .setOnClickListener(view -> dialog.dismiss());
+                .setOnClickListener(view -> showIncompleteDialog(decimal));
         sheet.findViewById(R.id.sheet_confirm)
                 .setOnClickListener(view -> confirmToPay(decimal));
 
@@ -356,12 +357,12 @@ public final class AmountScreenController {
         dialog.show();
     }
 
-    /** Confirm to Pay raises the app's own Touch ID sheet, like the original. */
+    /** Confirm to Pay asks the system biometric first, like the original. */
     private void confirmToPay(final String decimal) {
         if (loadingOverlay != null && loadingOverlay.isShowing()) {
             return;
         }
-        showTouchIdSheet(decimal);
+        startBiometric(decimal);
     }
 
     private Dialog touchIdSheet;
@@ -375,6 +376,8 @@ public final class AmountScreenController {
             return;
         }
         final Dialog dialog = new Dialog(context);
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
         View sheet = LayoutInflater.from(context)
                 .inflate(R.layout.dialog_touchid_sheet, null);
         dialog.setContentView(sheet);
@@ -407,6 +410,8 @@ public final class AmountScreenController {
             return;
         }
         final Dialog dialog = new Dialog(context);
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
         View sheet = LayoutInflater.from(context)
                 .inflate(R.layout.dialog_payment_incomplete, null);
         dialog.setContentView(sheet);
@@ -446,7 +451,7 @@ public final class AmountScreenController {
         if (manager.canAuthenticate(androidx.biometric.BiometricManager
                 .Authenticators.BIOMETRIC_WEAK)
                 != androidx.biometric.BiometricManager.BIOMETRIC_SUCCESS) {
-            showPinSheet(decimal);
+            showTouchIdSheet(decimal);
             return;
         }
         FragmentActivity activity = (FragmentActivity) context;
@@ -471,6 +476,12 @@ public final class AmountScreenController {
                                 }
                                 showPinSheet(decimal);
                             });
+                        } else {
+                            activity.runOnUiThread(() -> {
+                                showMessage(context.getString(
+                                        R.string.fingerprint_cancelled));
+                                showTouchIdSheet(decimal);
+                            });
                         }
                     }
                 });
@@ -492,7 +503,10 @@ public final class AmountScreenController {
         }
         pinCode.setLength(0);
         pinVisible = false;
+        pinFirstAttempt = null;
         final Dialog dialog = new Dialog(context);
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
         final View sheet = LayoutInflater.from(context)
                 .inflate(R.layout.dialog_pin_sheet, null);
         dialog.setContentView(sheet);
@@ -521,11 +535,7 @@ public final class AmountScreenController {
                 pinCode.append(((TextView) view).getText());
                 renderPin(boxes);
                 if (pinCode.length() == 4) {
-                    handler.postDelayed(() -> {
-                        dialog.dismiss();
-                        dismissAuthSheets();
-                        proceedToLoading(decimal);
-                    }, 220);
+                    evaluatePin(dialog, boxes, decimal);
                 }
             }
         };
@@ -553,6 +563,55 @@ public final class AmountScreenController {
                 });
         pinSheet = dialog;
         dialog.show();
+    }
+
+    private String pinFirstAttempt;
+
+    /** Profile decides: any PIN, a fixed PIN, or first attempt always fails. */
+    private void evaluatePin(final Dialog dialog, final TextView[] boxes,
+                             final String decimal) {
+        damjay.palmpay.clone.data.WalletStore store =
+                new damjay.palmpay.clone.data.WalletStore(context);
+        String entered = pinCode.toString();
+        int mode = store.getPinMode();
+        boolean accepted;
+        if (mode == 1) {
+            accepted = entered.equals(store.getPaymentPin());
+            if (!accepted) {
+                resetPinEntry(boxes,
+                        context.getString(R.string.pin_incorrect));
+                return;
+            }
+        } else if (mode == 2) {
+            if (pinFirstAttempt == null) {
+                pinFirstAttempt = entered;
+                resetPinEntry(boxes,
+                        context.getString(R.string.pin_try_again));
+                return;
+            }
+            if (entered.equals(pinFirstAttempt)) {
+                pinFirstAttempt = entered;
+                resetPinEntry(boxes,
+                        context.getString(R.string.pin_try_again));
+                return;
+            }
+            accepted = true;
+        } else {
+            accepted = true;
+        }
+        if (accepted) {
+            handler.postDelayed(() -> {
+                dialog.dismiss();
+                dismissAuthSheets();
+                proceedToLoading(decimal);
+            }, 220);
+        }
+    }
+
+    private void resetPinEntry(TextView[] boxes, String message) {
+        showMessage(message);
+        pinCode.setLength(0);
+        renderPin(boxes);
     }
 
     private void renderPin(TextView[] boxes) {
@@ -584,6 +643,15 @@ public final class AmountScreenController {
             return;
         }
         dismissAuthSheets();
+        double value = parseAmount(decimal);
+        damjay.palmpay.clone.data.WalletStore store =
+                new damjay.palmpay.clone.data.WalletStore(context);
+        store.deductBalance(value);
+        store.saveLastTransfer(
+                context.getString(R.string.naira_sign) + decimal + " Success",
+                "Today " + new java.text.SimpleDateFormat(
+                        "h:mm a", java.util.Locale.US)
+                        .format(new java.util.Date()));
         Dialog loading = new Dialog(context,
                 android.R.style.Theme_Translucent_NoTitleBar);
         loading.setContentView(LayoutInflater.from(context)

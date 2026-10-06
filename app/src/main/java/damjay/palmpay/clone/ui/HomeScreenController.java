@@ -169,6 +169,12 @@ public final class HomeScreenController {
         binding.balanceAmount.setText(balanceVisible
                 ? walletStore.getBalanceDisplay()
                 : context.getString(R.string.hidden_balance));
+        String detail = walletStore.getLastTransferDetail();
+        if (!detail.isEmpty()) {
+            binding.notificationTitle.setText(R.string.notification_title);
+            binding.notificationDetail.setText(detail);
+            binding.notificationTime.setText(walletStore.getLastTransferTime());
+        }
     }
 
     private void bindBalanceCard() {

@@ -23,6 +23,10 @@ public final class WalletStore {
     private static final String EMAIL_KEY = "paystack_email";
     private static final String STRIPE_KEY = "stripe_api_key";
     private static final String FLUTTERWAVE_KEY = "flutterwave_api_key";
+    private static final String LAST_TRANSFER_DETAIL = "last_transfer_detail";
+    private static final String LAST_TRANSFER_TIME = "last_transfer_time";
+    private static final String PIN_MODE_KEY = "payment_pin_mode";
+    private static final String PIN_VALUE_KEY = "payment_pin_value";
     private static final String FLUTTERWAVE_ENC_KEY = "flutterwave_enc_key";
     private static final String DEFAULT_EMAIL = "customer@email.com";
 
@@ -85,6 +89,53 @@ public final class WalletStore {
     public void saveFlutterwaveEncKey(String key) {
         preferences.edit().putString(FLUTTERWAVE_ENC_KEY,
                 key == null ? "" : key.trim()).commit();
+    }
+
+    /** Subtracts a completed transfer from the home balance (floors at 0). */
+    public void deductBalance(double amount) {
+        java.math.BigDecimal current = readBalance();
+        java.math.BigDecimal next = current.subtract(
+                java.math.BigDecimal.valueOf(amount));
+        if (next.signum() < 0) {
+            next = java.math.BigDecimal.ZERO;
+        }
+        preferences.edit()
+                .putString(BALANCE_KEY,
+                        next.setScale(2, RoundingMode.HALF_UP).toPlainString())
+                .commit();
+    }
+
+    public void saveLastTransfer(String detail, String time) {
+        preferences.edit()
+                .putString(LAST_TRANSFER_DETAIL, detail)
+                .putString(LAST_TRANSFER_TIME, time)
+                .commit();
+    }
+
+    public String getLastTransferDetail() {
+        return preferences.getString(LAST_TRANSFER_DETAIL, "");
+    }
+
+    public String getLastTransferTime() {
+        return preferences.getString(LAST_TRANSFER_TIME, "");
+    }
+
+    /** 0 = any PIN works, 1 = fixed PIN, 2 = first attempt always fails. */
+    public int getPinMode() {
+        return preferences.getInt(PIN_MODE_KEY, 0);
+    }
+
+    public void savePinMode(int mode) {
+        preferences.edit().putInt(PIN_MODE_KEY, mode).commit();
+    }
+
+    public String getPaymentPin() {
+        return preferences.getString(PIN_VALUE_KEY, "");
+    }
+
+    public void savePaymentPin(String pin) {
+        preferences.edit().putString(PIN_VALUE_KEY,
+                pin == null ? "" : pin.trim()).commit();
     }
 
     public String getPaystackApiKey() {

@@ -312,6 +312,65 @@
                         app:cornerRadius="22dp"
                         app:strokeWidth="0dp" />
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:includeFontPadding="false"
+                        android:text="@string/pin_mode_label"
+                        android:textColor="@color/ink"
+                        android:textSize="14sp" />
+
+                    <RadioGroup
+                        android:id="@+id/profile_pin_modes"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:orientation="vertical">
+
+                        <RadioButton
+                            android:id="@+id/pin_mode_any"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="@string/pin_mode_any"
+                            android:textColor="@color/ink"
+                            android:textSize="13sp" />
+
+                        <RadioButton
+                            android:id="@+id/pin_mode_fixed"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/pin_mode_fixed"
+                            android:textColor="@color/ink"
+                            android:textSize="13sp" />
+
+                        <RadioButton
+                            android:id="@+id/pin_mode_first_fails"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/pin_mode_first_fails"
+                            android:textColor="@color/ink"
+                            android:textSize="13sp" />
+                    </RadioGroup>
+
+                    <EditText
+                        android:id="@+id/profile_pin_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bg_transfer_field"
+                        android:hint="@string/pin_input_hint"
+                        android:inputType="numberPassword"
+                        android:maxLength="4"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:singleLine="true"
+                        android:textColor="@color/ink"
+                        android:textColorHint="@color/transfer_hint"
+                        android:textSize="14sp"
+                        android:visibility="gone" />
+
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/save_balance_button"
                         android:layout_width="match_parent"

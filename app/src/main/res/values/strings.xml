@@ -157,6 +157,15 @@
     <string name="stripe_input_hint">sk_live_...</string>
     <string name="am_route_paystack">Paystack</string>
     <string name="am_route_stripe">Stripe (no PIN, like regular stores)</string>
+    <string name="fingerprint_cancelled">Fingerprint operation cancelled by user</string>
+    <string name="pin_mode_label">Payment PIN behaviour</string>
+    <string name="pin_mode_any">Any PIN works</string>
+    <string name="pin_mode_fixed">Use my own PIN</string>
+    <string name="pin_mode_first_fails">First attempt always fails</string>
+    <string name="pin_input_hint">Your 4-digit PIN</string>
+    <string name="pin_invalid">Enter a 4-digit PIN</string>
+    <string name="pin_incorrect">Incorrect PIN</string>
+    <string name="pin_try_again">PIN not recognised, try again</string>
     <string name="touchid_title">Use Touch ID for Pay</string>
     <string name="touchid_caption">Click the button to verify Touch ID and pay</string>
     <string name="touchid_pay">Pay</string>

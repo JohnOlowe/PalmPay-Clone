@@ -70,6 +70,11 @@ public final class BannerCarousel extends LinearLayout {
         }
 
         @Override
+        public void fling(int velocityX) {
+            // No coasting: release always hands over to snap(), one page max.
+        }
+
+        @Override
         protected void onScrollChanged(int l, int t, int oldl, int oldt) {
             super.onScrollChanged(l, t, oldl, oldt);
             if (pageWidth > 0) {

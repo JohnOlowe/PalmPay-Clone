@@ -50,6 +50,18 @@ public final class ProfileScreenController {
                 view -> openSecurityEnrollment());
         binding.profileNotificationsButton.setOnClickListener(
                 view -> showNotificationConsent());
+        int mode = walletStore.getPinMode();
+        binding.profilePinModes.check(mode == 1
+                ? R.id.pin_mode_fixed
+                : mode == 2 ? R.id.pin_mode_first_fails
+                        : R.id.pin_mode_any);
+        binding.profilePinInput.setText(walletStore.getPaymentPin());
+        binding.profilePinInput.setVisibility(
+                mode == 1 ? View.VISIBLE : View.GONE);
+        binding.profilePinModes.setOnCheckedChangeListener(
+                (group, checkedId) -> binding.profilePinInput.setVisibility(
+                        checkedId == R.id.pin_mode_fixed
+                                ? View.VISIBLE : View.GONE));
     }
 
     private static final int NOTIFICATION_PERMISSION_REQUEST = 777;
@@ -145,6 +157,20 @@ public final class ProfileScreenController {
             binding.profileBalanceInput.setError(context.getString(R.string.invalid_balance));
             return;
         }
+        int pinMode = binding.profilePinModes.getCheckedRadioButtonId()
+                == R.id.pin_mode_fixed ? 1
+                : binding.profilePinModes.getCheckedRadioButtonId()
+                        == R.id.pin_mode_first_fails ? 2 : 0;
+        if (pinMode == 1) {
+            String pin = binding.profilePinInput.getText().toString();
+            if (pin.length() != 4) {
+                binding.profilePinInput.setError(
+                        context.getString(R.string.pin_invalid));
+                return;
+            }
+            walletStore.savePaymentPin(pin);
+        }
+        walletStore.savePinMode(pinMode);
         walletStore.saveDisplayName(binding.profileNameInput.getText().toString());
         walletStore.savePaystackApiKey(binding.profilePaystackInput.getText().toString());
         walletStore.savePaystackEmail(binding.profileEmailInput.getText().toString());
