@@ -4,6 +4,9 @@ package androidx.biometric;
 import androidx.fragment.app.FragmentActivity;
 
 public class BiometricPrompt {
+    public static final int ERROR_NEGATIVE_BUTTON = 13;
+    public static final int ERROR_USER_CANCELED = 11;
+
     public BiometricPrompt(FragmentActivity activity,
                            AuthenticationCallback callback) {
     }
@@ -36,6 +39,10 @@ public class BiometricPrompt {
             }
 
             public Builder setAllowedAuthenticators(int authenticators) {
+                return this;
+            }
+
+            public Builder setNegativeButtonText(CharSequence text) {
                 return this;
             }
 

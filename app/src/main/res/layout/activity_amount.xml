@@ -205,12 +205,13 @@
                                  left behind. -->
                             <FrameLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="48dp"
+                                android:layout_height="64dp"
                                 android:layout_marginTop="2dp">
 
                                 <LinearLayout
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
+                                    android:layout_height="48dp"
+                                    android:layout_gravity="bottom"
                                     android:gravity="center_vertical"
                                     android:orientation="horizontal">
 
@@ -258,12 +259,12 @@
                                         android:layout_height="wrap_content"
                                         android:background="@drawable/bg_place_tooltip"
                                         android:includeFontPadding="false"
-                                        android:paddingStart="7dp"
-                                        android:paddingTop="2dp"
-                                        android:paddingEnd="7dp"
-                                        android:paddingBottom="2dp"
+                                        android:paddingStart="8dp"
+                                        android:paddingTop="4dp"
+                                        android:paddingEnd="8dp"
+                                        android:paddingBottom="4dp"
                                         android:textColor="#FFFFFF"
-                                        android:textSize="11sp" />
+                                        android:textSize="12sp" />
 
                                     <ImageView
                                         android:layout_width="10dp"

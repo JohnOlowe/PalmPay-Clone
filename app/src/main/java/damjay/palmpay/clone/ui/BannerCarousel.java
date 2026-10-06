@@ -6,12 +6,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.VelocityTracker;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 
 import java.util.List;
@@ -19,38 +17,66 @@ import java.util.List;
 import damjay.palmpay.clone.R;
 
 /**
- * The home promo rail: pages sit still for ~3 s, then a fluid ~2 s scroll to
- * the left pushes the current page out and reveals the next one, exactly as
- * if a finger swiped right-to-left. The finger can also drag at any time and
- * the rail follows, snapping one page per gesture.
- *
- * Implemented without a ViewPager so the dwell/scroll rhythm is ours: a
- * horizontal track translated inside a clipping viewport, plus the dot row.
- * The first page is cloned at the tail of the track so the wrap from last to
- * first is still a leftward scroll, after which the track jumps home
- * invisibly.
+ * The home promo rail: pages dwell ~3 s, then a fluid ~2 s scroll to the
+ * left pushes the current page out; a finger can drag at any time and the
+ * rail snaps one page per gesture. Built on HorizontalScrollView so every
+ * page is a real laid-out child - the earlier translation-on-a-LinearLayout
+ * version rendered page one only on some devices.
  */
 public final class BannerCarousel extends LinearLayout {
     public static final long DWELL_MS = 3000;
     public static final long SCROLL_MS = 2000;
     private static final long SNAP_MS = 260;
 
-    private final FrameLayout viewport = new FrameLayout(getContext());
+    private final PagingScroll scroller = new PagingScroll(getContext());
     private final LinearLayout track = new LinearLayout(getContext());
     private final LinearLayout dots = new LinearLayout(getContext());
     private final Handler handler = new Handler(Looper.getMainLooper());
-    private final int touchSlop =
-            ViewConfiguration.get(getContext()).getScaledTouchSlop();
 
     private int pageCount;
-    private int position;
     private int pageWidth;
+    private int currentPage;
     private ValueAnimator animator;
-    private VelocityTracker velocityTracker;
-    private float downX;
-    private float downY;
-    private float startOffset;
-    private boolean dragging;
+
+    private final class PagingScroll extends HorizontalScrollView {
+        PagingScroll(Context context) {
+            super(context);
+        }
+
+        @Override
+        public boolean onTouchEvent(MotionEvent ev) {
+            switch (ev.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN:
+                    stopAuto();
+                    cancelAnimator();
+                    break;
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_CANCEL:
+                    snap();
+                    break;
+                default:
+                    break;
+            }
+            return super.onTouchEvent(ev);
+        }
+
+        @Override
+        public boolean onInterceptTouchEvent(MotionEvent ev) {
+            if (ev.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                stopAuto();
+                cancelAnimator();
+            }
+            return super.onInterceptTouchEvent(ev);
+        }
+
+        @Override
+        protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+            super.onScrollChanged(l, t, oldl, oldt);
+            if (pageWidth > 0) {
+                updateDots((l + pageWidth / 2) / pageWidth);
+            }
+        }
+    }
 
     public BannerCarousel(Context context) {
         super(context);
@@ -65,10 +91,11 @@ public final class BannerCarousel extends LinearLayout {
     private void init() {
         setOrientation(VERTICAL);
         track.setOrientation(LinearLayout.HORIZONTAL);
-        viewport.setClipChildren(true);
-        addView(viewport, new LayoutParams(
+        scroller.setHorizontalScrollBarEnabled(false);
+        scroller.setOverScrollMode(OVER_SCROLL_NEVER);
+        addView(scroller, new LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(78)));
-        viewport.addView(track, new FrameLayout.LayoutParams(
+        scroller.addView(track, new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
         dots.setOrientation(LinearLayout.HORIZONTAL);
@@ -90,10 +117,13 @@ public final class BannerCarousel extends LinearLayout {
             addDot(i);
         }
         track.addView(newBannerSlideView(slides.get(0)));
-        position = 0;
+        currentPage = 0;
         requestLayout();
-        applyOffset(offsetFor(position));
-        updateDots();
+        post(() -> {
+            scroller.scrollTo(0, 0);
+            updateDots(0);
+            scheduleAuto();
+        });
     }
 
     private BannerSlideView newBannerSlideView(BannerSlideView.Slide slide) {
@@ -113,8 +143,11 @@ public final class BannerCarousel extends LinearLayout {
         dots.addView(dot, params);
     }
 
-    private void updateDots() {
-        int active = position % pageCount;
+    private void updateDots(int page) {
+        if (pageCount == 0) {
+            return;
+        }
+        int active = Math.floorMod(page, pageCount);
         for (int i = 0; i < dots.getChildCount(); i++) {
             dots.getChildAt(i).setBackgroundResource(
                     i == active ? R.drawable.bg_dot_active
@@ -123,43 +156,19 @@ public final class BannerCarousel extends LinearLayout {
     }
 
     @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-        sizePages(w);
-        applyOffset(offsetFor(position));
-    }
-
-    /**
-     * Pages are sized at measure time, not in onSizeChanged: depending on
-     * when setSlides() runs relative to the first layout pass the size
-     * callback alone can fire before the pages exist (leaving them at their
-     * default wrap size: slide one hugging the top, the rest blank).
-     */
-    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        sizePages(MeasureSpec.getSize(widthMeasureSpec));
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-    }
-
-    private void sizePages(int width) {
+        int width = MeasureSpec.getSize(widthMeasureSpec);
         int usable = width - getPaddingLeft() - getPaddingRight();
-        if (usable <= 0 || usable == pageWidth) {
-            return;
+        if (usable > 0 && usable != pageWidth) {
+            pageWidth = usable;
+            for (int i = 0; i < track.getChildCount(); i++) {
+                ViewGroup.LayoutParams params =
+                        track.getChildAt(i).getLayoutParams();
+                params.width = pageWidth;
+                params.height = ViewGroup.LayoutParams.MATCH_PARENT;
+            }
         }
-        pageWidth = usable;
-        for (int i = 0; i < track.getChildCount(); i++) {
-            ViewGroup.LayoutParams params = track.getChildAt(i).getLayoutParams();
-            params.width = pageWidth;
-            params.height = ViewGroup.LayoutParams.MATCH_PARENT;
-        }
-    }
-
-    private float offsetFor(int pos) {
-        return -pos * (float) pageWidth;
-    }
-
-    private void applyOffset(float offset) {
-        track.setTranslationX(offset);
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     // ------------------------------------------------------------ autoplay
@@ -179,154 +188,76 @@ public final class BannerCarousel extends LinearLayout {
 
     private void scheduleAuto() {
         stopAuto();
-        handler.postDelayed(this::advanceAuto, DWELL_MS);
+        handler.postDelayed(this::advance, DWELL_MS);
     }
 
     private void stopAuto() {
         handler.removeCallbacksAndMessages(null);
     }
 
-    private void advanceAuto() {
-        if (pageCount == 0 || pageWidth == 0) {
-            scheduleAuto();
-            return;
-        }
-        animateTo(position + 1, SCROLL_MS);
-    }
-
     private void cancelAnimator() {
         if (animator != null) {
-            // A cancelled scroll must not run the settle callback, or a
-            // drag started mid-scroll would snap against the wrong page.
-            animator.removeAllListeners();
+            animator.removeAllUpdateListeners();
             animator.cancel();
             animator = null;
         }
     }
 
-    /** Fluid leftward scroll to the target page, then wrap or settle. */
-    private void animateTo(final int target, long duration) {
+    /** Fluid leftward scroll to the next page, wrapping through the clone. */
+    private void advance() {
+        if (pageCount == 0 || pageWidth == 0) {
+            scheduleAuto();
+            return;
+        }
+        animateScrollTo((currentPage + 1) * pageWidth, SCROLL_MS, () -> {
+            if (currentPage + 1 >= pageCount) {
+                // Landed on the clone: jump home invisibly.
+                scroller.scrollTo(0, 0);
+                currentPage = 0;
+                updateDots(0);
+            } else {
+                currentPage += 1;
+            }
+            scheduleAuto();
+        });
+    }
+
+    /** One page per gesture, never more. */
+    private void snap() {
+        if (pageWidth == 0) {
+            scheduleAuto();
+            return;
+        }
+        int nearest = Math.round(scroller.getScrollX() / (float) pageWidth);
+        nearest = Math.max(currentPage - 1, Math.min(currentPage + 1, nearest));
+        nearest = Math.max(0, Math.min(pageCount, nearest));
+        final int target = nearest;
+        animateScrollTo(target * pageWidth, SNAP_MS, () -> {
+            if (target >= pageCount) {
+                scroller.scrollTo(0, 0);
+                currentPage = 0;
+            } else {
+                currentPage = target;
+            }
+            updateDots(currentPage);
+            scheduleAuto();
+        });
+    }
+
+    private void animateScrollTo(final int x, long duration, Runnable onEnd) {
         cancelAnimator();
-        float from = track.getTranslationX();
-        float to = offsetFor(target);
-        animator = ValueAnimator.ofFloat(from, to);
+        animator = ValueAnimator.ofInt(scroller.getScrollX(), x);
         animator.setDuration(duration);
         animator.setInterpolator(new DecelerateInterpolator(1.1f));
         animator.addUpdateListener(animation ->
-                applyOffset((float) animation.getAnimatedValue()));
+                scroller.scrollTo((int) animation.getAnimatedValue(), 0));
         animator.addListener(new android.animation.AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(android.animation.Animator a) {
-                settleAt(target);
-                scheduleAuto();
+                onEnd.run();
             }
         });
         animator.start();
-        position = target;
-        updateDots();
-    }
-
-    /** After landing on the clone page, jump to the real first page. */
-    private void settleAt(int target) {
-        if (target >= pageCount) {
-            position = 0;
-            applyOffset(0);
-            updateDots();
-        } else {
-            position = target;
-        }
-    }
-
-    // -------------------------------------------------------- manual drag
-
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if (pageCount == 0) {
-            return false;
-        }
-        switch (ev.getActionMasked()) {
-            case MotionEvent.ACTION_DOWN:
-                stopAuto();
-                cancelAnimator();
-                downX = ev.getX();
-                downY = ev.getY();
-                startOffset = track.getTranslationX();
-                dragging = false;
-                return false;
-            case MotionEvent.ACTION_MOVE: {
-                float dx = ev.getX() - downX;
-                float dy = ev.getY() - downY;
-                if (Math.abs(dx) > touchSlop && Math.abs(dx) > Math.abs(dy)) {
-                    dragging = true;
-                    return true;
-                }
-                return false;
-            }
-            default:
-                scheduleAuto();
-                return false;
-        }
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent ev) {
-        if (pageCount == 0) {
-            return super.onTouchEvent(ev);
-        }
-        if (velocityTracker == null) {
-            velocityTracker = VelocityTracker.obtain();
-        }
-        velocityTracker.addMovement(ev);
-        switch (ev.getActionMasked()) {
-            case MotionEvent.ACTION_DOWN:
-                stopAuto();
-                cancelAnimator();
-                downX = ev.getX();
-                downY = ev.getY();
-                startOffset = track.getTranslationX();
-                dragging = true;
-                return true;
-            case MotionEvent.ACTION_MOVE: {
-                float dx = ev.getX() - downX;
-                float raw = startOffset + dx;
-                applyOffset(rubber(raw));
-                return true;
-            }
-            case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_CANCEL: {
-                velocityTracker.computeCurrentVelocity(1000);
-                float vx = velocityTracker.getXVelocity();
-                velocityTracker.recycle();
-                velocityTracker = null;
-                float current = track.getTranslationX();
-                float home = offsetFor(position);
-                float delta = current - home;
-                int target = position;
-                if (delta < -pageWidth * 0.25f || vx < -600f) {
-                    target = Math.min(position + 1, pageCount);
-                } else if (delta > pageWidth * 0.25f || vx > 600f) {
-                    target = Math.max(position - 1, 0);
-                }
-                // One page per gesture, never more.
-                animateTo(target, SNAP_MS);
-                dragging = false;
-                return true;
-            }
-            default:
-                return super.onTouchEvent(ev);
-        }
-    }
-
-    /** Gentle resistance at the two ends of the rail. */
-    private float rubber(float raw) {
-        float min = offsetFor(pageCount);
-        if (raw > 0) {
-            return raw / 2.5f;
-        }
-        if (raw < min) {
-            return min + (raw - min) / 2.5f;
-        }
-        return raw;
     }
 
     private int dp(int value) {

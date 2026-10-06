@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.ImageView;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
@@ -355,14 +356,97 @@ public final class AmountScreenController {
         dialog.show();
     }
 
-    /** Confirm to Pay asks for the device security first (fingerprint,
-     *  face, PIN - whatever the person registered), then pays. */
+    /** Confirm to Pay raises the app's own Touch ID sheet, like the original. */
     private void confirmToPay(final String decimal) {
         if (loadingOverlay != null && loadingOverlay.isShowing()) {
             return;
         }
+        showTouchIdSheet(decimal);
+    }
+
+    private Dialog touchIdSheet;
+    private Dialog pinSheet;
+    private Dialog incompleteDialog;
+    private final StringBuilder pinCode = new StringBuilder();
+    private boolean pinVisible;
+
+    private void showTouchIdSheet(final String decimal) {
+        if (touchIdSheet != null && touchIdSheet.isShowing()) {
+            return;
+        }
+        final Dialog dialog = new Dialog(context);
+        View sheet = LayoutInflater.from(context)
+                .inflate(R.layout.dialog_touchid_sheet, null);
+        dialog.setContentView(sheet);
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawableResource(android.R.color.transparent);
+            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            window.setGravity(Gravity.BOTTOM);
+            window.setDimAmount(0.5f);
+        }
+        TextView amount = sheet.findViewById(R.id.touchid_amount);
+        amount.setText(context.getString(R.string.naira_sign) + decimal);
+        sheet.findViewById(R.id.touchid_close)
+                .setOnClickListener(view -> showIncompleteDialog(decimal));
+        sheet.findViewById(R.id.touchid_pay)
+                .setOnClickListener(view -> startBiometric(decimal));
+        sheet.findViewById(R.id.touchid_verify_pin)
+                .setOnClickListener(view -> {
+                    dialog.dismiss();
+                    showPinSheet(decimal);
+                });
+        touchIdSheet = dialog;
+        dialog.show();
+    }
+
+    /** The leave-confirmation card shown over the Touch ID sheet. */
+    private void showIncompleteDialog(final String decimal) {
+        if (incompleteDialog != null && incompleteDialog.isShowing()) {
+            return;
+        }
+        final Dialog dialog = new Dialog(context);
+        View sheet = LayoutInflater.from(context)
+                .inflate(R.layout.dialog_payment_incomplete, null);
+        dialog.setContentView(sheet);
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawableResource(android.R.color.transparent);
+            window.setLayout((int) (context.getResources()
+                    .getDisplayMetrics().widthPixels * 0.86f),
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            window.setGravity(Gravity.CENTER);
+            window.setDimAmount(0.35f);
+        }
+        sheet.findViewById(R.id.incomplete_close)
+                .setOnClickListener(view -> dialog.dismiss());
+        sheet.findViewById(R.id.incomplete_continue)
+                .setOnClickListener(view -> dialog.dismiss());
+        sheet.findViewById(R.id.incomplete_leave)
+                .setOnClickListener(view -> {
+                    dialog.dismiss();
+                    dismissAuthSheets();
+                    if (paymentSheet != null && paymentSheet.isShowing()) {
+                        paymentSheet.dismiss();
+                    }
+                });
+        incompleteDialog = dialog;
+        dialog.show();
+    }
+
+    /** System fingerprint prompt: original title, no subtitle, "Use PIN". */
+    private void startBiometric(final String decimal) {
         if (!(context instanceof FragmentActivity)) {
-            proceedToLoading(decimal);
+            showPinSheet(decimal);
+            return;
+        }
+        androidx.biometric.BiometricManager manager =
+                androidx.biometric.BiometricManager.from(context);
+        if (manager.canAuthenticate(androidx.biometric.BiometricManager
+                .Authenticators.BIOMETRIC_WEAK)
+                != androidx.biometric.BiometricManager.BIOMETRIC_SUCCESS) {
+            showPinSheet(decimal);
             return;
         }
         FragmentActivity activity = (FragmentActivity) context;
@@ -371,33 +455,127 @@ public final class AmountScreenController {
                     @Override
                     public void onAuthenticationSucceeded(
                             BiometricPrompt.AuthenticationResult result) {
-                        activity.runOnUiThread(() -> proceedToLoading(decimal));
+                        activity.runOnUiThread(() -> {
+                            dismissAuthSheets();
+                            proceedToLoading(decimal);
+                        });
                     }
 
                     @Override
                     public void onAuthenticationError(int errorCode,
                             CharSequence errString) {
-                        activity.runOnUiThread(() ->
-                                showMessage(context.getString(
-                                        R.string.payment_cancelled)));
+                        if (errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
+                            activity.runOnUiThread(() -> {
+                                if (touchIdSheet != null) {
+                                    touchIdSheet.dismiss();
+                                }
+                                showPinSheet(decimal);
+                            });
+                        }
                     }
                 });
-        BiometricPrompt.PromptInfo.Builder info =
-                new BiometricPrompt.PromptInfo.Builder()
-                        .setTitle(context.getString(R.string.confirm_payment_title))
-                        .setSubtitle(context.getString(
-                                R.string.confirm_payment_sub,
-                                decimal, recipient.getName()));
-        if (Build.VERSION.SDK_INT >= 28) {
-            info.setAllowedAuthenticators(
-                    androidx.biometric.BiometricManager.Authenticators
-                            .BIOMETRIC_WEAK
-                            | androidx.biometric.BiometricManager.Authenticators
-                                    .DEVICE_CREDENTIAL);
-        } else {
-            info.setDeviceCredentialAllowed(true);
+        BiometricPrompt.PromptInfo info = new BiometricPrompt.PromptInfo
+                .Builder()
+                .setTitle(context.getString(R.string.touchid_title))
+                .setNegativeButtonText(
+                        context.getString(R.string.touchid_negative))
+                .setAllowedAuthenticators(androidx.biometric.BiometricManager
+                        .Authenticators.BIOMETRIC_WEAK)
+                .build();
+        prompt.authenticate(info);
+    }
+
+    /** The app's own PIN entry sheet with the secure-input keypad. */
+    private void showPinSheet(final String decimal) {
+        if (pinSheet != null && pinSheet.isShowing()) {
+            return;
         }
-        prompt.authenticate(info.build());
+        pinCode.setLength(0);
+        pinVisible = false;
+        final Dialog dialog = new Dialog(context);
+        final View sheet = LayoutInflater.from(context)
+                .inflate(R.layout.dialog_pin_sheet, null);
+        dialog.setContentView(sheet);
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawableResource(android.R.color.transparent);
+            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            window.setGravity(Gravity.BOTTOM);
+            window.setDimAmount(0.5f);
+        }
+        final TextView[] boxes = new TextView[] {
+                sheet.findViewById(R.id.pin_box_1),
+                sheet.findViewById(R.id.pin_box_2),
+                sheet.findViewById(R.id.pin_box_3),
+                sheet.findViewById(R.id.pin_box_4)};
+        final ImageView eye = sheet.findViewById(R.id.pin_eye);
+        eye.setOnClickListener(view -> {
+            pinVisible = !pinVisible;
+            eye.setImageResource(pinVisible
+                    ? R.drawable.ic_eye_visible : R.drawable.ic_eye_off);
+            renderPin(boxes);
+        });
+        View.OnClickListener digit = view -> {
+            if (pinCode.length() < 4) {
+                pinCode.append(((TextView) view).getText());
+                renderPin(boxes);
+                if (pinCode.length() == 4) {
+                    handler.postDelayed(() -> {
+                        dialog.dismiss();
+                        dismissAuthSheets();
+                        proceedToLoading(decimal);
+                    }, 220);
+                }
+            }
+        };
+        for (int id : new int[] {R.id.pin_key_0, R.id.pin_key_1,
+                R.id.pin_key_2, R.id.pin_key_3, R.id.pin_key_4,
+                R.id.pin_key_5, R.id.pin_key_6, R.id.pin_key_7,
+                R.id.pin_key_8, R.id.pin_key_9}) {
+            sheet.findViewById(id).setOnClickListener(digit);
+        }
+        sheet.findViewById(R.id.pin_key_back).setOnClickListener(view -> {
+            if (pinCode.length() > 0) {
+                pinCode.deleteCharAt(pinCode.length() - 1);
+                renderPin(boxes);
+            }
+        });
+        sheet.findViewById(R.id.pin_close)
+                .setOnClickListener(view -> dialog.dismiss());
+        sheet.findViewById(R.id.pin_forgot)
+                .setOnClickListener(view -> showMessage(
+                        context.getString(R.string.pin_forgot_toast)));
+        sheet.findViewById(R.id.pin_touchid)
+                .setOnClickListener(view -> {
+                    dialog.dismiss();
+                    startBiometric(decimal);
+                });
+        pinSheet = dialog;
+        dialog.show();
+    }
+
+    private void renderPin(TextView[] boxes) {
+        for (int i = 0; i < boxes.length; i++) {
+            boolean filled = i < pinCode.length();
+            boxes[i].setBackgroundResource(filled
+                    ? R.drawable.bg_pin_box_filled : R.drawable.bg_pin_box);
+            boxes[i].setText(filled
+                    ? (pinVisible ? String.valueOf(pinCode.charAt(i)) : "\u25CF")
+                    : "");
+        }
+    }
+
+    private void dismissAuthSheets() {
+        if (touchIdSheet != null && touchIdSheet.isShowing()) {
+            touchIdSheet.dismiss();
+        }
+        if (pinSheet != null && pinSheet.isShowing()) {
+            pinSheet.dismiss();
+        }
+        if (incompleteDialog != null && incompleteDialog.isShowing()) {
+            incompleteDialog.dismiss();
+        }
     }
 
     /** The dimmed screen with the fluid PalmPay logo card. */
@@ -405,6 +583,7 @@ public final class AmountScreenController {
         if (loadingOverlay != null && loadingOverlay.isShowing()) {
             return;
         }
+        dismissAuthSheets();
         Dialog loading = new Dialog(context,
                 android.R.style.Theme_Translucent_NoTitleBar);
         loading.setContentView(LayoutInflater.from(context)
