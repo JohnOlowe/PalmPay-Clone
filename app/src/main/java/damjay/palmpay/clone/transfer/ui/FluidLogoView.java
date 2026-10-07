@@ -34,14 +34,17 @@ public final class FluidLogoView extends AppCompatImageView {
 
     /** White channels in the 48-unit viewport, leaking past the hexagon. */
     private static final float[][] LEFT_SLASH = {
-            {0f, 25f}, {4f, 29f}, {21f, 15f}, {17f, 11f}};
+            {1f, 29.5f}, {4f, 32.5f}, {20f, 16.5f}, {17f, 13.5f}};
     private static final float[][] RIGHT_SLASH = {
-            {48f, 23f}, {44f, 19f}, {27f, 33f}, {31f, 37f}};
+            {47f, 18.5f}, {44f, 15.5f}, {28f, 31.5f}, {31f, 34.5f}};
     private static final float[][] DIAMOND = {
-            {24f, 21.8f}, {26.2f, 24f}, {24f, 26.2f}, {21.8f, 24f}};
+            {24f, 21.4f}, {26.6f, 24f}, {24f, 26.6f}, {21.4f, 24f}};
 
     private final Paint water = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final Path channels = new Path();
+    private final Path channelsLeft = new Path();
+    private final Path channelsRight = new Path();
+    private final Path channelsDiamond = new Path();
+    private final Path wipe = new Path();
     private float fill;
     private int builtFor;
     private ValueAnimator animator;
@@ -91,20 +94,22 @@ public final class FluidLogoView extends AppCompatImageView {
     }
 
     private void buildChannels(int side, int left, int top) {
-        channels.reset();
-        addQuad(side, left, top, LEFT_SLASH);
-        addQuad(side, left, top, RIGHT_SLASH);
-        addQuad(side, left, top, DIAMOND);
-        channels.close();
+        channelsLeft.reset();
+        channelsRight.reset();
+        channelsDiamond.reset();
+        addQuad(channelsLeft, side, left, top, LEFT_SLASH);
+        addQuad(channelsRight, side, left, top, RIGHT_SLASH);
+        addQuad(channelsDiamond, side, left, top, DIAMOND);
     }
 
-    private void addQuad(int side, int left, int top, float[][] pts) {
+    private void addQuad(Path target, int side, int left, int top,
+                         float[][] pts) {
         float s = side / 48f;
-        channels.moveTo(left + pts[0][0] * s, top + pts[0][1] * s);
+        target.moveTo(left + pts[0][0] * s, top + pts[0][1] * s);
         for (int i = 1; i < pts.length; i++) {
-            channels.lineTo(left + pts[i][0] * s, top + pts[i][1] * s);
+            target.lineTo(left + pts[i][0] * s, top + pts[i][1] * s);
         }
-        channels.close();
+        target.close();
     }
 
     @Override
@@ -132,18 +137,30 @@ public final class FluidLogoView extends AppCompatImageView {
         // degree turn that axis is horizontal, so a growing rect becomes a
         // front of water travelling up the left slash, through the diamond
         // and out of the right slash.
-        float halfSpan = 20f * (side / 48f);
+        float halfSpan = 21f * (side / 48f);
+        float s = side / 48f;
         canvas.save();
-        canvas.clipPath(channels);
+        // Clip to the two wipe fronts (in the turned space), then draw the
+        // channels back in normal orientation.
         canvas.rotate(-45f, cx, cy);
-        // Water enters from both leaked outer ends at once: the left front
-        // runs up the left slash, the right front down the right slash, and
-        // they meet (and fill the diamond) at the centre.
+        wipe.reset();
         float reach = halfSpan * fill;
-        canvas.drawRect(cx - halfSpan, cy - side, cx - halfSpan + reach,
-                cy + side, water);
-        canvas.drawRect(cx + halfSpan - reach, cy - side, cx + halfSpan,
-                cy + side, water);
+        wipe.addRect(cx - halfSpan, cy - side, cx - halfSpan + reach,
+                cy + side, Path.Direction.CW);
+        wipe.addRect(cx + halfSpan - reach, cy - side, cx + halfSpan,
+                cy + side, Path.Direction.CW);
+        canvas.clipPath(wipe);
+        canvas.rotate(45f, cx, cy);
+        // Water enters from both leaked outer ends at once and meets at the
+        // centre. Fill AND stroke, a touch fatter than the white marks' own
+        // strokes, so no white fringe survives at full fill.
+        water.setStyle(Paint.Style.FILL_AND_STROKE);
+        water.setStrokeJoin(Paint.Join.ROUND);
+        water.setStrokeWidth(2.4f * s);
+        canvas.drawPath(channelsLeft, water);
+        canvas.drawPath(channelsRight, water);
+        water.setStrokeWidth(2.0f * s);
+        canvas.drawPath(channelsDiamond, water);
         canvas.restore();
     }
 }
